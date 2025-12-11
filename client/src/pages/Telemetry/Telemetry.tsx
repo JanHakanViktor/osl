@@ -64,10 +64,6 @@ interface SessionPacket {
   m_totalLaps?: number;
 }
 
-/* -------------------------
-   Utilities
-   ------------------------- */
-
 function fmtMs(ms?: number | null) {
   if (ms == null || !isFinite(ms)) return "--:--.---";
   const totalMs = Math.max(0, Math.round(ms));
@@ -85,9 +81,6 @@ function combineSector(mins?: number, ms?: number) {
   return minutes * 60 + msPart / 1000;
 }
 
-/* -------------------------
-   Minimal useTelemetry hook
-   ------------------------- */
 function useTelemetry(
   serverUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:3030",
   namespace = "/telemetry"
@@ -135,9 +128,9 @@ function useTelemetry(
   return { connected, carTelemetry, lapDataPkt, sessionPkt };
 }
 
-/* -------------------------
-   Presentational components
-   ------------------------- */
+/* -----------
+   Components
+   ----------- */
 
 function SectorChip({
   label,
@@ -283,10 +276,10 @@ function TelemetryGauges({
 }
 
 /* -------------------------
-   Main minimal page (flex-based, polished)
+   Telemetry page
    ------------------------- */
 
-export default function TimeAttackPage() {
+export default function TelemetryPage() {
   const { connected, carTelemetry, lapDataPkt, sessionPkt } = useTelemetry();
   const [history, setHistory] = useState<
     Array<{ lapMs: number; valid: boolean; sectors?: number[] }>
@@ -384,10 +377,8 @@ export default function TimeAttackPage() {
     ? Math.max(...telemetryArray.map((t) => t.m_speed ?? 0))
     : null;
 
-  // responsive layout: two columns on md+, stacked on xs
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
-      {/* Header */}
       <Box
         sx={{
           display: "flex",
@@ -434,7 +425,6 @@ export default function TimeAttackPage() {
           alignItems: "flex-start",
         }}
       >
-        {/* Left column */}
         <Box
           sx={{
             flex: "1 1 65%",
@@ -661,7 +651,6 @@ export default function TimeAttackPage() {
           </Card>
         </Box>
 
-        {/* Right column */}
         <Box
           sx={{
             width: { xs: "100%", md: 360 },
