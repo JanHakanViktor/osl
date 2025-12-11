@@ -8,9 +8,9 @@ import NewDriver from "../pages/Create/NewDriver";
 import TrackSelection from "../pages/Create/TrackSelection";
 import SessionOverview from "../pages/Session/SessionOverview";
 import DriverTelemetryPage from "../pages/Session/DriverTelemetry";
-import HotlapPage from "../pages/Session/HotlapPage";
+import HotlapPage from "../pages/Session/Hotlap.tsx";
 import Podium from "../pages/Session/Podium";
-import Telemetry from "../pages/Telemetry/Telemetry";
+import Telemetry from "../pages/Telemetry/Telemetry.tsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
