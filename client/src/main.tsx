@@ -4,7 +4,7 @@ import "./index.css";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { RouterProvider } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import router from "./routes/routes";
+import router from "./routes/Router";
 
 const queryClient = new QueryClient();
 const theme = createTheme();
