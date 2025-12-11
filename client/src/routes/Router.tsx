@@ -10,7 +10,7 @@ import SessionOverview from "../pages/Session/SessionOverview";
 import DriverTelemetryPage from "../pages/Session/DriverTelemetry";
 import HotlapPage from "../pages/Session/HotlapPage";
 import Podium from "../pages/Session/Podium";
-import Telemetry from "../pages/Telemetry/Telemetry";
+import Telemetry from "../pages/Telemetry/Telemetry.tsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
