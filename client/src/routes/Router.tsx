@@ -10,6 +10,7 @@ import SessionOverview from "../pages/Session/SessionOverview";
 import DriverTelemetryPage from "../pages/Session/DriverTelemetry";
 import HotlapPage from "../pages/Session/HotlapPage";
 import Podium from "../pages/Session/Podium";
+import Telemetry from "../pages/Telemetry/Telemetry";
 
 const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
@@ -51,6 +52,15 @@ const router = createBrowserRouter([
         element: <DriverTelemetryPage />,
       },
       { path: "podium", element: <Podium /> },
+    ],
+  },
+  {
+    path: "/telemetry",
+    children: [
+      {
+        index: true,
+        element: <Telemetry />,
+      },
     ],
   },
   { path: "*", element: <NotFoundPage /> },
