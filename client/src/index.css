@@ -50,4 +50,11 @@ a {
   text-decoration: none;
 }
 
+.oslLogo {
+  margin-left: 2rem;
+  transition: all 0.3s ease;
+}
 
+.oslLogo:hover {
+  transform: scale(1.05);
+}

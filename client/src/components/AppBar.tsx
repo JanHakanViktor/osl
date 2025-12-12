@@ -23,11 +23,15 @@ function ResponsiveAppBar() {
         <img
           src={logo}
           alt="OSL Logo"
+          className="oslLogo"
           width={160}
           height={160}
           onClick={() => navigate("/")}
-          style={{ marginLeft: "2rem" }}
+          style={{
+            marginLeft: "2rem",
+          }}
         />
+
         <MenuItem
           sx={{
             color: "black",
