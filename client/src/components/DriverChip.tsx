@@ -33,7 +33,12 @@ const DriverChip = ({
         </Avatar>
       }
       label={
-        <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1 }}>
             {name}
           </Typography>
@@ -52,13 +57,14 @@ const DriverChip = ({
         </Box>
       }
       sx={{
-        py: 0.5,
-        px: 1.25,
+        py: 1,
+        px: 1,
         borderRadius: 1.5,
         color: "white",
         height: "auto",
         bgcolor: "#ffffff24",
         flexGrow: 1,
+        justifyContent: "flex-start",
       }}
     />
   );

@@ -15,8 +15,9 @@ function ResponsiveAppBar() {
         disableGutters
         sx={{
           display: "flex",
-          justifyContent: "center",
+          justifyContent: "flex-start",
           border: "2px, solid, black",
+          gap: 4,
         }}
       >
         <img
@@ -25,17 +26,75 @@ function ResponsiveAppBar() {
           width={160}
           height={160}
           onClick={() => navigate("/")}
+          style={{ marginLeft: "2rem" }}
         />
-        <MenuItem>
+        <MenuItem
+          sx={{
+            color: "black",
+            height: "100%",
+            transition: "all 0.3s ease",
+            ":hover": {
+              color: "red",
+              transform: "scale(1.05)",
+              bgcolor: "#FFFFFF",
+            },
+          }}
+        >
           <Typography
             textAlign="center"
-            sx={{ color: "black", height: "100%" }}
-            fontSize={"40px"}
+            fontSize={"30px"}
+            fontWeight={"bold"}
             onClick={() => {
               navigate("/create");
             }}
           >
             CREATE SESSION
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          sx={{
+            color: "black",
+            height: "100%",
+            transition: "all 0.3s ease",
+            ":hover": {
+              color: "red",
+              transform: "scale(1.05)",
+              bgcolor: "#FFFFFF",
+            },
+          }}
+        >
+          <Typography
+            textAlign="center"
+            fontSize={"30px"}
+            fontWeight={"bold"}
+            onClick={() => {
+              navigate("/create");
+            }}
+          >
+            SESSION HISTORY
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          sx={{
+            color: "black",
+            height: "100%",
+            transition: "all 0.3s ease",
+            ":hover": {
+              color: "red",
+              transform: "scale(1.05)",
+              bgcolor: "#FFFFFF",
+            },
+          }}
+        >
+          <Typography
+            textAlign="center"
+            fontSize={"30px"}
+            fontWeight={"bold"}
+            onClick={() => {
+              navigate("/create");
+            }}
+          >
+            DRIVERS
           </Typography>
         </MenuItem>
       </Toolbar>
