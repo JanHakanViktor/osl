@@ -36,7 +36,7 @@ function LandingPage() {
             topDrivers={[]}
             cleanLaps={7}
             topSpeed={342}
-            podiumPlacement={}
+            podiumPlacement={0}
           />
         </Box>
         <Box></Box>
