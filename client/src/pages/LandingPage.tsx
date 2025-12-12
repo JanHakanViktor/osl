@@ -4,6 +4,7 @@ import HeroBanner from "../components/HeroBanner";
 import RecentSessions from "../components/RecentSessions";
 import Footer from "../components/Footer";
 import MostPlayedCircuit from "../components/MostPlayedCircuit";
+import ScoreBoard from "../components/ScoreBoard";
 
 function LandingPage() {
   return (
@@ -18,11 +19,6 @@ function LandingPage() {
           gridTemplateRows: "1fr 1fr",
           gap: 1,
           p: 2,
-          minHeight: "68vh",
-          alignItems: "stretch",
-          "& > div": {
-            height: "100%",
-          },
         }}
       >
         <Box>
@@ -33,7 +29,16 @@ function LandingPage() {
           <MostPlayedCircuit />
         </Box>
 
-        <Box></Box>
+        <Box>
+          <ScoreBoard
+            id={1}
+            sessionId={42}
+            topDrivers={[]}
+            cleanLaps={7}
+            topSpeed={342}
+            podiumPlacement={}
+          />
+        </Box>
         <Box></Box>
       </Box>
 
