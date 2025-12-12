@@ -1,9 +1,6 @@
-import { Box, Container, Typography, Button } from "@mui/material";
-import { useNavigate } from "react-router";
+import { Box, Container, Typography } from "@mui/material";
 
 const HeroBanner = () => {
-  const navigate = useNavigate();
-
   return (
     <Box
       aria-label="F1 Car"
@@ -34,22 +31,6 @@ const HeroBanner = () => {
             Create and manage your own F1 25 tournaments with ease. Organize
             hotlap races and track results all in one place.
           </Typography>
-          <Box
-            sx={{
-              pt: 4,
-            }}
-          >
-            <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-              <Button
-                onClick={() => navigate("/create")}
-                variant="contained"
-                color="primary"
-                size="large"
-              >
-                CREATE SESSION
-              </Button>
-            </Box>
-          </Box>
         </Box>
       </Container>
     </Box>

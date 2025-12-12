@@ -86,7 +86,14 @@ const RecentSessions = () => {
                   {sessionTitle}
                 </Typography>
 
-                <Box sx={{ display: "flex", gap: 1, mt: 1, flexWrap: "wrap" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    mt: 1,
+                    flexWrap: "wrap",
+                  }}
+                >
                   {drivers.slice(0, 3).map(({ id, name, team, avatarUrl }) => (
                     <DriverChip
                       key={id}

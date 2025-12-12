@@ -58,6 +58,7 @@ const DriverChip = ({
         color: "white",
         height: "auto",
         bgcolor: "#ffffff24",
+        flexGrow: 1,
       }}
     />
   );

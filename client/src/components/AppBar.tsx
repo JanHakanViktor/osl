@@ -16,27 +16,21 @@ function ResponsiveAppBar() {
         sx={{
           display: "flex",
           justifyContent: "center",
-          marginLeft: 34,
+          border: "2px, solid, black",
         }}
       >
+        <img
+          src={logo}
+          alt="OSL Logo"
+          width={160}
+          height={160}
+          onClick={() => navigate("/")}
+        />
         <MenuItem>
           <Typography
+            textAlign="center"
+            sx={{ color: "black", height: "100%" }}
             fontSize={"40px"}
-            textAlign="center"
-            sx={{ color: "black" }}
-            onClick={() => navigate("/")}
-          >
-            HOME
-          </Typography>
-        </MenuItem>
-
-        <img src={logo} alt="OSL Logo" width={160} height={160} />
-
-        <MenuItem>
-          <Typography
-            textAlign="center"
-            sx={{ color: "black" }}
-            fontSize={"50px"}
             onClick={() => {
               navigate("/create");
             }}
