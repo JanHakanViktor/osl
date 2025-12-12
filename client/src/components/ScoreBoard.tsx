@@ -5,6 +5,7 @@ import PodiumImage from "./PodiumImage";
 
 interface ScoreBoardProps {
   id: number;
+  title: string;
   sessionId: number;
   topDrivers: DriverProps[];
   podiumPlacement: number;
@@ -12,7 +13,7 @@ interface ScoreBoardProps {
   topSpeed: number;
 }
 
-const ScoreBoard = ({ topDrivers, cleanLaps }: ScoreBoardProps) => {
+const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
   const rows = [0, 1, 2].map(
     (i) => topDrivers[i] ?? { id: `p-${i}`, name: `Driver ${i + 1}` } // TODO: REAL VALUES NEEDED
   );
@@ -20,17 +21,19 @@ const ScoreBoard = ({ topDrivers, cleanLaps }: ScoreBoardProps) => {
   return (
     <>
       <Typography sx={{ p: 2, fontWeight: "bold" }} variant="h5">
-        LONGEST CLEAN LAP STREAK
+        {title}
       </Typography>
       <Box
         sx={{
-          width: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "flex-start",
           p: 2,
           boxSizing: "border-box",
           maxWidth: 980,
+          width: "100%",
+          bgcolor: "#00000037",
+          borderRadius: "10px",
         }}
       >
         <Box
@@ -39,6 +42,7 @@ const ScoreBoard = ({ topDrivers, cleanLaps }: ScoreBoardProps) => {
             flexDirection: "column",
             gap: 4,
             width: 340,
+            flex: 1,
           }}
         >
           {rows.map((driver) => (
@@ -49,6 +53,7 @@ const ScoreBoard = ({ topDrivers, cleanLaps }: ScoreBoardProps) => {
                 alignItems: "center",
                 gap: 2,
                 py: 0.5,
+                borderBottom: "2px solid red",
               }}
             >
               <Box
@@ -69,19 +74,30 @@ const ScoreBoard = ({ topDrivers, cleanLaps }: ScoreBoardProps) => {
                   avatarUrl={driver.avatarUrl ?? null}
                 />
               </Box>
-              <Box
-                sx={{
-                  fontSize: "0.95rem",
-                  color: "text.secondary",
-                  width: 200,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 1,
-                  flex: 1,
-                  flexGrow: 1,
-                }}
-              >
-                Clean Laps: <strong>{cleanLaps}x</strong>
+              <Box sx={{ justifyContent: "space-between" }}>
+                <Box
+                  sx={{
+                    fontSize: "0.95rem",
+                    color: "#FFFFFF",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                    flex: 1,
+                    flexGrow: 1,
+                    p: 2,
+                  }}
+                >
+                  <Box
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                    }}
+                  >
+                    {cleanLaps}x
+                  </Box>
+                </Box>
               </Box>
             </Box>
           ))}

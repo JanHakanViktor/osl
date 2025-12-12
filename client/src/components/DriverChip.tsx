@@ -22,8 +22,6 @@ const DriverChip = ({
         <Avatar
           src={avatarUrl ?? undefined}
           sx={{
-            width: 36,
-            height: 36,
             bgcolor: "grey.200",
             color: "text.primary",
             fontWeight: 700,
@@ -46,7 +44,11 @@ const DriverChip = ({
           {team && (
             <Typography
               variant="caption"
-              sx={{ lineHeight: 1, color: "#FF8000" }}
+              sx={{
+                lineHeight: 1,
+                color: "#FF8000",
+                mb: 1,
+              }}
             >
               {team}
             </Typography>
@@ -57,8 +59,8 @@ const DriverChip = ({
         </Box>
       }
       sx={{
-        py: 1,
-        px: 1,
+        py: 2,
+        px: 2,
         borderRadius: 1.5,
         color: "white",
         height: "auto",

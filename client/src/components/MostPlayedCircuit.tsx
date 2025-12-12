@@ -49,7 +49,7 @@ const MostPlayedCircuit = () => {
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(to bottom, rgba(0, 0, 0, 0.41), rgba(255, 255, 255, 0.47))",
+              "linear-gradient(to bottom, rgba(255, 255, 255, 0.41), rgba(0, 0, 0, 0.47))",
             zIndex: 1,
             pointerEvents: "none",
           }}
