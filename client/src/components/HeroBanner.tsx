@@ -8,13 +8,14 @@ const HeroBanner = () => {
         pt: 8,
         pb: 6,
         backgroundImage:
-          'radial-gradient(rgba(0, 0, 0, 1), rgba(38, 0, 255, 0.28)), url("/heroBanner.png")',
+          'radial-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.28)), url("/heroBanner.png")',
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         color: "white",
         textAlign: "center",
         height: "50vh",
+        filter: "grayscale(100%)",
       }}
     >
       <Box>

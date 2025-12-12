@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import mockedCircuitLibrary from "../mockedData";
 
 const MostPlayedCircuit = () => {
-  const idx = mockedCircuitLibrary[3] ? 3 : 0;
+  const idx = mockedCircuitLibrary[2] ? 3 : 0;
   const { image, grandPrix, circuit, played } = mockedCircuitLibrary[idx];
 
   return (
@@ -23,7 +23,6 @@ const MostPlayedCircuit = () => {
           flex: 1,
           width: "100%",
           borderRadius: 2,
-          border: "4px solid",
           borderColor: "red",
           overflow: "hidden",
         }}
@@ -39,7 +38,6 @@ const MostPlayedCircuit = () => {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            transform: "scale(1.03)",
             filter: "blur(1px) brightness(0.8)",
             zIndex: 1,
             pointerEvents: "none",
@@ -51,7 +49,7 @@ const MostPlayedCircuit = () => {
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.12), rgba(0, 0, 0, 0.73))",
+              "linear-gradient(to bottom, rgba(0, 0, 0, 0.41), rgba(255, 255, 255, 0.47))",
             zIndex: 1,
             pointerEvents: "none",
           }}
@@ -77,7 +75,7 @@ const MostPlayedCircuit = () => {
               px: { xs: 2, md: 3 },
               py: { xs: 1.6, md: 2.5 },
               borderColor: "red",
-              borderRadius: "12px",
+              borderRadius: "10px",
               backgroundColor: "#00000086",
               width: { xs: "100%", md: "auto" },
               maxWidth: 980,
@@ -85,10 +83,10 @@ const MostPlayedCircuit = () => {
           >
             <Box>
               <Typography sx={{ color: "#fff", fontWeight: 700 }}>
-                {grandPrix}
+                {grandPrix.toLocaleUpperCase()}
               </Typography>
               <Typography sx={{ color: "#fff", fontWeight: 700 }}>
-                {circuit}
+                {circuit.toLocaleUpperCase()}
               </Typography>
             </Box>
 
@@ -102,16 +100,21 @@ const MostPlayedCircuit = () => {
               }}
             >
               <Typography
-                sx={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.9)" }}
+                sx={{
+                  fontSize: "0.95rem",
+                  color: "rgba(255,255,255,0.9)",
+                  fontWeight: "bold",
+                }}
               >
-                Total amount of times played
+                TOTAL TIMES PLAYED
               </Typography>
               <Typography
                 sx={{
+                  display: "flex",
                   fontSize: "1.2rem",
                   fontWeight: 700,
                   color: "error.main",
-                  mt: 0.5,
+                  justifyContent: "flex-end",
                 }}
               >
                 {played}

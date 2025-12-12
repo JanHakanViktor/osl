@@ -18,26 +18,17 @@ function LandingPage() {
           gridTemplateRows: "1fr 1fr",
           gap: 1,
           p: 2,
-
-          // Important: give the grid a sensible height so "1fr" rows have meaning
-          // Adjust minHeight to taste (keeps layout consistent across viewports)
           minHeight: "68vh",
-
-          // Ensure grid cells stretch to the full row height
           alignItems: "stretch",
-
-          // Optional: ensure every direct grid child occupies full height of its cell
           "& > div": {
             height: "100%",
           },
         }}
       >
-        {/* Top-left (fills cell) */}
         <Box>
           <RecentSessions />
         </Box>
 
-        {/* Top-right (fills cell) */}
         <Box>
           <MostPlayedCircuit />
         </Box>

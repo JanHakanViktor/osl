@@ -71,7 +71,6 @@ const RecentSessions = () => {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           color: "text.primary",
-          border: "solid, 4px, red",
           borderRadius: "10px",
           pt: 3,
           pb: 1,
