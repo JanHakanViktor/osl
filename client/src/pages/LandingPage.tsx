@@ -21,15 +21,9 @@ function LandingPage() {
         <Box>
           <RecentSessions />
         </Box>
-        <Box>
-          <RecentSessions />
-        </Box>
-        <Box>
-          <RecentSessions />
-        </Box>
-        <Box>
-          <RecentSessions />
-        </Box>
+        <Box></Box>
+        <Box></Box>
+        <Box></Box>
       </Box>
       <Footer />
     </>

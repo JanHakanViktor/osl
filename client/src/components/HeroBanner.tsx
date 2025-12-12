@@ -14,6 +14,7 @@ const HeroBanner = () => {
           'radial-gradient(rgba(0, 0, 0, 1), rgba(38, 0, 255, 0.28)), url("/heroBanner.png")',
         backgroundSize: "cover",
         backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
         color: "white",
         textAlign: "center",
       }}

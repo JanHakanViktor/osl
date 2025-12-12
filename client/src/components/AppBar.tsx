@@ -4,44 +4,51 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import MenuItem from "@mui/material/MenuItem";
+import { useNavigate } from "react-router";
 
 const logo = "/osl_logo.png";
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate();
+
   return (
     <AppBar position="static" sx={{ backgroundColor: "white" }}>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 2,
+      <Toolbar
+        disableGutters
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          marginLeft: 34,
+        }}
+      >
+        <MenuItem>
+          <Typography
+            fontSize={"40px"}
+            textAlign="center"
+            sx={{ color: "black" }}
+            onClick={() => navigate("/")}
+          >
+            HOME
+          </Typography>
+        </MenuItem>
+
+        <img src={logo} alt="OSL Logo" width={160} height={160} />
+
+        <MenuItem>
+          <Typography
+            textAlign="center"
+            sx={{ color: "black" }}
+            fontSize={"50px"}
+            onClick={() => {
+              navigate("/create");
             }}
           >
-            <MenuItem>
-              <Typography textAlign="center" sx={{ color: "black" }}>
-                HOME
-              </Typography>
-            </MenuItem>
-            <img src={logo} alt="OSL Logo" width={150} height={150} />
-            <MenuItem>
-              <Typography
-                textAlign="center"
-                sx={{ color: "black" }}
-                onClick={() => {
-                  window.location.href = "/create";
-                }}
-              >
-                CREATE SESSION
-              </Typography>
-            </MenuItem>
-          </Box>
-        </Toolbar>
-      </Container>
+            CREATE SESSION
+          </Typography>
+        </MenuItem>
+      </Toolbar>
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;
