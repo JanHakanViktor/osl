@@ -14,24 +14,17 @@ const HeroBanner = () => {
         backgroundRepeat: "no-repeat",
         color: "white",
         textAlign: "center",
+        height: "50vh",
       }}
     >
+      <Box>
+        <img src="/f125LogoLight.png" height={200} />
+      </Box>
       <Container maxWidth="sm">
-        <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h2"
-            align="center"
-            color="inherit"
-            gutterBottom
-            fontWeight={"bold"}
-          >
-            F1 25 TOURNAMENT HUB
-          </Typography>
-          <Typography variant="h5" align="center" color="inherit">
-            Create and manage your own F1 25 tournaments with ease. Organize
-            hotlap races and track results all in one place.
-          </Typography>
-        </Box>
+        <Typography variant="h5" align="center" color="inherit">
+          Create and manage your own F1 25 tournaments with ease. Organize
+          hotlap races and track results all in one place.
+        </Typography>
       </Container>
     </Box>
   );
