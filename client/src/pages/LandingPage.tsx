@@ -49,7 +49,7 @@ function LandingPage() {
             id={1}
             sessionId={42}
             topDrivers={[]}
-            cleanLaps={7}
+            cleanLaps={0}
             topSpeed={342}
             podiumPlacement={0}
           />

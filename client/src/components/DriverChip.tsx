@@ -1,10 +1,18 @@
-import { Avatar, Box, Chip, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Chip,
+  Typography,
+  type SxProps,
+  type Theme,
+} from "@mui/material";
 
 export interface DriverProps {
   id: string;
   name: string;
   team?: string | null;
   avatarUrl?: string | null;
+  sx?: SxProps<Theme>;
 }
 
 const DriverChip = ({
@@ -12,6 +20,7 @@ const DriverChip = ({
   name,
   team = null,
   avatarUrl = null,
+  sx,
 }: DriverProps) => {
   const initialPlaceholder = name ? name.charAt(0).toUpperCase() : "?";
 
@@ -48,6 +57,7 @@ const DriverChip = ({
                 lineHeight: 1,
                 color: "#FF8000",
                 mb: 1,
+                ml: 0.5,
               }}
             >
               {team}
@@ -67,6 +77,7 @@ const DriverChip = ({
         bgcolor: "#ffffff24",
         flexGrow: 1,
         justifyContent: "flex-start",
+        ...sx,
       }}
     />
   );

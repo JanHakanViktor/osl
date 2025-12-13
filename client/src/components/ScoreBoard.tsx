@@ -8,7 +8,7 @@ interface ScoreBoardProps {
   title: string;
   sessionId: number;
   topDrivers: DriverProps[];
-  podiumPlacement: number;
+  podiumPlacement: number[];
   cleanLaps: number;
   topSpeed: number;
 }
@@ -32,7 +32,7 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
           boxSizing: "border-box",
           maxWidth: 980,
           width: "100%",
-          bgcolor: "#00000037",
+          bgcolor: "#000000ff",
           borderRadius: "10px",
         }}
       >
@@ -45,7 +45,7 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
             flex: 1,
           }}
         >
-          {rows.map((driver) => (
+          {rows.map((driver, index) => (
             <Box
               key={driver.id}
               sx={{
@@ -53,7 +53,6 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
                 alignItems: "center",
                 gap: 2,
                 py: 0.5,
-                borderBottom: "2px solid red",
               }}
             >
               <Box
@@ -64,7 +63,13 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
                   justifyContent: "center",
                 }}
               >
-                <PodiumImage size={28} />
+                <Typography
+                  variant="h5"
+                  sx={{ ml: 6, mr: 2, color: "#FFFFFF" }}
+                >
+                  {index + 1}
+                </Typography>
+                <PodiumImage size={50} />
               </Box>
               <Box sx={{ flex: 1 }}>
                 <DriverChip
@@ -72,19 +77,31 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
                   name={driver.name}
                   team={driver.team ?? null}
                   avatarUrl={driver.avatarUrl ?? null}
+                  sx={{
+                    display: "flex",
+                    ml: 6,
+                    bgcolor: "#ffffff37",
+                    p: 4,
+                    "& .MuiTypography-root": {
+                      flexDirection: "row",
+                      fontWeight: 700,
+                    },
+                  }}
                 />
               </Box>
               <Box sx={{ justifyContent: "space-between" }}>
                 <Box
                   sx={{
                     fontSize: "0.95rem",
-                    color: "#FFFFFF",
+                    color: "#ff0000ff",
                     display: "flex",
                     flexDirection: "column",
                     gap: 1,
                     flex: 1,
                     flexGrow: 1,
                     p: 2,
+                    bgcolor: "#FFFFFF",
+                    borderRadius: "10px",
                   }}
                 >
                   <Box

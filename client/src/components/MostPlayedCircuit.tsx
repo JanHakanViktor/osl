@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import mockedCircuitLibrary from "../mockedData";
 
 const MostPlayedCircuit = () => {
-  const idx = mockedCircuitLibrary[2] ? 3 : 0;
+  const idx = mockedCircuitLibrary[0] ? 3 : 0;
   const { image, grandPrix, circuit, played } = mockedCircuitLibrary[idx];
 
   return (
@@ -38,7 +38,7 @@ const MostPlayedCircuit = () => {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            filter: "blur(1px) brightness(0.8)",
+            filter: "blur(1px) brightness(1.1)",
             zIndex: 1,
             pointerEvents: "none",
           }}
@@ -49,7 +49,7 @@ const MostPlayedCircuit = () => {
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(to bottom, rgba(255, 255, 255, 0.41), rgba(0, 0, 0, 0.47))",
+              "linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.64))",
             zIndex: 1,
             pointerEvents: "none",
           }}
@@ -63,7 +63,6 @@ const MostPlayedCircuit = () => {
             flexDirection: "column",
             gap: 3,
             px: { xs: 2, md: 4 },
-            py: 2,
             height: "100%",
           }}
         >
