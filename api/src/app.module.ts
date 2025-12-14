@@ -7,6 +7,6 @@ import { AppService } from './app.service';
 @Module({
   imports: [TelemetryModule],
   controllers: [AppController],
-  providers: [AppService, TelemetryModule],
+  providers: [AppService],
 })
 export class AppModule {}
