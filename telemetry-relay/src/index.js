@@ -1,7 +1,7 @@
 import { F1TelemetryClient, constants } from '@deltazeroproduction/f1-udp-parser';
 import fetch from 'node-fetch';
 
-const API_URL = 'https://your-api.up.railway.app'; // env later
+const API_URL = 'https://osl.railway.app';
 
 const client = new F1TelemetryClient({
   port: 20777,
