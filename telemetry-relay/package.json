@@ -1,0 +1,12 @@
+{
+  "name": "udp-ingest",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "@deltazeroproduction/f1-udp-parser": "^1.2.2",
+    "node-fetch": "^3.3.2"
+  }
+}
