@@ -1,10 +1,18 @@
-import { Avatar, Box, Chip, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Chip,
+  Typography,
+  type SxProps,
+  type Theme,
+} from "@mui/material";
 
 export interface DriverProps {
   id: string;
   name: string;
   team?: string | null;
   avatarUrl?: string | null;
+  sx?: SxProps<Theme>;
 }
 
 const DriverChip = ({
@@ -12,6 +20,7 @@ const DriverChip = ({
   name,
   team = null,
   avatarUrl = null,
+  sx,
 }: DriverProps) => {
   const initialPlaceholder = name ? name.charAt(0).toUpperCase() : "?";
 
@@ -22,8 +31,6 @@ const DriverChip = ({
         <Avatar
           src={avatarUrl ?? undefined}
           sx={{
-            width: 36,
-            height: 36,
             bgcolor: "grey.200",
             color: "text.primary",
             fontWeight: 700,
@@ -46,7 +53,12 @@ const DriverChip = ({
           {team && (
             <Typography
               variant="caption"
-              sx={{ lineHeight: 1, color: "#FF8000" }}
+              sx={{
+                lineHeight: 1,
+                color: "#FF8000",
+                mb: 1,
+                ml: 0.5,
+              }}
             >
               {team}
             </Typography>
@@ -57,14 +69,15 @@ const DriverChip = ({
         </Box>
       }
       sx={{
-        py: 1,
-        px: 1,
+        py: 2,
+        px: 2,
         borderRadius: 1.5,
         color: "white",
         height: "auto",
         bgcolor: "#ffffff24",
         flexGrow: 1,
         justifyContent: "flex-start",
+        ...sx,
       }}
     />
   );

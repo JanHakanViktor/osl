@@ -10,33 +10,40 @@ function ResponsiveAppBar() {
   const navigate = useNavigate();
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "white" }}>
+    <AppBar
+      position="static"
+      sx={{ backgroundColor: "#ffffffff", color: "white" }}
+    >
       <Toolbar
         disableGutters
         sx={{
           display: "flex",
-          justifyContent: "flex-start",
-          border: "2px, solid, black",
+          justifyContent: "center",
           gap: 4,
         }}
       >
         <img
           src={logo}
           alt="OSL Logo"
+          className="oslLogo"
           width={160}
           height={160}
           onClick={() => navigate("/")}
-          style={{ marginLeft: "2rem" }}
+          style={{
+            marginLeft: "2rem",
+          }}
         />
+
         <MenuItem
           sx={{
-            color: "black",
             height: "100%",
             transition: "all 0.3s ease",
+            color: "#000000ff",
             ":hover": {
-              color: "red",
+              color: "#ff0000ff",
               transform: "scale(1.05)",
-              bgcolor: "#FFFFFF",
+              bgcolor: "rgba(255, 255, 255, 1)",
+              borderRadius: "10px",
             },
           }}
         >
@@ -53,13 +60,14 @@ function ResponsiveAppBar() {
         </MenuItem>
         <MenuItem
           sx={{
-            color: "black",
             height: "100%",
             transition: "all 0.3s ease",
+            color: "#000000ff",
             ":hover": {
-              color: "red",
+              color: "#ff0000ff",
               transform: "scale(1.05)",
-              bgcolor: "#FFFFFF",
+              bgcolor: "rgba(255, 255, 255, 1)",
+              borderRadius: "10px",
             },
           }}
         >
@@ -76,13 +84,14 @@ function ResponsiveAppBar() {
         </MenuItem>
         <MenuItem
           sx={{
-            color: "black",
             height: "100%",
             transition: "all 0.3s ease",
+            color: "#000000ff",
             ":hover": {
-              color: "red",
+              color: "#ff0000ff",
               transform: "scale(1.05)",
-              bgcolor: "#FFFFFF",
+              bgcolor: "rgba(255, 255, 255, 1)",
+              borderRadius: "10px",
             },
           }}
         >

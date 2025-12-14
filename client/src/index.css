@@ -27,6 +27,7 @@
 
 html,
 body {
+  font-family: 'Inria Sans', 'sans-serif';
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -50,4 +51,11 @@ a {
   text-decoration: none;
 }
 
+.oslLogo {
+  margin-left: 2rem;
+  transition: all 0.3s ease;
+}
 
+.oslLogo:hover {
+  transform: scale(1.05);
+}
