@@ -1,86 +1,114 @@
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
+import { useNavigate } from "react-router";
 
 const logo = "/osl_logo.png";
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate();
+
   return (
-    <AppBar position="static" sx={{ backgroundColor: "white" }}>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
+    <AppBar
+      position="static"
+      sx={{ backgroundColor: "#ffffffff", color: "white" }}
+    >
+      <Toolbar
+        disableGutters
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 4,
+        }}
+      >
+        <img
+          src={logo}
+          alt="OSL Logo"
+          className="oslLogo"
+          width={160}
+          height={160}
+          onClick={() => navigate("/")}
+          style={{
+            marginLeft: "2rem",
+          }}
+        />
+
+        <MenuItem
+          sx={{
+            height: "100%",
+            transition: "all 0.3s ease",
+            color: "#000000ff",
+            ":hover": {
+              color: "#ff0000ff",
+              transform: "scale(1.05)",
+              bgcolor: "rgba(255, 255, 255, 1)",
+              borderRadius: "10px",
+            },
+          }}
+        >
+          <Typography
+            textAlign="center"
+            fontSize={"30px"}
+            fontWeight={"bold"}
+            onClick={() => {
+              navigate("/create");
             }}
           >
-            <Box sx={{ flexGrow: 1 }}></Box>
-            <MenuItem>
-              <Typography textAlign="center" sx={{ color: "black" }}>
-                HOME
-              </Typography>
-            </MenuItem>
-
-            <MenuItem>
-              <Typography
-                textAlign="center"
-                sx={{ color: "black" }}
-                onClick={() => {
-                  window.location.href = "/create";
-                }}
-              >
-                CREATE GAME
-              </Typography>
-            </MenuItem>
-            <MenuItem>
-              <Typography textAlign="center" sx={{ color: "black" }}>
-                LEADERBOARD
-              </Typography>
-            </MenuItem>
-            <img src={logo} alt="OSL Logo" width={150} height={150} />
-            <MenuItem>
-              <Typography textAlign="center" sx={{ color: "black" }}>
-                DRIVERS
-              </Typography>
-            </MenuItem>
-
-            <MenuItem>
-              <Typography textAlign="center" sx={{ color: "black" }}>
-                ADMIN
-              </Typography>
-            </MenuItem>
-          </Box>
-
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: { xs: "none", md: "flex" },
-              gap: 2,
-              flexDirection: "row-reverse",
+            CREATE SESSION
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          sx={{
+            height: "100%",
+            transition: "all 0.3s ease",
+            color: "#000000ff",
+            ":hover": {
+              color: "#ff0000ff",
+              transform: "scale(1.05)",
+              bgcolor: "rgba(255, 255, 255, 1)",
+              borderRadius: "10px",
+            },
+          }}
+        >
+          <Typography
+            textAlign="center"
+            fontSize={"30px"}
+            fontWeight={"bold"}
+            onClick={() => {
+              navigate("/create");
             }}
           >
-            <Button
-              sx={{
-                my: 2,
-                color: "white",
-                backgroundColor: "#ff0000",
-                display: "block",
-                ":hover": { fontWeight: "bold" },
-              }}
-            >
-              LOGIN
-            </Button>
-          </Box>
-        </Toolbar>
-      </Container>
+            SESSION HISTORY
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          sx={{
+            height: "100%",
+            transition: "all 0.3s ease",
+            color: "#000000ff",
+            ":hover": {
+              color: "#ff0000ff",
+              transform: "scale(1.05)",
+              bgcolor: "rgba(255, 255, 255, 1)",
+              borderRadius: "10px",
+            },
+          }}
+        >
+          <Typography
+            textAlign="center"
+            fontSize={"30px"}
+            fontWeight={"bold"}
+            onClick={() => {
+              navigate("/create");
+            }}
+          >
+            DRIVERS
+          </Typography>
+        </MenuItem>
+      </Toolbar>
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;

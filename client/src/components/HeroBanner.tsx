@@ -1,53 +1,31 @@
-import { Box, Container, Typography, Button } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 
 const HeroBanner = () => {
   return (
     <Box
+      aria-label="F1 Car"
       sx={{
         pt: 8,
         pb: 6,
         backgroundImage:
-          'radial-gradient(rgba(0, 0, 0, 1), rgba(38, 0, 255, 0.28)), url("/heroBanner.png")',
+          'radial-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.28)), url("/heroBanner.png")',
         backgroundSize: "cover",
         backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
         color: "white",
         textAlign: "center",
+        height: "50vh",
+        filter: "grayscale(100%)",
       }}
     >
+      <Box>
+        <img src="/f125LogoLight.png" height={200} />
+      </Box>
       <Container maxWidth="sm">
-        <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h2"
-            align="center"
-            color="inherit"
-            gutterBottom
-            fontWeight={"bold"}
-          >
-            F1 25 TOURNAMENT HUB
-          </Typography>
-          <Typography variant="h5" align="center" color="inherit" paragraph>
-            Create and manage your own F1 25 tournaments with ease. Organize
-            races and track results all in one place.
-          </Typography>
-          <Box
-            sx={{
-              pt: 4,
-            }}
-          >
-            <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                onClick={() => {
-                  window.location.href = "/telemetry";
-                }}
-              >
-                VIEW TELEMETRY
-              </Button>
-            </Box>
-          </Box>
-        </Box>
+        <Typography variant="h5" align="center" color="inherit">
+          Create and manage your own F1 25 tournaments with ease. Organize
+          hotlap races and track results all in one place.
+        </Typography>
       </Container>
     </Box>
   );
