@@ -1,3 +1,4 @@
+import "dotenv/config";
 import {
   constants,
   F1TelemetryClient,
@@ -5,10 +6,11 @@ import {
 
 const { PACKETS } = constants;
 
-const API_URL = "http://localhost:3030/telemetry";
+const API_URL = process.env.API_URL!;
+const UDP_PORT = Number(process.env.UDP_PORT ?? 20777);
 
 const client = new F1TelemetryClient({
-  port: 20777,
+  port: UDP_PORT,
 });
 
 function bigintSafeReplacer(_key: string, value: unknown) {
@@ -21,13 +23,17 @@ function safeJsonify(obj: unknown) {
 
 async function forward(eventName: string, data: unknown) {
   try {
-    await fetch(API_URL, {
+    const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: safeJsonify({ type: eventName, data }),
-    }).catch(console.error);
+    });
+
+    if (!res.ok) {
+      console.error("❌ Backend error", res.status);
+    }
   } catch (error) {
-    console.log("Something went wrong with udp listener", error);
+    console.error("❌ Fetch failed", error);
   }
 }
 

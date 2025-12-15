@@ -6,7 +6,8 @@
     "dev": "node src/index.ts"
   },
   "dependencies": {
-    "@deltazeroproduction/f1-udp-parser": "^1.2.2"
+    "@deltazeroproduction/f1-udp-parser": "^1.2.2",
+    "dotenv": "^17.2.3"
   },
   "devDependencies": {
     "@types/node": "^25.0.2"
