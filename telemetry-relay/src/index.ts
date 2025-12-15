@@ -20,19 +20,24 @@ function safeJsonify(obj: unknown) {
   return JSON.stringify(obj, bigintSafeReplacer);
 }
 
-function forward(eventName: string, data: unknown) {
-  fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: safeJsonify({ type: eventName, data }),
-  }).catch(console.error);
+async function forward(eventName: string, data: unknown) {
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: safeJsonify({ type: eventName, data }),
+    }).catch(console.error);
+  } catch (error) {
+    console.log("Something went wrong with udp listener", error);
+  }
 }
 
-client.on(PACKETS.carTelemetry, (data: any) => forward("carTelemetry", data));
+client.on(PACKETS.carTelemetry, (data) => forward("carTelemetry", data));
 
-client.on(PACKETS.lapData, (data: any) => forward("lapData", data));
+client.on(PACKETS.lapData, (data) => forward("lapData", data));
 
-client.on(PACKETS.session, (data: any) => forward("session", data));
+client.on(PACKETS.session, (data) => forward("session", data));
 
 client.start();
 console.log("🏁 Telemetry relay listening on UDP 20777");
+console.log(`➡️ Forwarding to ${API_URL}`);

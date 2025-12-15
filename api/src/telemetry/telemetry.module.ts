@@ -5,6 +5,5 @@ import { TelemetryController } from './telemetry.controller';
 @Module({
   controllers: [TelemetryController],
   providers: [TelemetryGateway, TelemetryService],
-  exports: [TelemetryGateway, TelemetryService],
 })
 export class TelemetryModule {}

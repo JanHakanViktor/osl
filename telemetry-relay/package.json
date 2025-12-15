@@ -8,5 +8,8 @@
   "dependencies": {
     "@deltazeroproduction/f1-udp-parser": "^1.2.2",
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.2"
   }
 }

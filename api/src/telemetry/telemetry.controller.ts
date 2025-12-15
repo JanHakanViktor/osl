@@ -8,7 +8,7 @@ export class TelemetryController {
   @Post('relay')
   relay(@Body() payload: { type: string; data: any }) {
     this.telemetryService.handleIncomingPacket(payload.type, payload.data);
-    console.log('📥 TELEMETRY SUCCESSFULLY HANDLED:', payload.type);
+    console.log('TELEMETERY RECEIVED:', payload.type);
 
     return { ok: true };
   }
