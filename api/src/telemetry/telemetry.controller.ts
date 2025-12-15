@@ -5,9 +5,12 @@ import { TelemetryService } from './telemetry.service';
 export class TelemetryController {
   constructor(private readonly telemetryService: TelemetryService) {}
 
-  @Post('relay')
+  @Post('/')
   relay(@Body() payload: { type: string; data: any }) {
-    this.telemetryService.handleIncomingPacket(payload.type, payload.data);
+    this.telemetryService.handleIncomingTelemetryPacket(
+      payload.type,
+      payload.data,
+    );
     console.log('TELEMETERY RECEIVED:', payload.type);
 
     return { ok: true };

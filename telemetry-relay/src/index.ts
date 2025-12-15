@@ -2,11 +2,10 @@ import {
   constants,
   F1TelemetryClient,
 } from "@deltazeroproduction/f1-udp-parser";
-import fetch from "node-fetch";
 
 const { PACKETS } = constants;
 
-const API_URL = "http://localhost:3030/telemetry/relay";
+const API_URL = "http://localhost:3030/telemetry";
 
 const client = new F1TelemetryClient({
   port: 20777,
@@ -32,11 +31,11 @@ async function forward(eventName: string, data: unknown) {
   }
 }
 
-client.on(PACKETS.carTelemetry, (data) => forward("carTelemetry", data));
+client.on(PACKETS.carTelemetry, (data: any) => forward("carTelemetry", data));
 
-client.on(PACKETS.lapData, (data) => forward("lapData", data));
+client.on(PACKETS.lapData, (data: any) => forward("lapData", data));
 
-client.on(PACKETS.session, (data) => forward("session", data));
+client.on(PACKETS.session, (data: any) => forward("session", data));
 
 client.start();
 console.log("🏁 Telemetry relay listening on UDP 20777");

@@ -6,12 +6,8 @@ import { safeJsonify } from './sanitize.utils';
 export class TelemetryService {
   constructor(private readonly gateway: TelemetryGateway) {}
 
-  handleIncomingPacket(eventName: string, data: any) {
-    try {
-      const sanitizedJson = safeJsonify(data);
-      this.gateway.broadcast(eventName, sanitizedJson);
-    } catch (error) {
-      console.log(`Error handling F1 packet [${eventName}]`, error);
-    }
+  handleIncomingTelemetryPacket(eventName: string, data: any) {
+    const sanitizedJson = safeJsonify(data);
+    this.gateway.broadcast(eventName, sanitizedJson);
   }
 }
