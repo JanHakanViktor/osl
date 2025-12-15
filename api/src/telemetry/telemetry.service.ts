@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TelemetryGateway } from './telemetry.gateway';
-import { safeJsonify } from './sanitize';
+import { safeJsonify } from './sanitize.utils';
 
 @Injectable()
 export class TelemetryService {

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node src/index.js"
+    "dev": "node src/index.ts"
   },
   "dependencies": {
     "@deltazeroproduction/f1-udp-parser": "^1.2.2",
