@@ -6,12 +6,12 @@ import {
 
 const { PACKETS } = constants;
 
-const API_URL = process.env.API_URL!;
+const API_URL =
+  process.env.API_URL ?? "http://localhost:3030/telemetry/realtime-relay";
+
 const UDP_PORT = Number(process.env.UDP_PORT ?? 20777);
 
-const client = new F1TelemetryClient({
-  port: UDP_PORT,
-});
+const client = new F1TelemetryClient({ port: UDP_PORT });
 
 function bigintSafeReplacer(_key: string, value: unknown) {
   return typeof value === "bigint" ? value.toString() : value;

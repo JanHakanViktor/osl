@@ -5,7 +5,7 @@ import { TelemetryService } from './telemetry.service';
 export class TelemetryController {
   constructor(private readonly telemetryService: TelemetryService) {}
 
-  @Post('/')
+  @Post('/realtime-relay')
   relay(@Body() payload: { type: string; data: any }) {
     this.telemetryService.handleIncomingTelemetryPacket(
       payload.type,
