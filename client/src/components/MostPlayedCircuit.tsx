@@ -30,7 +30,7 @@ const MostPlayedCircuit = () => {
         <Box
           component="img"
           src={image}
-          alt=""
+          aria-label="race circuits"
           aria-hidden="true"
           sx={{
             position: "absolute",
