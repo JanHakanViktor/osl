@@ -39,7 +39,7 @@ function LandingPage() {
             topDrivers={[]}
             cleanLaps={7}
             topSpeed={342}
-            podiumPlacement={0}
+            podiumPlacement={[]}
             title="CLEAN LAPS RECORD"
           />
         </Box>
@@ -51,7 +51,7 @@ function LandingPage() {
             topDrivers={[]}
             cleanLaps={0}
             topSpeed={342}
-            podiumPlacement={0}
+            podiumPlacement={[]}
           />
         </Box>
       </Box>

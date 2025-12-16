@@ -23,102 +23,85 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
       <Typography sx={{ p: 2, fontWeight: "bold" }} variant="h5">
         {title}
       </Typography>
+
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          p: 2,
-          boxSizing: "border-box",
-          maxWidth: 980,
-          width: "100%",
-          bgcolor: "#000000ff",
-          borderRadius: "10px",
+          flexDirection: "column",
+          gap: 4,
+          flex: 1,
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 4,
-            width: 340,
-            flex: 1,
-          }}
-        >
-          {rows.map((driver, index) => (
+        {rows.map((driver, index) => (
+          <Box
+            key={driver.id}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              py: 0.5,
+            }}
+          >
             <Box
-              key={driver.id}
               sx={{
+                width: 36,
                 display: "flex",
                 alignItems: "center",
-                gap: 2,
-                py: 0.5,
+                justifyContent: "center",
               }}
             >
+              <Typography variant="h5" sx={{ ml: 6, mr: 2, color: "#FFFFFF" }}>
+                {index + 1}
+              </Typography>
+              <PodiumImage size={50} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <DriverChip
+                id={driver.id}
+                name={driver.name}
+                team={driver.team ?? null}
+                avatarUrl={driver.avatarUrl ?? null}
+                sx={{
+                  display: "flex",
+                  ml: 6,
+                  p: 4,
+                  "& .MuiTypography-root": {
+                    flexDirection: "row",
+                    fontWeight: 700,
+                    color: "#000000ff",
+                  },
+                  borderBottom: "2px solid black",
+                }}
+              />
+            </Box>
+            <Box sx={{ justifyContent: "space-between" }}>
               <Box
                 sx={{
-                  width: 36,
+                  fontSize: "0.95rem",
+                  color: "#ff0000ff",
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  flexDirection: "column",
+                  gap: 1,
+                  flex: 1,
+                  flexGrow: 1,
+                  p: 2,
+                  borderRadius: "10px",
                 }}
               >
-                <Typography
-                  variant="h5"
-                  sx={{ ml: 6, mr: 2, color: "#FFFFFF" }}
-                >
-                  {index + 1}
-                </Typography>
-                <PodiumImage size={50} />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <DriverChip
-                  id={driver.id}
-                  name={driver.name}
-                  team={driver.team ?? null}
-                  avatarUrl={driver.avatarUrl ?? null}
-                  sx={{
-                    display: "flex",
-                    ml: 6,
-                    bgcolor: "#ffffff37",
-                    p: 4,
-                    "& .MuiTypography-root": {
-                      flexDirection: "row",
-                      fontWeight: 700,
-                    },
-                  }}
-                />
-              </Box>
-              <Box sx={{ justifyContent: "space-between" }}>
                 <Box
-                  sx={{
-                    fontSize: "0.95rem",
-                    color: "#ff0000ff",
+                  style={{
                     display: "flex",
-                    flexDirection: "column",
-                    gap: 1,
-                    flex: 1,
-                    flexGrow: 1,
-                    p: 2,
-                    bgcolor: "#FFFFFF",
-                    borderRadius: "10px",
+                    justifyContent: "flex-end",
+                    fontWeight: "bold",
+                    fontSize: "20px",
                   }}
                 >
-                  <Box
-                    style={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      fontWeight: "bold",
-                      fontSize: "20px",
-                    }}
-                  >
-                    {cleanLaps}x
-                  </Box>
+                  {cleanLaps}x
                 </Box>
               </Box>
             </Box>
-          ))}
-        </Box>
+          </Box>
+        ))}
       </Box>
     </>
   );
