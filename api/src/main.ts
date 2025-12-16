@@ -9,10 +9,6 @@ async function bootstrap(): Promise<void> {
   app.use(json({ limit: '10mb' }));
 
   await app.listen(process.env.PORT ?? 3030);
-
-  console.log(
-    `Nest server listening on http://localhost:${process.env.PORT ?? 3030}`,
-  );
 }
 
 void bootstrap();
