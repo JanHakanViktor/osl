@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { TelemetryModule } from './telemetry/telemetry.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TelemetryModule } from './telemetry/telemetry.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URL! || process.env.MONGO_URI!),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    MongooseModule.forRoot(process.env.MONGO_URL!),
     TelemetryModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
