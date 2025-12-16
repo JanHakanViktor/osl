@@ -19,7 +19,11 @@ const HeroBanner = () => {
       }}
     >
       <Box>
-        <img src="/f125LogoLight.png" height={200} />
+        <img
+          src="/f125LogoLight.png"
+          height={200}
+          aria-label="EA Sport F1 25 logotype"
+        />
       </Box>
       <Container maxWidth="sm">
         <Typography variant="h5" align="center" color="inherit">

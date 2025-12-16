@@ -30,7 +30,7 @@ const MostPlayedCircuit = () => {
         <Box
           component="img"
           src={image}
-          alt=""
+          aria-label="race circuits"
           aria-hidden="true"
           sx={{
             position: "absolute",
@@ -38,18 +38,6 @@ const MostPlayedCircuit = () => {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            filter: "blur(1px) brightness(1.1)",
-            zIndex: 1,
-            pointerEvents: "none",
-          }}
-        />
-
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.64))",
             zIndex: 1,
             pointerEvents: "none",
           }}
@@ -73,25 +61,22 @@ const MostPlayedCircuit = () => {
               justifyContent: "space-between",
               px: { xs: 2, md: 3 },
               py: { xs: 1.6, md: 2.5 },
-              borderColor: "red",
-              borderRadius: "10px",
-              backgroundColor: "#00000086",
               width: { xs: "100%", md: "auto" },
               maxWidth: 980,
             }}
           >
             <Box>
-              <Typography sx={{ color: "#fff", fontWeight: 700 }}>
+              <Typography sx={{ color: "#000000ff", fontWeight: 700 }}>
                 {grandPrix.toLocaleUpperCase()}
               </Typography>
-              <Typography sx={{ color: "#fff", fontWeight: 700 }}>
+              <Typography sx={{ color: "#000000ff", fontWeight: 700 }}>
                 {circuit.toLocaleUpperCase()}
               </Typography>
             </Box>
 
             <Box
               sx={{
-                bgcolor: "rgba(255, 255, 255, 0.44)",
+                bgcolor: "rgba(186, 186, 186, 1)",
                 minWidth: 150,
                 py: 1.5,
                 px: 2.5,
@@ -101,7 +86,7 @@ const MostPlayedCircuit = () => {
               <Typography
                 sx={{
                   fontSize: "0.95rem",
-                  color: "rgba(255,255,255,0.9)",
+                  color: "#000000ff",
                   fontWeight: "bold",
                 }}
               >
@@ -110,9 +95,9 @@ const MostPlayedCircuit = () => {
               <Typography
                 sx={{
                   display: "flex",
-                  fontSize: "1.2rem",
+                  fontSize: "2rem",
                   fontWeight: 700,
-                  color: "error.main",
+                  color: "#ffffffff",
                   justifyContent: "flex-end",
                 }}
               >
