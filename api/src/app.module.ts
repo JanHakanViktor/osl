@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TelemetryModule } from './telemetry/telemetry.module';
-import { SessionModule } from 'src/telemetry/session/session.module';
+import { SessionModule } from 'src/session/session.module';
 
 @Module({
   imports: [

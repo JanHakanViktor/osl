@@ -13,8 +13,6 @@ export class SessionService implements OnModuleInit {
   async onModuleInit() {
     const docs = await this.sessionModel.find().limit(1).lean();
     console.log('Mongo session docs:', docs);
-    console.log('CONNECTED DB:', this.sessionModel.db.name);
-    console.log('CONNECTED COLLECTION:', this.sessionModel.collection.name);
   }
 
   async findAll(): Promise<Session[]> {
