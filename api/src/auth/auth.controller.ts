@@ -51,4 +51,10 @@ export class AuthController {
 
     return sessionUser;
   }
+
+  @Post('logout')
+  logout(@Req() req: Request) {
+    req.session.user = undefined;
+    return { success: true };
+  }
 }
