@@ -1,13 +1,28 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { json } from 'express';
+import cookieSession from 'cookie-session';
 
-//bootstrap-funktionen som startar NestJS-applikationen.
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
-  app.use(json({ limit: '10mb' }));
+  app.use(
+    json({ limit: '10mb' }),
+    cookieSession({
+      name: 'session',
+      keys: [process.env.COOKIE_SECRET!],
+      maxAge: 10 * 60 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    }),
+  );
 
-  await app.listen(process.env.PORT ?? 3030);
+  app.enableCors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  });
+
+  await app.listen(3030);
 }
 
 void bootstrap();
