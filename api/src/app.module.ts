@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TelemetryModule } from './telemetry/telemetry.module';
-import { SessionModule } from 'src/telemetry/session/session.module';
+import { SessionModule } from 'src/session/session.module';
 
 @Module({
   imports: [
@@ -13,11 +13,12 @@ import { SessionModule } from 'src/telemetry/session/session.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         const uri = config.get<string>('MONGO_URL');
+        const dbName = config.get<string>('MONGO_DB_NAME');
 
         if (!uri) {
           throw new Error('MONGO_URL is not defined');
         }
-        return { uri };
+        return { uri, dbName };
       },
     }),
     TelemetryModule,
