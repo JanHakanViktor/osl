@@ -47,6 +47,9 @@ export class AuthController {
       isAdmin: user.isAdmin,
     };
 
+    if (!req.session) {
+      req.session = {};
+    }
     req.session.user = sessionUser;
 
     return sessionUser;
@@ -54,7 +57,7 @@ export class AuthController {
 
   @Post('logout')
   logout(@Req() req: Request) {
-    req.session.user = undefined;
+    req.session = null;
     return { success: true };
   }
 }

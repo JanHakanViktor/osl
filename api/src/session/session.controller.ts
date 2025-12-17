@@ -1,12 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Post, UseGuards } from '@nestjs/common';
 import { SessionService } from './session.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('sessions')
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}
 
-  @Get()
-  findAll() {
-    return this.sessionService.findAll();
-  }
+  @UseGuards(AuthGuard)
+  @Post()
+  createSession() {}
 }
