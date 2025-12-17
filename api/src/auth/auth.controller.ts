@@ -7,14 +7,14 @@ import {
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import type { Request } from 'express';
-import { SessionUser, UserDetails } from 'src/auth/auth.types';
+import { SessionUser, UserCredentials } from 'src/auth/auth.types';
 
 @Controller('users')
 export class AuthController {
   constructor(private usersService: UsersService) {}
 
   @Post('/register')
-  async register(@Body() body: UserDetails) {
+  async register(@Body() body: UserCredentials) {
     const user = await this.usersService.createUser(
       body.username,
       body.password,
@@ -22,7 +22,7 @@ export class AuthController {
 
     return {
       id: user._id,
-      username: user.password,
+      username: user.username,
       isAdmin: user.isAdmin,
     };
   }
@@ -30,7 +30,7 @@ export class AuthController {
   @Post('/login')
   async login(
     @Req() req: Request,
-    @Body() body: UserDetails,
+    @Body() body: UserCredentials,
   ): Promise<SessionUser> {
     const user = await this.usersService.checkUser(
       body.username,
