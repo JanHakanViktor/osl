@@ -1,0 +1,54 @@
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
+import type { Request } from 'express';
+import { SessionUser, UserDetails } from 'src/auth/auth.types';
+
+@Controller('users')
+export class AuthController {
+  constructor(private usersService: UsersService) {}
+
+  @Post('/register')
+  async register(@Body() body: UserDetails) {
+    const user = await this.usersService.createUser(
+      body.username,
+      body.password,
+    );
+
+    return {
+      id: user._id,
+      username: user.password,
+      isAdmin: user.isAdmin,
+    };
+  }
+
+  @Post('/login')
+  async login(
+    @Req() req: Request,
+    @Body() body: UserDetails,
+  ): Promise<SessionUser> {
+    const user = await this.usersService.checkUser(
+      body.username,
+      body.password,
+    );
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const sessionUser: SessionUser = {
+      id: user._id.toString(),
+      username: user.username,
+      isAdmin: user.isAdmin,
+    };
+
+    req.session.user = sessionUser;
+
+    return sessionUser;
+  }
+}
