@@ -1,10 +1,4 @@
-import {
-  Box,
-  TextField,
-  MenuItem,
-  Typography,
-  Autocomplete,
-} from "@mui/material";
+import { Box, TextField, Typography, Autocomplete } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useSignUpStore } from "../../store/signupStore";
 import { DriverProfileChip } from "../DriverProfileChip";
