@@ -2,8 +2,14 @@ import { Box, TextField, Typography, Autocomplete } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useSignUpStore } from "../../store/signupStore";
 import { DriverProfileChip } from "../DriverProfileChip";
-import type { SignUpFormValues } from "./auth";
 import { COUNTRIES } from "./countries";
+
+export type SignUpFormValues = {
+  username: string;
+  password: string;
+  country: string;
+  teamId: string | null;
+};
 
 const SignUpForm = () => {
   const setField = useSignUpStore((s) => s.setField);
