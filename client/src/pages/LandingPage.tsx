@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import MostPlayedCircuit from "../components/MostPlayedCircuit";
 import ScoreBoard from "../components/ScoreBoard";
 import "../index.css";
+import SignUpDialog from "../components/auth/SignUpDialog";
 
 function LandingPage() {
   return (
@@ -55,6 +56,7 @@ function LandingPage() {
           />
         </Box>
       </Box>
+      <SignUpDialog />
       <Footer />
     </>
   );

@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 type UIState = {
-  SignUpDialogOpen: boolean;
+  isOpen: boolean;
   openSignUpDialog: () => void;
   closeSignUpDialog: () => void;
 };
 
 export const useUIStore = create<UIState>((set) => ({
-  SignUpDialogOpen: false,
-  openSignUpDialog: () => set({ SignUpDialogOpen: true }),
-  closeSignUpDialog: () => set({ SignUpDialogOpen: false }),
+  isOpen: false,
+  openSignUpDialog: () => set({ isOpen: true }),
+  closeSignUpDialog: () => set({ isOpen: false }),
 }));
