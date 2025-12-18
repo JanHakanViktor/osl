@@ -1,4 +1,4 @@
-import { Box, Dialog, DialogContent, Slide } from "@mui/material";
+import { Dialog, DialogContent, Slide } from "@mui/material";
 import { forwardRef } from "react";
 import { useUIStore } from "../../store/uiStore";
 import type { TransitionProps } from "@mui/material/transitions";
@@ -40,9 +40,8 @@ const SignUpDialog = () => {
         },
       }}
     >
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent sx={{ p: 2 }}>
         <SignUpForm />
-        <Box sx={{ height: "700px" }}></Box>
       </DialogContent>
     </Dialog>
   );

@@ -3,14 +3,12 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router";
-import { Button } from "@mui/material";
-import { useUIStore } from "../store/uiStore";
+import SignInButton from "./auth/SignInButton";
 
 const logo = "/osl_logo.png";
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
-  const openSignUpDialog = useUIStore((s) => s.openSignUpDialog);
 
   return (
     <AppBar
@@ -109,14 +107,7 @@ function ResponsiveAppBar() {
             DRIVERS
           </Typography>
         </MenuItem>
-        <Button
-          sx={{ ml: 4, py: 2, px: 4, fontSize: "20px", color: "white" }}
-          variant="contained"
-          color="error"
-          onClick={openSignUpDialog}
-        >
-          Sign in
-        </Button>
+        <SignInButton />
       </Toolbar>
     </AppBar>
   );
