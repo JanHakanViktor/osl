@@ -1,8 +1,15 @@
-import { Box, TextField, MenuItem, Typography } from "@mui/material";
+import {
+  Box,
+  TextField,
+  MenuItem,
+  Typography,
+  Autocomplete,
+} from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useSignUpStore } from "../../store/signupStore";
 import { DriverProfileChip } from "../DriverProfileChip";
 import type { SignUpFormValues } from "./auth";
+import { COUNTRIES } from "./countries";
 
 const SignUpForm = () => {
   const setField = useSignUpStore((s) => s.setField);
@@ -65,18 +72,17 @@ const SignUpForm = () => {
             name="country"
             control={control}
             render={({ field }) => (
-              <TextField
-                {...field}
-                select
-                label="Country"
-                fullWidth
-                onChange={(e) => {
-                  field.onChange(e);
-                  setField("country", e.target.value);
+              <Autocomplete
+                options={COUNTRIES}
+                getOptionLabel={(option) => option.name}
+                onChange={(_, value) => {
+                  field.onChange(value?.code ?? "");
+                  setField("country", value?.code ?? "");
                 }}
-              >
-                <MenuItem value="SE">Sweden</MenuItem>
-              </TextField>
+                renderInput={(params) => (
+                  <TextField {...params} label="Country" fullWidth />
+                )}
+              />
             )}
           />
           <Box sx={{ width: "300px", height: "150px" }}>
