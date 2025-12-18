@@ -29,7 +29,7 @@ export const TEAMS: Team[] = [
   {
     id: "vcarb",
     name: "Visa Cash App Racing Bulls",
-    logo: "/f1teams/vcarbLogo.png",
+    logo: "/f1teams/vCarbLogo.png",
   },
   {
     id: "haas",
@@ -44,7 +44,7 @@ export const TEAMS: Team[] = [
   {
     id: "williams",
     name: "Williams Racing",
-    logo: "/f1teams/williamsLogo.svg",
+    logo: "/f1teams/williamsLogo.png",
   },
   {
     id: "aston",

@@ -1,9 +1,9 @@
 import { Box, Typography } from "@mui/material";
-import mockedCircuitLibrary from "../mockedData";
+import CircuitLibrary from "../data/circuit";
 
 const MostPlayedCircuit = () => {
-  const idx = mockedCircuitLibrary[0] ? 3 : 0;
-  const { image, grandPrix, circuit, played } = mockedCircuitLibrary[idx];
+  const idx = CircuitLibrary[0] ? 3 : 0;
+  const { image, grandPrix, circuit, timesPlayed } = CircuitLibrary[idx];
 
   return (
     <Box
@@ -101,7 +101,7 @@ const MostPlayedCircuit = () => {
                   justifyContent: "flex-end",
                 }}
               >
-                {played}
+                {timesPlayed}
               </Typography>
             </Box>
           </Box>

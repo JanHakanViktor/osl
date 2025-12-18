@@ -1,19 +1,21 @@
 import { Box, Typography } from "@mui/material";
 import { useSignUpStore } from "../store/signupStore";
 import "flag-icons/css/flag-icons.min.css";
+import { TEAMS } from "../data/team";
+import TeamLogo from "./TeamLogo";
 
 export function DriverProfileChip() {
   const { username, country, teamId } = useSignUpStore();
+  const team = TEAMS.find((t) => t.id === teamId);
 
   return (
     <Box
       display="flex"
-      flexDirection="row"
       bgcolor="#fff"
       border="2px solid black"
       borderRadius="10px"
       width={500}
-      height={150}
+      height={125}
       overflow="hidden"
     >
       <Box
@@ -38,25 +40,25 @@ export function DriverProfileChip() {
         sx={{
           flex: 1,
           display: "flex",
-          alignItems: "center",
-          paddingLeft: 2,
+          justifyContent: "flex-start",
+          pl: 2,
+          pt: 2,
         }}
       >
         <Typography fontSize="18px" fontWeight="bold">
-          {username || "FIRSTNAME SURNAME"}
+          {username.toUpperCase() || "FIRSTNAME SURNAME"}
         </Typography>
       </Box>
 
       <Box
         sx={{
-          width: 120,
+          width: 140,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          paddingRight: 2,
         }}
       >
-        {teamId && <img src={teamId} height={60} alt="Team logo" />}
+        {team && <TeamLogo src={team.logo} alt={team.name} size={100} />}
       </Box>
     </Box>
   );
