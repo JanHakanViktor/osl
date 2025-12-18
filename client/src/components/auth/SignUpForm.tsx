@@ -1,4 +1,6 @@
+import { DriverProfileChip } from "../DriverProfileChip";
+
 const SignUpForm = () => {
-  return null;
+  return <DriverProfileChip />;
 };
 export default SignUpForm;
