@@ -5,33 +5,32 @@ import { TEAMS } from "../data/team";
 import TeamLogo from "./TeamLogo";
 
 export function DriverProfileChip() {
-  const { username, country, teamId } = useSignUpStore();
+  const { drivername, country, teamId } = useSignUpStore();
   const team = TEAMS.find((t) => t.id === teamId);
+
+  const getSurnameAbbreviation = (drivername: string) =>
+    drivername.split(/\s+/).slice(1).join(" ").slice(0, 3).toUpperCase() ||
+    "VER";
 
   return (
     <Box
       display="flex"
-      bgcolor="#fff"
-      border="2px solid black"
-      borderRadius="10px"
       width={500}
       height={125}
       overflow="hidden"
+      border="2px solid #86868659"
+      borderRadius="10px"
     >
       <Box
         sx={{
-          width: 150,
-          height: "100%",
+          display: "flex",
+          flex: 0.5,
         }}
       >
         <span
-          className={`fi fi-${country ?? "se"}`}
+          className={`fi fi-${country.toLowerCase()}`}
           style={{
-            width: "100%",
-            height: "100%",
-            display: "block",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            width: "161px",
           }}
         />
       </Box>
@@ -41,12 +40,16 @@ export function DriverProfileChip() {
           flex: 1,
           display: "flex",
           justifyContent: "flex-start",
+          flexDirection: "column",
           pl: 2,
           pt: 2,
         }}
       >
         <Typography fontSize="18px" fontWeight="bold">
-          {username.toUpperCase() || "FIRSTNAME SURNAME"}
+          {drivername.toUpperCase() || "MAX VERSTAPPEN"}
+        </Typography>
+        <Typography fontSize="24px" fontWeight="bold">
+          {getSurnameAbbreviation(drivername)}
         </Typography>
       </Box>
 

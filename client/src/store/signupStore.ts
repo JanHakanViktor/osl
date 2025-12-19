@@ -3,6 +3,7 @@ import { create } from "zustand";
 type SignUpState = {
   username: string;
   password: string;
+  drivername: string;
   country: string;
   teamId: string | null;
 
@@ -17,6 +18,7 @@ type SignUpState = {
 export const useSignUpStore = create<SignUpState>((set) => ({
   username: "",
   password: "",
+  drivername: "",
   country: "",
   teamId: null,
 

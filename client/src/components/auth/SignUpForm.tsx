@@ -15,6 +15,7 @@ import { TEAMS } from "../../data/team";
 export type SignUpFormValues = {
   username: string;
   password: string;
+  drivername: string;
   country: string;
   teamId: string | null;
 };
@@ -26,8 +27,9 @@ const SignUpForm = () => {
     defaultValues: {
       username: "",
       password: "",
+      drivername: "",
       country: "",
-      teamId: null,
+      teamId: "",
     },
   });
 
@@ -72,6 +74,24 @@ const SignUpForm = () => {
                   onChange={(e) => {
                     field.onChange(e);
                     setField("password", e.target.value);
+                  }}
+                />
+              )}
+            />
+
+            <Controller
+              name="drivername"
+              control={control}
+              rules={{ required: true, minLength: 6 }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  type="drivername"
+                  label="Driver Name"
+                  fullWidth
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setField("drivername", e.target.value);
                   }}
                 />
               )}
