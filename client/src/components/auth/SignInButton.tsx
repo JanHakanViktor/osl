@@ -6,7 +6,7 @@ import { logoutUser } from "../../service/auth";
 
 const SignInButton = () => {
   const openSignUpDialog = useUIStore((s) => s.openSignUpDialog);
-  const { data: user } = useCurrentUser();
+  const { data: user, isLoading } = useCurrentUser();
   const queryClient = useQueryClient();
 
   const signedIn = !!user;
@@ -17,6 +17,8 @@ const SignInButton = () => {
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     },
   });
+
+  if (!isLoading) return null;
 
   return (
     <>

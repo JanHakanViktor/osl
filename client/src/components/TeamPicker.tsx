@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { useSignUpStore } from "../store/signupStore";
 import type { Control } from "react-hook-form";
-import type { Team } from "../types/team";
+import type { Team } from "../types/team.types";
 import type { SignUpFormValues } from "./auth/SignUpForm";
 import TeamLogo from "./TeamLogo";
 

@@ -11,7 +11,7 @@ import { DriverProfileChip } from "../DriverProfileChip";
 import { COUNTRIES } from "../../service/countries";
 import TeamPicker from "../TeamPicker";
 import { TEAMS } from "../../data/team";
-import { useAuthStore } from "../../store/authStore";
+
 import { useUIStore } from "../../store/uiStore";
 import { registerUser } from "../../service/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -26,7 +26,6 @@ export type SignUpFormValues = {
 
 const SignUpForm = () => {
   const setField = useSignUpStore((s) => s.setField);
-  const setUser = useAuthStore((s) => s.setUser);
   const closeDialog = useUIStore((s) => s.closeSignUpDialog);
   const queryClient = useQueryClient();
 
@@ -42,8 +41,7 @@ const SignUpForm = () => {
 
   const registerMutation = useMutation({
     mutationFn: registerUser,
-    onSuccess: (user) => {
-      setUser(user);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
       closeDialog();
     },
@@ -113,7 +111,6 @@ const SignUpForm = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  type="drivername"
                   label="Driver Name"
                   fullWidth
                   onChange={(e) => {
