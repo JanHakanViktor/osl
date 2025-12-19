@@ -6,7 +6,8 @@ import TeamLogo from "./TeamLogo";
 
 export function DriverProfileChip() {
   const { drivername, country, teamId } = useSignUpStore();
-  const team = TEAMS.find((t) => t.id === teamId);
+  const team =
+    TEAMS.find((t) => t.id === teamId) ?? TEAMS.find((t) => t.id === "redbull");
 
   const getSurnameAbbreviation = (drivername: string) =>
     drivername.split(/\s+/).slice(1).join(" ").slice(0, 3).toUpperCase() ||
@@ -27,12 +28,21 @@ export function DriverProfileChip() {
           flex: 0.5,
         }}
       >
-        <span
-          className={`fi fi-${country.toLowerCase()}`}
-          style={{
-            width: "161px",
-          }}
-        />
+        {(country && (
+          <span
+            className={`fi fi-${country.toLowerCase()}`}
+            style={{
+              width: "161px",
+            }}
+          />
+        )) || (
+          <span
+            className={`fi fi-nl`}
+            style={{
+              width: "161px",
+            }}
+          ></span>
+        )}
       </Box>
 
       <Box
