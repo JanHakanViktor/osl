@@ -58,10 +58,14 @@ export const logoutUser = async () => {
   return res.json();
 };
 
-export const fetchCurrentUser = async (): Promise<AuthUser> => {
+export const fetchCurrentUser = async (): Promise<AuthUser | null> => {
   const res = await fetch(`${API_URL}/users/me`, {
     credentials: "include",
   });
+
+  if (res.status === 401) {
+    return null;
+  }
 
   if (!res.ok) {
     throw new Error("Not authenticated");
