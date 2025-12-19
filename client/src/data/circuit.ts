@@ -1,4 +1,6 @@
-const mockedCircuitLibrary = [
+import type { Circuit } from "../types/circuit";
+
+const CircuitLibrary: Circuit[] = [
   {
     id: "0",
     grandPrix: "Australia",
@@ -22,7 +24,6 @@ const mockedCircuitLibrary = [
     grandPrix: "Miami",
     circuit: "Miami International Autodrome",
     image: "/circuits/miamiCircuit.png",
-    played: "43",
   },
   {
     id: "4",
@@ -146,4 +147,4 @@ const mockedCircuitLibrary = [
   },
 ];
 
-export default mockedCircuitLibrary;
+export default CircuitLibrary;

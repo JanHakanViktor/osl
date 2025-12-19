@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
-import type { DriverProps } from "./DriverChip";
-import DriverChip from "./DriverChip";
-import PodiumImage from "./PodiumImage";
+import type { DriverProps } from "../DriverChip";
+import DriverChip from "../DriverChip";
+import PodiumImage from "../PodiumImage";
 
 interface ScoreBoardProps {
   id: number;

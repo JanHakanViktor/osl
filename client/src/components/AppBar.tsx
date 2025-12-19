@@ -3,6 +3,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router";
+import SignInButton from "./auth/SignInButton";
 
 const logo = "/osl_logo.png";
 
@@ -106,6 +107,7 @@ function ResponsiveAppBar() {
             DRIVERS
           </Typography>
         </MenuItem>
+        <SignInButton />
       </Toolbar>
     </AppBar>
   );
