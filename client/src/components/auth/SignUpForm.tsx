@@ -11,6 +11,9 @@ import { DriverProfileChip } from "../DriverProfileChip";
 import { COUNTRIES } from "./countries";
 import TeamPicker from "./TeamPicker";
 import { TEAMS } from "../../data/team";
+import { useAuthStore } from "../../store/authStore";
+import { useUIStore } from "../../store/uiStore";
+import { registerUser } from "../../service/auth";
 
 export type SignUpFormValues = {
   username: string;
@@ -22,21 +25,42 @@ export type SignUpFormValues = {
 
 const SignUpForm = () => {
   const setField = useSignUpStore((s) => s.setField);
+  const setUser = useAuthStore((s) => s.setUser);
+  const closeDialog = useUIStore((s) => s.closeSignUpDialog);
 
-  const form = useForm<SignUpFormValues>({
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+    control,
+  } = useForm<SignUpFormValues>({
     defaultValues: {
       username: "",
       password: "",
       drivername: "",
       country: "",
-      teamId: "",
+      teamId: null,
     },
   });
 
-  const { control } = form;
+  const onSubmit = async (data: SignUpFormValues) => {
+    try {
+      const user = await registerUser({
+        username: data.username,
+        password: data.password,
+        drivername: data.drivername,
+        country: data.country,
+        teamId: data.teamId,
+      });
+
+      setUser(user);
+      closeDialog();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
-    <>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <Box sx={{ display: "flex", flexDirection: "row", height: "700px" }}>
         <Box sx={{ flex: 1 }}>
           <Box p={4} display="flex" flexDirection="column" gap={3}>
@@ -127,9 +151,16 @@ const SignUpForm = () => {
           justifyContent: "center",
         }}
       >
-        <Button>Sign Up</Button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="error"
+          disabled={isSubmitting}
+        >
+          Create account
+        </Button>
       </Box>
-    </>
+    </form>
   );
 };
 export default SignUpForm;
