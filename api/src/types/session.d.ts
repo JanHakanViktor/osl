@@ -1,6 +1,6 @@
 import 'express';
-import { SessionUser } from '../auth/auth.types';
 import 'cookie-session';
+import { SessionUser } from '../auth/auth.types';
 
 declare module 'express' {
   interface Request {
