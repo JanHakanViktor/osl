@@ -6,8 +6,14 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
   app.set('trust proxy', 1);
+
+  app.enableCors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   app.use(
     json({ limit: '10mb' }),
@@ -20,13 +26,6 @@ async function bootstrap(): Promise<void> {
       sameSite: 'none',
     }),
   );
-
-  app.enableCors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
 
   await app.listen(3030);
 }
