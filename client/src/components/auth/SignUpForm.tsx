@@ -9,7 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useSignUpStore } from "../../store/signupStore";
 import { DriverProfileChip } from "../DriverProfileChip";
 import { COUNTRIES } from "./countries";
-import TeamPicker from "./TeamPicker";
+import TeamPicker from "../TeamPicker";
 import { TEAMS } from "../../data/team";
 import { useAuthStore } from "../../store/authStore";
 import { useUIStore } from "../../store/uiStore";

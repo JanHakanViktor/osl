@@ -1,5 +1,7 @@
 import { Box, Container, Typography } from "@mui/material";
-import DriverChip, { type DriverProps } from "./DriverChip";
+import type { DriverProps } from "../DriverChip";
+import DriverChip from "../DriverChip";
+
 export interface RecentSession {
   id: string;
   sessionTitle: string;

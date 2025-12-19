@@ -4,7 +4,7 @@ import { useUIStore } from "../../store/uiStore";
 
 const SignInButton = () => {
   const openSignUpDialog = useUIStore((s) => s.openSignUpDialog);
-  const { signedIn, signOut } = useAuthStore();
+  const { signedIn, clearUser } = useAuthStore();
 
   return (
     <>
@@ -23,7 +23,7 @@ const SignInButton = () => {
           sx={{ ml: 4, py: 2, px: 4, fontSize: "20px", color: "white" }}
           variant="contained"
           color="primary"
-          onClick={signOut}
+          onClick={clearUser}
         >
           Sign out
         </Button>

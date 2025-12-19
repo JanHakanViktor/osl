@@ -1,12 +1,12 @@
+import "../index.css";
 import { Box } from "@mui/material";
 import AppBar from "../components/AppBar";
 import HeroBanner from "../components/HeroBanner";
-import RecentSessions from "../components/RecentSessions";
-import Footer from "../components/Footer";
-import MostPlayedCircuit from "../components/MostPlayedCircuit";
-import ScoreBoard from "../components/ScoreBoard";
-import "../index.css";
 import SignUpDialog from "../components/auth/SignUpDialog";
+import RecentSessions from "../components/widgets/RecentSessions";
+import MostPlayedCircuit from "../components/widgets/MostPlayedCircuit";
+import ScoreBoard from "../components/widgets/ScoreBoard";
+import Footer from "../components/Footer";
 
 function LandingPage() {
   return (

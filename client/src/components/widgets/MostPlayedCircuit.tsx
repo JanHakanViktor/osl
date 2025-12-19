@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import CircuitLibrary from "../data/circuit";
+import CircuitLibrary from "../../data/circuit";
 
 const MostPlayedCircuit = () => {
   const idx = CircuitLibrary[0] ? 3 : 0;
