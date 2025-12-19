@@ -12,8 +12,8 @@ async function bootstrap(): Promise<void> {
       keys: [process.env.COOKIE_SECRET!],
       maxAge: 10 * 60 * 1000,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
     }),
   );
 
