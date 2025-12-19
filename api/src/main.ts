@@ -6,13 +6,32 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  const isProduction = process.env.NODE_ENV === 'production';
+
   app.set('trust proxy', 1);
 
   app.enableCors({
-    origin: true,
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (origin.startsWith('http://localhost')) {
+        return callback(null, true);
+      }
+
+      if (origin === 'https://osl-f1.vercel.app') {
+        return callback(null, true);
+      }
+
+      if (origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   app.use(
@@ -20,10 +39,10 @@ async function bootstrap(): Promise<void> {
     cookieSession({
       name: 'session',
       keys: [process.env.COOKIE_SECRET!],
-      maxAge: 10 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
     }),
   );
 
