@@ -18,7 +18,7 @@ const SignInButton = () => {
     },
   });
 
-  if (!isLoading) return null;
+  if (isLoading) return null;
 
   return (
     <>
@@ -40,7 +40,7 @@ const SignInButton = () => {
           onClick={() => logoutMutation.mutate()}
           disabled={logoutMutation.isPending}
         >
-          Sign out
+          {logoutMutation.isPending ? "Signing out..." : "Sign out"}
         </Button>
       )}
     </>
