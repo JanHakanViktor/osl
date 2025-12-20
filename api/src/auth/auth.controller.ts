@@ -15,17 +15,24 @@ export class AuthController {
   constructor(private usersService: UsersService) {}
 
   @Post('/register')
-  async register(@Body() body: UserCredentials) {
+  async register(@Req() req: Request, @Body() body: UserCredentials) {
     const user = await this.usersService.createUser(
       body.username,
       body.password,
     );
 
-    return {
-      id: user._id,
+    const sessionUser: SessionUser = {
+      id: user._id.toString(),
       username: user.username,
       isAdmin: user.isAdmin,
     };
+
+    if (!req.session) {
+      req.session = {};
+    }
+    req.session.user = sessionUser;
+
+    return sessionUser;
   }
 
   @Post('/login')
