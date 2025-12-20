@@ -8,12 +8,13 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { useSignUpStore } from "../../store/signupStore";
 import { DriverProfileChip } from "../DriverProfileChip";
-import { COUNTRIES } from "./countries";
+import { COUNTRIES } from "../../service/countries";
 import TeamPicker from "../TeamPicker";
 import { TEAMS } from "../../data/team";
-import { useAuthStore } from "../../store/authStore";
+
 import { useUIStore } from "../../store/uiStore";
 import { registerUser } from "../../service/auth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export type SignUpFormValues = {
   username: string;
@@ -25,14 +26,10 @@ export type SignUpFormValues = {
 
 const SignUpForm = () => {
   const setField = useSignUpStore((s) => s.setField);
-  const setUser = useAuthStore((s) => s.setUser);
   const closeDialog = useUIStore((s) => s.closeSignUpDialog);
+  const queryClient = useQueryClient();
 
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-    control,
-  } = useForm<SignUpFormValues>({
+  const { handleSubmit, control } = useForm<SignUpFormValues>({
     defaultValues: {
       username: "",
       password: "",
@@ -42,21 +39,25 @@ const SignUpForm = () => {
     },
   });
 
-  const onSubmit = async (data: SignUpFormValues) => {
-    try {
-      const user = await registerUser({
-        username: data.username,
-        password: data.password,
-        drivername: data.drivername,
-        country: data.country,
-        teamId: data.teamId,
-      });
-
-      setUser(user);
+  const registerMutation = useMutation({
+    mutationFn: registerUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
       closeDialog();
-    } catch (err) {
-      console.error(err);
-    }
+    },
+    onError: (error) => {
+      console.error("Registration failed:", error);
+    },
+  });
+
+  const onSubmit = (data: SignUpFormValues) => {
+    registerMutation.mutate({
+      username: data.username,
+      password: data.password,
+      drivername: data.drivername,
+      country: data.country,
+      teamId: data.teamId,
+    });
   };
 
   return (
@@ -110,7 +111,6 @@ const SignUpForm = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  type="drivername"
                   label="Driver Name"
                   fullWidth
                   onChange={(e) => {
@@ -155,9 +155,9 @@ const SignUpForm = () => {
           type="submit"
           variant="contained"
           color="error"
-          disabled={isSubmitting}
+          disabled={registerMutation.isPending}
         >
-          Create account
+          {registerMutation.isPending ? "Creating..." : "Create account"}
         </Button>
       </Box>
     </form>

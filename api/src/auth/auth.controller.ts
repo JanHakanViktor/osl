@@ -1,13 +1,14 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import type { Request } from 'express';
 import { SessionUser, UserCredentials } from 'src/auth/auth.types';
+import type { Request } from 'express';
 
 @Controller('users')
 export class AuthController {
@@ -59,5 +60,16 @@ export class AuthController {
   logout(@Req() req: Request) {
     req.session = null;
     return { success: true };
+  }
+
+  @Get('me')
+  me(@Req() req: Request): SessionUser {
+    const user = req.session?.user;
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return user;
   }
 }

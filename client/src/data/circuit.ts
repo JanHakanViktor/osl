@@ -1,4 +1,4 @@
-import type { Circuit } from "../types/circuit";
+import type { Circuit } from "../types/circuit.types";
 
 const CircuitLibrary: Circuit[] = [
   {
