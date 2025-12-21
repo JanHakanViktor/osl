@@ -1,6 +1,8 @@
 import { Box, Container, Typography } from "@mui/material";
+import { useCurrentUser } from "./auth/auth.queries";
 
 const HeroBanner = () => {
+  const { data: user } = useCurrentUser();
   return (
     <Box
       aria-label="F1 Car"
@@ -30,6 +32,18 @@ const HeroBanner = () => {
           Create and manage your own F1 25 tournaments with ease. Organize
           hotlap races and track results all in one place.
         </Typography>
+      </Container>
+      <Container sx={{ mt: 4 }}>
+        {user && (
+          <Typography
+            variant="h3"
+            fontWeight="bold"
+            align="center"
+            color="#ffffffff"
+          >
+            Welcome {user.username}!
+          </Typography>
+        )}
       </Container>
     </Box>
   );

@@ -1,5 +1,8 @@
-import type { SignUpFormValues } from "../components/auth/SignUpForm";
-import type { AuthUser } from "../types/auth.types";
+import type {
+  AuthUser,
+  LoginFormValues,
+  SignUpFormValues,
+} from "../types/auth.types";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const registerUser = async (
@@ -26,7 +29,7 @@ export const registerUser = async (
 };
 
 export const loginUser = async (
-  data: Pick<SignUpFormValues, "username" | "password">
+  data: Pick<LoginFormValues, "username" | "password">
 ): Promise<AuthUser> => {
   const res = await fetch(`${API_URL}/users/login`, {
     method: "POST",

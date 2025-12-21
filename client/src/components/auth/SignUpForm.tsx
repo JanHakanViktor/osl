@@ -6,27 +6,19 @@ import {
   Button,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { useSignUpStore } from "../../store/signupStore";
 import { DriverProfileChip } from "../DriverProfileChip";
 import { COUNTRIES } from "../../service/countries";
 import TeamPicker from "../TeamPicker";
 import { TEAMS } from "../../data/team";
-
 import { useUIStore } from "../../store/uiStore";
 import { registerUser } from "../../service/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-export type SignUpFormValues = {
-  username: string;
-  password: string;
-  drivername: string;
-  country: string;
-  teamId: string | null;
-};
+import type { SignUpFormValues } from "../../types/auth.types";
+import { useSignUpStore } from "../../store/signupStore";
 
 const SignUpForm = () => {
   const setField = useSignUpStore((s) => s.setField);
-  const closeDialog = useUIStore((s) => s.closeSignUpDialog);
+  const closeDialog = useUIStore((s) => s.closeAuth);
   const queryClient = useQueryClient();
 
   const { handleSubmit, control } = useForm<SignUpFormValues>({
@@ -66,7 +58,7 @@ const SignUpForm = () => {
         <Box sx={{ flex: 1 }}>
           <Box p={4} display="flex" flexDirection="column" gap={3}>
             <Typography fontSize="28px" fontWeight="bold">
-              Sign up
+              Create new account
             </Typography>
 
             <Controller
@@ -160,6 +152,17 @@ const SignUpForm = () => {
           {registerMutation.isPending ? "Creating..." : "Create account"}
         </Button>
       </Box>
+      <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
+        Already have an account?{" "}
+        <Typography
+          component="span"
+          color="error"
+          sx={{ cursor: "pointer", fontWeight: 500 }}
+          onClick={() => useUIStore.getState().switchToSignIn()}
+        >
+          SIGN IN
+        </Typography>
+      </Typography>
     </form>
   );
 };

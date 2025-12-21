@@ -3,6 +3,7 @@ import { forwardRef } from "react";
 import { useUIStore } from "../../store/uiStore";
 import type { TransitionProps } from "@mui/material/transitions";
 import SignUpForm from "./SignUpForm";
+import SignInForm from "./SignInForm";
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },
@@ -11,16 +12,17 @@ const Transition = forwardRef(function Transition(
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const SignUpDialog = () => {
+const AuthDialog = () => {
   const open = useUIStore((s) => s.isOpen);
-  const close = useUIStore((s) => s.closeSignUpDialog);
+  const close = useUIStore((s) => s.closeAuth);
+  const mode = useUIStore((s) => s.authMode);
 
   return (
     <Dialog
       open={open}
       onClose={close}
       fullWidth
-      maxWidth="lg"
+      maxWidth={mode === "sign-up" ? "lg" : "xs"}
       disableScrollLock
       slots={{
         transition: Transition,
@@ -40,11 +42,12 @@ const SignUpDialog = () => {
         },
       }}
     >
-      <DialogContent sx={{ p: 2 }}>
-        <SignUpForm />
+      <DialogContent sx={{ p: mode === "sign-in" ? 2 : null }}>
+        {mode === "sign-in" && <SignInForm />}
+        {mode === "sign-up" && <SignUpForm />}
       </DialogContent>
     </Dialog>
   );
 };
 
-export default SignUpDialog;
+export default AuthDialog;
