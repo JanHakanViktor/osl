@@ -1,10 +1,8 @@
 import { Box, Container, Typography } from "@mui/material";
 import { useCurrentUser } from "./auth/auth.queries";
-import { useSignUpStore } from "../store/signupStore";
 
 const HeroBanner = () => {
   const { data: user } = useCurrentUser();
-  const { drivername } = useSignUpStore();
   return (
     <Box
       aria-label="F1 Car"
@@ -43,7 +41,7 @@ const HeroBanner = () => {
             align="center"
             color="#ffffffff"
           >
-            Welcome {drivername}!
+            Welcome {user.username}!
           </Typography>
         )}
       </Container>
