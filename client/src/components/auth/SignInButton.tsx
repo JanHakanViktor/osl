@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "../../service/auth";
 
 const SignInButton = () => {
-  const openSignUpDialog = useUIStore((s) => s.openSignUpDialog);
+  const openSignInDialog = useUIStore((s) => s.openSignInDialog);
   const { data: user, isLoading } = useCurrentUser();
   const queryClient = useQueryClient();
 
@@ -27,7 +27,7 @@ const SignInButton = () => {
           sx={{ ml: 4, py: 2, px: 4, fontSize: "20px", color: "white" }}
           variant="contained"
           color="error"
-          onClick={openSignUpDialog}
+          onClick={openSignInDialog}
         >
           Sign in
         </Button>
