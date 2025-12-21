@@ -40,14 +40,7 @@ const SignInForm = () => {
         <img src={logo} width={200} />
       </Box>
 
-      <Box
-        onSubmit={handleSubmit(onSubmit)}
-        display="flex"
-        flexDirection="column"
-        gap={3}
-        p={4}
-        width="100%"
-      >
+      <Box display="flex" flexDirection="column" gap={3} p={4} width="100%">
         <Controller
           name="username"
           control={control}
