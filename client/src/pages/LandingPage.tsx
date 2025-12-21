@@ -13,7 +13,6 @@ function LandingPage() {
     <>
       <AppBar />
       <HeroBanner />
-
       <Box
         sx={{
           margin: "auto",

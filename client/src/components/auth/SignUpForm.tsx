@@ -6,7 +6,6 @@ import {
   Button,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { useSignUpStore } from "../../store/signupStore";
 import { DriverProfileChip } from "../DriverProfileChip";
 import { COUNTRIES } from "../../service/countries";
 import TeamPicker from "../TeamPicker";
@@ -15,6 +14,7 @@ import { useUIStore } from "../../store/uiStore";
 import { registerUser } from "../../service/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SignUpFormValues } from "../../types/auth.types";
+import { useSignUpStore } from "../../store/signupStore";
 
 const SignUpForm = () => {
   const setField = useSignUpStore((s) => s.setField);

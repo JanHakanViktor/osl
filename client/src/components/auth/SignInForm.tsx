@@ -35,13 +35,12 @@ const SignInForm = () => {
   };
 
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Box display="flex" justifyContent="center">
         <img src={logo} width={200} />
       </Box>
 
       <Box
-        component="form"
         onSubmit={handleSubmit(onSubmit)}
         display="flex"
         flexDirection="column"
