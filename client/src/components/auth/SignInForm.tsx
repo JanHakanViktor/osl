@@ -11,6 +11,7 @@ const SignInForm = () => {
   const queryClient = useQueryClient();
   const closeDialog = useUIStore((s) => s.closeAuth);
   const switchToSignUp = useUIStore((s) => s.switchToSignUp);
+  const authMessage = useUIStore((s) => s.authMessage);
 
   const { control, handleSubmit } = useForm<LoginFormValues>({
     defaultValues: {
@@ -39,6 +40,11 @@ const SignInForm = () => {
       <Box display="flex" justifyContent="center">
         <img src={logo} width={200} />
       </Box>
+      {authMessage && (
+        <Typography color="error" textAlign="center" mb={2}>
+          {authMessage}
+        </Typography>
+      )}
 
       <Box display="flex" flexDirection="column" gap={3} p={4} width="100%">
         <Controller

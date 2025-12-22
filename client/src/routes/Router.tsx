@@ -9,6 +9,7 @@ import Podium from "../pages/Session/Podium";
 import Telemetry from "../pages/Telemetry/Telemetry.tsx";
 import CreateGamePage from "../pages/Create/CreateGamePage.tsx";
 import AppLayout from "../pages/AppLayout.tsx";
+import ProtectedRoute from "./ProtectecRoute.tsx";
 
 const router = createBrowserRouter([
   {
@@ -16,39 +17,44 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <LandingPage /> },
       {
-        path: "/session",
-        children: [
-          { index: true, element: <CreateGamePage /> },
-          {
-            path: "tracks",
-            element: <TrackSelection />,
-          },
-        ],
-      },
-      {
-        path: "/league/:leagueId",
+        element: <ProtectedRoute />, // 🔐 PROTECTED
         children: [
           {
-            index: true,
-            element: <SessionOverview />,
+            path: "/create",
+            children: [
+              { index: true, element: <CreateGamePage /> },
+              {
+                path: "tracks",
+                element: <TrackSelection />,
+              },
+            ],
           },
           {
-            path: "track/:trackId",
-            element: <HotlapPage />,
+            path: "/league/:leagueId",
+            children: [
+              {
+                index: true,
+                element: <SessionOverview />,
+              },
+              {
+                path: "track/:trackId",
+                element: <HotlapPage />,
+              },
+              {
+                path: "track/:trackId/driver/:driverId",
+                element: <DriverTelemetryPage />,
+              },
+              { path: "podium", element: <Podium /> },
+            ],
           },
           {
-            path: "track/:trackId/driver/:driverId",
-            element: <DriverTelemetryPage />,
-          },
-          { path: "podium", element: <Podium /> },
-        ],
-      },
-      {
-        path: "/telemetry",
-        children: [
-          {
-            index: true,
-            element: <Telemetry />,
+            path: "/telemetry",
+            children: [
+              {
+                index: true,
+                element: <Telemetry />,
+              },
+            ],
           },
         ],
       },
