@@ -20,7 +20,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />, // 🔐 PROTECTED
         children: [
           {
-            path: "/create",
+            path: "/create-session",
             children: [
               { index: true, element: <CreateGamePage /> },
               {
