@@ -1,17 +1,13 @@
 import "../index.css";
 import { Box } from "@mui/material";
-import AppBar from "../components/AppBar";
 import HeroBanner from "../components/HeroBanner";
 import RecentSessions from "../components/widgets/RecentSessions";
 import MostPlayedCircuit from "../components/widgets/MostPlayedCircuit";
 import ScoreBoard from "../components/widgets/ScoreBoard";
-import Footer from "../components/Footer";
-import AuthDialog from "../components/auth/AuthDialog";
 
 function LandingPage() {
   return (
     <>
-      <AppBar />
       <HeroBanner />
       <Box
         sx={{
@@ -55,8 +51,6 @@ function LandingPage() {
           />
         </Box>
       </Box>
-      <AuthDialog />
-      <Footer />
     </>
   );
 }

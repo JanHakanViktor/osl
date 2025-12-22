@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { DriverProfileChip } from "../DriverProfileChip";
-import { COUNTRIES } from "../../service/countries";
+import { COUNTRIES } from "../../data/countries";
 import TeamPicker from "../TeamPicker";
 import { TEAMS } from "../../data/team";
 import { useUIStore } from "../../store/uiStore";

@@ -27,7 +27,7 @@ const SignInButton = () => {
           sx={{ ml: 4, py: 2, px: 4, fontSize: "20px", color: "white" }}
           variant="contained"
           color="error"
-          onClick={openSignInDialog}
+          onClick={() => openSignInDialog()}
         >
           Sign in
         </Button>

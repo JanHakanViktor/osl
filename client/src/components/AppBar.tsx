@@ -4,11 +4,24 @@ import Typography from "@mui/material/Typography";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router";
 import SignInButton from "./auth/SignInButton";
+import { useUIStore } from "../store/uiStore";
+import { useCurrentUser } from "./auth/auth.queries";
 
 const logo = "/osl_logo.png";
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
+  const { data: user } = useCurrentUser();
+  const openSignInDialog = useUIStore((s) => s.openSignInDialog);
+
+  const handleCreateSession = () => {
+    if (!user) {
+      openSignInDialog("You are not signed in. Sign in to create a session.");
+      return;
+    }
+
+    navigate("/create-session");
+  };
 
   return (
     <AppBar
@@ -52,9 +65,7 @@ function ResponsiveAppBar() {
             textAlign="center"
             fontSize={"30px"}
             fontWeight={"bold"}
-            onClick={() => {
-              navigate("/create");
-            }}
+            onClick={handleCreateSession}
           >
             CREATE SESSION
           </Typography>
