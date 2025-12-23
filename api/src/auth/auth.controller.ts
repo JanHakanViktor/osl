@@ -5,10 +5,12 @@ import {
   Post,
   Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { SessionUser, UserCredentials } from 'src/auth/auth.types';
 import type { Request } from 'express';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 export class AuthController {
@@ -70,13 +72,8 @@ export class AuthController {
   }
 
   @Get('me')
+  @UseGuards(AuthGuard)
   me(@Req() req: Request): SessionUser {
-    const user = req.session?.user;
-
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    return user;
+    return req.session!.user!;
   }
 }

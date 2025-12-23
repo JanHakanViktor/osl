@@ -6,10 +6,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
-  const isProduction = process.env.NODE_ENV === 'production';
-
   app.set('trust proxy', 1);
+
+  const sameSite = process.env.SAME_SITE === 'none' ? 'none' : 'lax';
 
   app.enableCors({
     origin: (origin, callback) => {
@@ -17,19 +16,17 @@ async function bootstrap(): Promise<void> {
         return callback(null, true);
       }
 
+      const allowedOrigins = ['https://osl-f1.com', 'https://www.osl-f1.com'];
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
       if (origin.startsWith('http://localhost')) {
         return callback(null, true);
       }
 
-      if (origin === 'https://osl-f1.vercel.app') {
-        return callback(null, true);
-      }
-
-      if (origin.endsWith('.vercel.app')) {
-        return callback(null, true);
-      }
-
-      return callback(new Error('Not allowed by CORS'));
+      return callback(new Error(`CORS blocked origin: ${origin}`));
     },
     credentials: true,
   });
@@ -37,12 +34,12 @@ async function bootstrap(): Promise<void> {
   app.use(
     json({ limit: '10mb' }),
     cookieSession({
-      name: 'session',
+      name: '__Host-session',
       keys: [process.env.COOKIE_SECRET!],
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
+      secure: sameSite === 'none',
+      sameSite,
     }),
   );
 
