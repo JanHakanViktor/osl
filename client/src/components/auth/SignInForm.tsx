@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "../../service/auth";
 import { useUIStore } from "../../store/uiStore";
-import type { LoginFormValues } from "../../types/auth.types";
+import type { AuthUser, LoginFormValues } from "../../types/auth.types";
 
 const logo = "/osl_logo.png";
 
@@ -20,14 +20,11 @@ const SignInForm = () => {
     },
   });
 
-  const loginMutation = useMutation({
+  const loginMutation = useMutation<AuthUser, Error, LoginFormValues>({
     mutationFn: loginUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
       closeDialog();
-    },
-    onError: (err) => {
-      console.error("Login failed:", err);
     },
   });
 
@@ -40,6 +37,7 @@ const SignInForm = () => {
       <Box display="flex" justifyContent="center">
         <img src={logo} width={200} />
       </Box>
+
       {authMessage && (
         <Typography color="error" textAlign="center" mb={2}>
           {authMessage}
@@ -47,10 +45,15 @@ const SignInForm = () => {
       )}
 
       <Box display="flex" flexDirection="column" gap={3} p={4} width="100%">
+        {loginMutation.isError && (
+          <Typography color="error" textAlign="center">
+            {loginMutation.error.message}
+          </Typography>
+        )}
         <Controller
           name="username"
           control={control}
-          rules={{ required: true }}
+          rules={{ required: "Username is required" }}
           render={({ field }) => (
             <TextField {...field} label="Username" fullWidth autoFocus />
           )}
@@ -59,7 +62,7 @@ const SignInForm = () => {
         <Controller
           name="password"
           control={control}
-          rules={{ required: true }}
+          rules={{ required: "Password is required" }}
           render={({ field }) => (
             <TextField {...field} type="password" label="Password" fullWidth />
           )}

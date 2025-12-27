@@ -11,13 +11,6 @@ const password = z
   .min(6, "Password must be at least 6 characters")
   .regex(/[0-9]/, "Password must contain a digit");
 
-export const signInSchema = z.object({
-  username,
-  password,
-});
-
-export type SignInSchema = z.infer<typeof signInSchema>;
-
 export const signUpSchema = z.object({
   username,
   password,
