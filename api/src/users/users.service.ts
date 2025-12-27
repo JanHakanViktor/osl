@@ -38,7 +38,7 @@ export class UsersService {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      throw new UnauthorizedException('Invalid username or password');
+      throw new UnauthorizedException('Invalid password');
     }
 
     return user;
