@@ -4,7 +4,8 @@ const username = z
   .string()
   .trim()
   .min(4, "Username must be at least 4 characters")
-  .max(24, "Username cannot exceed 24 characters");
+  .max(24, "Username cannot exceed 24 characters")
+  .regex(/^\S+$/, "No spaces allowed");
 
 const password = z
   .string()

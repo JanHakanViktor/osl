@@ -1,13 +1,14 @@
 import { Box, Typography } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { useSignUpStore } from "../store/signupStore";
-import type { Control } from "react-hook-form";
+import type { Control, FieldErrors } from "react-hook-form";
 import type { Team } from "../types/team.types";
 import TeamLogo from "./TeamLogo";
 import type { SignUpFormValues } from "../types/auth.types";
 
 type Props = {
   control: Control<SignUpFormValues>;
+  errors: FieldErrors<SignUpFormValues>;
   teams: Team[];
 };
 
