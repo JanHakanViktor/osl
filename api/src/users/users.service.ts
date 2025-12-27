@@ -32,11 +32,15 @@ export class UsersService {
     const user = await this.userModel.findOne({ username });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('No user found');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
-    return isMatch ? user : null;
+    if (!isMatch) {
+      throw new UnauthorizedException('Invalid password');
+    }
+
+    return user;
   }
 }

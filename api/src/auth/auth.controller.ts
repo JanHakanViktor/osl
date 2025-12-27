@@ -1,16 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { SessionUser, UserCredentials } from 'src/auth/auth.types';
 import type { Request } from 'express';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { LoginDto } from 'src/auth/signIn.dto';
 
 @Controller('users')
 export class AuthController {
@@ -40,16 +33,12 @@ export class AuthController {
   @Post('/login')
   async login(
     @Req() req: Request,
-    @Body() body: UserCredentials,
+    @Body() body: LoginDto,
   ): Promise<SessionUser> {
     const user = await this.usersService.checkUser(
       body.username,
       body.password,
     );
-
-    if (!user) {
-      throw new UnauthorizedException();
-    }
 
     const sessionUser: SessionUser = {
       id: user._id.toString(),
