@@ -186,15 +186,16 @@ const SignUpForm = () => {
             >
               {registerMutation.isPending ? "Creating..." : "Create account"}
             </Button>
-            <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
+            <Typography variant="body2" sx={{ mt: 2 }}>
               Already have an account?
-              <Typography
-                color="error"
-                sx={{ cursor: "pointer", fontWeight: 500 }}
-                onClick={() => useUIStore.getState().switchToSignIn()}
-              >
-                SIGN IN
-              </Typography>
+            </Typography>
+            <Typography
+              alignSelf="center"
+              color="error"
+              sx={{ cursor: "pointer", fontWeight: 500 }}
+              onClick={() => useUIStore.getState().switchToSignIn()}
+            >
+              SIGN IN
             </Typography>
           </Box>
         </Box>

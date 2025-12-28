@@ -77,7 +77,7 @@ const MostPlayedCircuit = () => {
             <Box
               sx={{
                 bgcolor: "rgba(186, 186, 186, 1)",
-                minWidth: 150,
+                maxWidth: 150,
                 py: 1.5,
                 px: 2.5,
                 borderRadius: 2,

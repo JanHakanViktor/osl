@@ -21,6 +21,7 @@ export function DriverProfileChip() {
       overflow="hidden"
       border="2px solid #86868659"
       borderRadius="10px"
+      mb={4}
     >
       <Box
         sx={{
