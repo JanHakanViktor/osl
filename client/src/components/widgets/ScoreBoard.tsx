@@ -55,7 +55,7 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
               </Typography>
               <PodiumImage size={50} />
             </Box>
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1, ml: 2 }}>
               <DriverChip
                 id={driver.id}
                 name={driver.name}
@@ -63,7 +63,6 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
                 avatarUrl={driver.avatarUrl ?? null}
                 sx={{
                   display: "flex",
-                  ml: 6,
                   p: 4,
                   "& .MuiTypography-root": {
                     flexDirection: "row",

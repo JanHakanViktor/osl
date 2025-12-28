@@ -13,10 +13,12 @@ function LandingPage() {
         sx={{
           margin: "auto",
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows: "1fr 1fr",
+          gridTemplateColumns: {
+            xs: "1fr",
+            md: "1fr 1fr",
+          },
           gap: 2,
-          p: 2,
+          p: { xs: 1, sm: 2 },
           maxWidth: "1680px",
         }}
       >
