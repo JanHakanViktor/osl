@@ -6,9 +6,11 @@ import { useUIStore } from "../../store/uiStore";
 const AuthBackButton = () => {
   const navigate = useNavigate();
   const closeAuth = useUIStore((s) => s.closeAuth);
+  const closeDrawer = useUIStore((s) => s.closeDrawer);
 
   const handleBackNagivation = () => {
     closeAuth();
+    closeDrawer();
     navigate("/");
   };
 
