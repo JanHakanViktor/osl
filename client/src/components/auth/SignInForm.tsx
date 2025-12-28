@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "../../service/auth";
 import { useUIStore } from "../../store/uiStore";
 import type { AuthUser, LoginFormValues } from "../../types/auth.types";
+import AuthBackButton from "./BackButton";
 
 const logo = "/osl_logo.png";
 
@@ -34,8 +35,9 @@ const SignInForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <AuthBackButton />
       <Box display="flex" justifyContent="center">
-        <img src={logo} width={200} />
+        <img src={logo} style={{ maxWidth: 200 }} />
       </Box>
 
       {authMessage && (
@@ -44,7 +46,13 @@ const SignInForm = () => {
         </Typography>
       )}
 
-      <Box display="flex" flexDirection="column" gap={3} p={4} width="100%">
+      <Box
+        display="flex"
+        flexDirection="column"
+        gap={3}
+        p={{ xs: 2, sm: 4 }}
+        width="100%"
+      >
         {loginMutation.isError && (
           <Typography color="error" textAlign="center">
             {loginMutation.error.message}

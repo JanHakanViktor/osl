@@ -17,16 +17,19 @@ import type { SignUpFormValues } from "../../types/auth.types";
 import { useSignUpStore } from "../../store/signupStore";
 import { signUpSchema, type SignUpSchema } from "./auth.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useIsMobile } from "../../theme";
+import BackButton from "./BackButton";
 
 const SignUpForm = () => {
   const setField = useSignUpStore((s) => s.setField);
   const closeDialog = useUIStore((s) => s.closeAuth);
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const {
     handleSubmit,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -61,11 +64,12 @@ const SignUpForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      {isMobile && <BackButton />}
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
-          height: "700px",
+          flexDirection: { xs: "column", md: "row" },
+          minHeight: { md: "700px" },
         }}
       >
         <Box sx={{ flex: 1 }}>
@@ -159,13 +163,13 @@ const SignUpForm = () => {
           sx={{
             display: "flex",
             flex: 1,
-            ml: 4,
-            mt: 12,
+            ml: { md: 4 },
+            mt: { xs: 4, md: 12 },
             flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <DriverProfileChip />
+          {!isMobile && <DriverProfileChip />}
           <Box
             sx={{
               display: "flex",

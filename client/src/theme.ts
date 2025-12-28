@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme, useMediaQuery, useTheme } from "@mui/material";
 
 export const redBullTheme = createTheme({
   palette: {
@@ -90,4 +90,9 @@ export const teamThemes = {
   rb: rbTheme,
   sauber: sauberTheme,
   haas: haasTheme,
+};
+
+export const useIsMobile = () => {
+  const theme = useTheme();
+  return useMediaQuery(theme.breakpoints.down("sm"));
 };

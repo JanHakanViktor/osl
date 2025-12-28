@@ -4,6 +4,7 @@ import { useUIStore } from "../../store/uiStore";
 import type { TransitionProps } from "@mui/material/transitions";
 import SignUpForm from "./SignUpForm";
 import SignInForm from "./SignInForm";
+import { useIsMobile } from "../../theme";
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },
@@ -16,11 +17,13 @@ const AuthDialog = () => {
   const open = useUIStore((s) => s.isOpen);
   const close = useUIStore((s) => s.closeAuth);
   const mode = useUIStore((s) => s.authMode);
+  const isMobile = useIsMobile();
 
   return (
     <Dialog
       open={open}
       onClose={close}
+      fullScreen={isMobile}
       fullWidth
       maxWidth={mode === "sign-up" ? "lg" : "xs"}
       disableScrollLock
@@ -42,7 +45,7 @@ const AuthDialog = () => {
         },
       }}
     >
-      <DialogContent sx={{ p: mode === "sign-in" ? 2 : null }}>
+      <DialogContent sx={{ p: { xs: 2, sm: mode === "sign-in" ? 2 : 0 } }}>
         {mode === "sign-in" && <SignInForm />}
         {mode === "sign-up" && <SignUpForm />}
       </DialogContent>
