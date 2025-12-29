@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose';
 
 @Schema({ collection: 'session' })
 export class Session extends Document {
-  @Prop({ required: true })
+  @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
   userId: Types.ObjectId;
 
   @Prop({ required: true })
@@ -15,6 +15,9 @@ export class Session extends Document {
   @Prop()
   circuitName: string;
 
+  @Prop({ default: 'CREATED' })
+  status: 'CREATED' | 'ACTIVE' | 'FINISHED';
+
   @Prop({ enum: ['TIME', 'LAPS'], required: true })
   limitType: 'TIME' | 'LAPS';
 
@@ -23,6 +26,12 @@ export class Session extends Document {
 
   @Prop()
   lapLimit?: number;
+
+  @Prop()
+  fastestLapMs?: number;
+
+  @Prop({ default: 0 })
+  topSpeedKmh: number;
 }
 
 export const SessionSchema = SchemaFactory.createForClass(Session);

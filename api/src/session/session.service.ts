@@ -1,21 +1,42 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Session } from './session.schema';
 
 @Injectable()
-export class SessionService implements OnModuleInit {
+export class SessionService {
   constructor(
-    @InjectModel('Session')
+    @InjectModel(Session.name)
     private readonly sessionModel: Model<Session>,
   ) {}
 
-  async onModuleInit() {
-    const docs = await this.sessionModel.find().limit(1).lean();
-    console.log('Mongo session docs:', docs);
+  async create(
+    userId: string,
+    dto: {
+      sessionName: string;
+      trackId: number;
+      circuitName: string;
+    },
+  ) {
+    return this.sessionModel.create({
+      ...dto,
+      userId,
+    });
   }
 
-  async findAll(): Promise<Session[]> {
-    return this.sessionModel.find().lean();
+  async start(sessionId: string, userId: string) {
+    const session = await this.sessionModel.findOne({
+      _id: sessionId,
+      userId,
+    });
+
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+
+    session.status = 'ACTIVE';
+    await session.save();
+
+    return session;
   }
 }
