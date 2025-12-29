@@ -1,5 +1,5 @@
 export type Circuit = {
-  id: string;
+  trackId: string;
   grandPrix: string;
   circuit: string;
   image: string;
