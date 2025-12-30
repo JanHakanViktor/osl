@@ -6,8 +6,11 @@ const CreateGamePage = () => {
   const { control, handleSubmit } = useForm<SessionFormValues>({
     defaultValues: {
       sessionName: "",
-      cleanLapsEnabled: false,
-      speedTrapEnabled: false,
+      circuitId: 0,
+      circuitName: "",
+      lapLimit: 0,
+      limitType: undefined,
+      timeLimitSeconds: 0,
     },
   });
 

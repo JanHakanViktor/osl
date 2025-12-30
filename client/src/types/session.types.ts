@@ -7,12 +7,7 @@ export type SessionFormValues = {
   lapLimit?: number;
 };
 
-export type ActiveSessionValues = {
-  id: string;
-  status: "ACTIVE";
-  circuitId: number;
-  circuitName: string;
-  limitType: "TIME" | "LAPS";
-  timeLimitSeconds?: number;
-  lapLimit?: number;
+export type SessionResponse = {
+  _id: string;
+  status: "CREATED" | "ACTIVE" | "FINISHED";
 };
