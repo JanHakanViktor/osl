@@ -36,4 +36,25 @@ export class SessionService {
 
     return session;
   }
+
+  async finish(sessionId: string, userId: string): Promise<Session> {
+    const session = await this.sessionModel.findOne({
+      _id: sessionId,
+      userId: new Types.ObjectId(userId),
+    });
+
+    if (!session) {
+      throw new NotFoundException('Session not found');
+    }
+
+    if (session.status !== 'ACTIVE') {
+      throw new NotFoundException('Session is not active');
+    }
+
+    session.status = 'FINISHED';
+    session.finishedAt = new Date();
+
+    await session.save();
+    return session;
+  }
 }

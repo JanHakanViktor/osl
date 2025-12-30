@@ -18,4 +18,9 @@ export class SessionController {
   start(@Req() req: Request, @Param('id') id: string) {
     return this.sessionService.start(id, req.session!.user!.id);
   }
+
+  @Post(':id/finish')
+  finish(@Req() req: Request, @Param('id') id: string) {
+    return this.sessionService.finish(id, req.session!.user!.id);
+  }
 }
