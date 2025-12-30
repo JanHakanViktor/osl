@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { SessionService } from './session.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateSessionDto } from 'src/session/session.dto';
@@ -22,5 +30,10 @@ export class SessionController {
   @Post(':id/finish')
   finish(@Req() req: Request, @Param('id') id: string) {
     return this.sessionService.finish(id, req.session!.user!.id);
+  }
+
+  @Get(':id/overview')
+  getOverview(@Req() req: Request, @Param('id') id: string) {
+    return this.sessionService.getOverview(id, req.session!.user!.id);
   }
 }

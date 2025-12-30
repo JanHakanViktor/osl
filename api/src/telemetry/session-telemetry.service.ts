@@ -13,39 +13,88 @@ export class SessionTelemetryService {
 
   private readonly logger = new Logger(SessionTelemetryService.name);
 
-  async handlePacket(event: string, packet: any): Promise<void> {
-    const session = await this.sessionModel.findOne({
-      status: 'ACTIVE',
-    });
+  async handlePacket(event: string, packet: unknown): Promise<void> {
+    const session = await this.sessionModel.findOne({ status: 'ACTIVE' });
 
     if (!session) {
       this.logger.debug('No active session found');
       return;
     }
 
-    const playerIndex = packet.m_header?.m_playerCarIndex ?? 0;
+    if (!session.telemetry) {
+      session.telemetry = {
+        fastestLapMs: 0,
+        topSpeedKmh: 0,
+        cleanLapStreak: 0,
+        bestCleanLapStreak: 0,
+        totalCleanLaps: 0,
+      };
+    }
 
+    const telemetry = session.telemetry;
+    let dirty = false;
+
+    const header = (packet as { m_header?: { m_playerCarIndex?: number } })
+      .m_header;
+    const playerIndex = header?.m_playerCarIndex ?? 0;
+
+    // LAP DATA
     if (event === 'lapData') {
-      const lap = packet.m_lapData?.[playerIndex];
+      const lapData = (
+        packet as {
+          m_lapData?: Array<{
+            m_lastLapTimeInMS?: number;
+            m_currentLapInvalid?: number;
+          }>;
+        }
+      ).m_lapData;
 
+      const lap = lapData?.[playerIndex];
       if (!lap?.m_lastLapTimeInMS) return;
 
+      const lapTime = lap.m_lastLapTimeInMS;
+      const isCleanLap = lap.m_currentLapInvalid === 0;
+
       if (
-        !session.fastestLapMs ||
-        lap.m_lastLapTimeInMS < session.fastestLapMs
+        isCleanLap &&
+        (telemetry.fastestLapMs === 0 || lapTime < telemetry.fastestLapMs)
       ) {
-        session.fastestLapMs = lap.m_lastLapTimeInMS;
-        await session.save();
+        telemetry.fastestLapMs = lapTime;
+        dirty = true;
+      }
+
+      if (isCleanLap) {
+        telemetry.cleanLapStreak += 1;
+        telemetry.totalCleanLaps += 1;
+
+        if (telemetry.cleanLapStreak > telemetry.bestCleanLapStreak) {
+          telemetry.bestCleanLapStreak = telemetry.cleanLapStreak;
+        }
+
+        dirty = true;
+      } else if (telemetry.cleanLapStreak !== 0) {
+        telemetry.cleanLapStreak = 0;
+        dirty = true;
       }
     }
 
+    // CAR TELEMETRY
     if (event === 'carTelemetry') {
-      const car = packet.m_carTelemetryData?.[playerIndex];
+      const carData = (
+        packet as {
+          m_carTelemetryData?: Array<{ m_speed?: number }>;
+        }
+      ).m_carTelemetryData;
 
-      if (!car?.m_speed) return;
+      const speed = carData?.[playerIndex]?.m_speed;
 
-      session.topSpeedKmh = Math.max(session.topSpeedKmh, car.m_speed);
+      if (typeof speed === 'number' && speed > telemetry.topSpeedKmh) {
+        telemetry.topSpeedKmh = speed;
+        dirty = true;
+      }
+    }
 
+    if (dirty) {
       await session.save();
     }
   }

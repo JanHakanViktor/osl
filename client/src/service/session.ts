@@ -36,3 +36,11 @@ export async function startSession(
 
   return res.json();
 }
+
+export async function finishSession(id: string) {
+  const res = await fetch(`${API_URL}/sessions/${id}/finish`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to finish session");
+}
