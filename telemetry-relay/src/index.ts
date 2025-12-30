@@ -25,7 +25,10 @@ async function forward(eventName: string, data: unknown) {
   try {
     const res = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-telemetry-secret": process.env.TELEMETRY_SECRET!,
+      },
       body: safeJsonify({ type: eventName, data }),
     });
 

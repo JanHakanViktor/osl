@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Session } from './session.schema';
+import { CreateSessionDto } from 'src/session/session.dto';
 
 @Injectable()
 export class SessionService {
@@ -10,14 +11,7 @@ export class SessionService {
     private readonly sessionModel: Model<Session>,
   ) {}
 
-  async create(
-    userId: string,
-    dto: {
-      sessionName: string;
-      trackId: number;
-      circuitName: string;
-    },
-  ) {
+  async create(userId: string, dto: CreateSessionDto) {
     return this.sessionModel.create({
       ...dto,
       userId,
