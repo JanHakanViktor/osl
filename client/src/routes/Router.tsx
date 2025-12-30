@@ -12,14 +12,14 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <LandingPage /> },
       {
-        element: <ProtectedRoute />, // 🔐 PROTECTED
+        element: <ProtectedRoute />,
         children: [
           {
             path: "/create-session",
             children: [{ index: true, element: <CreateGamePage /> }],
           },
           {
-            path: "/telemetry",
+            path: "/telemetry/:sessionId",
             children: [
               {
                 index: true,

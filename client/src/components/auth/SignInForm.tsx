@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUser } from "../../service/auth";
 import { useUIStore } from "../../store/uiStore";
 import type { AuthUser, LoginFormValues } from "../../types/auth.types";
-import AuthBackButton from "./BackButton";
+import BackButton from "./BackButton";
 
 const logo = "/osl_logo.png";
 
@@ -35,7 +35,7 @@ const SignInForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <AuthBackButton />
+      <BackButton />
       <Box display="flex" justifyContent="center">
         <img src={logo} style={{ maxWidth: 200 }} />
       </Box>

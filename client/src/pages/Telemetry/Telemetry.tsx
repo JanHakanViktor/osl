@@ -95,7 +95,6 @@ function useTelemetry(
   useEffect(() => {
     const url = `${serverUrl.replace(/\/$/, "")}${namespace}`;
     const socket: Socket = io(url, {
-      transports: ["websocket"],
       autoConnect: true,
       reconnection: true,
       timeout: 20000,
