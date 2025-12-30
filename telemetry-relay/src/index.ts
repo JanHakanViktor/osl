@@ -22,19 +22,14 @@ function safeJsonify(obj: unknown) {
 }
 
 async function forward(eventName: string, data: unknown) {
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: safeJsonify({ type: eventName, data }),
-    });
-
-    if (!res.ok) {
-      console.error("❌ Backend error", res.status);
-    }
-  } catch (error) {
-    console.error("❌ Fetch failed", error);
-  }
+  fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-telemetry-secret": process.env.TELEMETRY_SECRET!,
+    },
+    body: safeJsonify({ type: eventName, data }),
+  }).catch(() => {});
 }
 
 client.on(PACKETS.carTelemetry, (data: any) => forward("carTelemetry", data));

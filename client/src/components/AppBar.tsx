@@ -36,7 +36,7 @@ function ResponsiveAppBar() {
       return;
     }
 
-    navigate("/create-session");
+    navigate("/sessions/new");
   };
 
   return (
@@ -84,7 +84,7 @@ function ResponsiveAppBar() {
                   <ListItemText primary="Create Session" />
                 </ListItem>
 
-                <ListItem onClick={() => navigate("/create")}>
+                <ListItem onClick={() => navigate("/sessions")}>
                   <ListItemText primary="Session History" />
                 </ListItem>
 
@@ -139,7 +139,7 @@ function ResponsiveAppBar() {
                 fontSize={"30px"}
                 fontWeight={"bold"}
                 onClick={() => {
-                  navigate("/create");
+                  navigate("/sessions/new");
                 }}
               >
                 SESSION HISTORY
@@ -164,7 +164,7 @@ function ResponsiveAppBar() {
                 fontSize={"30px"}
                 fontWeight={"bold"}
                 onClick={() => {
-                  navigate("/create");
+                  navigate("/sessions/new");
                 }}
               >
                 DRIVERS

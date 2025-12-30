@@ -18,6 +18,8 @@ import {
   useTheme,
 } from "@mui/material";
 import { io, Socket } from "socket.io-client";
+import { useNavigate, useParams } from "react-router";
+import { finishSession } from "../../service/session";
 
 /* -------------------------
    Types (trimmed & focused)
@@ -95,7 +97,6 @@ function useTelemetry(
   useEffect(() => {
     const url = `${serverUrl.replace(/\/$/, "")}${namespace}`;
     const socket: Socket = io(url, {
-      transports: ["websocket"],
       autoConnect: true,
       reconnection: true,
       timeout: 20000,
@@ -280,6 +281,8 @@ function TelemetryGauges({
    ------------------------- */
 
 export default function TelemetryPage() {
+  const navigate = useNavigate();
+  const { sessionId } = useParams<{ sessionId: string }>();
   const { connected, carTelemetry, lapDataPkt, sessionPkt } = useTelemetry();
   const [history, setHistory] = useState<
     Array<{ lapMs: number; valid: boolean; sectors?: number[] }>
@@ -344,30 +347,6 @@ export default function TelemetryPage() {
   const gear = playerTelem?.m_gear;
   const throttle = playerTelem?.m_throttle;
   const brake = playerTelem?.m_brake;
-
-  const leaderboard = useMemo(() => {
-    const arr: Array<{
-      driverIndex: number;
-      bestMs?: number | null;
-      name?: string;
-    }> = [];
-    for (let i = 0; i < lapArray.length; i++) {
-      const e = lapArray[i];
-      if (!e) continue;
-      arr.push({
-        driverIndex: i,
-        bestMs: e.m_bestLapTimeInMS ?? null,
-        name: `Driver ${i + 1}`,
-      });
-    }
-    arr.sort((a, b) => {
-      if (a.bestMs == null && b.bestMs == null) return 0;
-      if (a.bestMs == null) return 1;
-      if (b.bestMs == null) return -1;
-      return a.bestMs - b.bestMs;
-    });
-    return arr.slice(0, 10);
-  }, [lapArray]);
 
   const deltaToBest =
     currentLapMs != null && bestLapMs != null
@@ -650,93 +629,25 @@ export default function TelemetryPage() {
             </CardContent>
           </Card>
         </Box>
-
-        <Box
-          sx={{
-            width: { xs: "100%", md: 360 },
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          <Card variant="elevation" sx={{ borderRadius: 2 }}>
-            <CardContent>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography variant="h6">Session Leaderboard</Typography>
-                <Chip label="Top 10" />
-              </Stack>
-
-              <List dense sx={{ mt: 1 }}>
-                {leaderboard.map((r, i) => (
-                  <ListItem
-                    key={r.driverIndex}
-                    sx={{
-                      bgcolor:
-                        r.driverIndex === playerIndex
-                          ? "action.selected"
-                          : "inherit",
-                      borderRadius: 1,
-                      my: 0.5,
-                    }}
-                  >
-                    <ListItemAvatar>
-                      <Avatar>{String(i + 1)}</Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={r.name}
-                      secondary={r.bestMs ? fmtMs(r.bestMs) : "—"}
-                    />
-                    <Box textAlign="right">
-                      <Typography variant="body2">
-                        {r.bestMs ? fmtMs(r.bestMs) : "—"}
-                      </Typography>
-                    </Box>
-                  </ListItem>
-                ))}
-              </List>
-
-              <Divider sx={{ my: 1 }} />
-
-              <Stack direction="row" spacing={1} justifyContent="space-between">
-                <Button variant="contained">Start</Button>
-                <Button variant="outlined">Settings</Button>
-              </Stack>
-            </CardContent>
-          </Card>
-
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="subtitle1">Quick Stats</Typography>
-              <Stack spacing={1} mt={1}>
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Connected
-                  </Typography>
-                  <Typography variant="body2">
-                    {connected ? "Yes" : "No"}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Player Lap
-                  </Typography>
-                  <Typography variant="body2">{fmtMs(currentLapMs)}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Best Lap
-                  </Typography>
-                  <Typography variant="body2">{fmtMs(bestLapMs)}</Typography>
-                </Box>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Box>
       </Box>
+      <Button
+        color="error"
+        variant="contained"
+        onClick={async () => {
+          if (!sessionId) {
+            return (
+              <Container>
+                <Typography color="error">MISSING SESSION</Typography>
+              </Container>
+            );
+          }
+
+          await finishSession(sessionId);
+          navigate(`/sessions/${sessionId}/overview`);
+        }}
+      >
+        Finish Session
+      </Button>
     </Container>
   );
 }
