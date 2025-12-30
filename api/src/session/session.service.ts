@@ -8,6 +8,7 @@ import { Model, Types } from 'mongoose';
 import { Session } from './session.schema';
 import { CreateSessionDto } from 'src/session/session.dto';
 import CircuitLibrary from 'src/data/circuit';
+import { SessionOverviewDto } from 'src/session/session-summary.dto';
 @Injectable()
 export class SessionService {
   constructor(
@@ -81,7 +82,10 @@ export class SessionService {
     return session;
   }
 
-  async getOverview(sessionId: string, userId: string) {
+  async getOverview(
+    sessionId: string,
+    userId: string,
+  ): Promise<SessionOverviewDto> {
     const session = await this.sessionModel.findOne({
       _id: sessionId,
       userId: new Types.ObjectId(userId),

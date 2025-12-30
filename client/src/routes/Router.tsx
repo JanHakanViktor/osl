@@ -2,28 +2,31 @@ import { createBrowserRouter } from "react-router";
 import NotFoundPage from "../pages/NotFoundPage";
 import LandingPage from "../pages/LandingPage";
 import Telemetry from "../pages/Telemetry/Telemetry.tsx";
-import CreateGamePage from "../pages/Create/CreateGamePage.tsx";
 import AppLayout from "../pages/AppLayout.tsx";
 import ProtectedRoute from "./ProtectecRoute.tsx";
+import CreateSessionPage from "../pages/Session/CreateSessionPage.tsx";
+import SessionOverviewPage from "../pages/Session/SessionOverviewPage.tsx";
 
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
     children: [
-      { path: "/", element: <LandingPage /> },
+      { index: true, element: <LandingPage /> },
+
       {
         element: <ProtectedRoute />,
         children: [
           {
-            path: "/create-session",
-            children: [{ index: true, element: <CreateGamePage /> }],
-          },
-          {
-            path: "/telemetry/:sessionId",
+            path: "sessions",
             children: [
+              { path: "new", element: <CreateSessionPage /> },
+
               {
-                index: true,
-                element: <Telemetry />,
+                path: ":sessionId",
+                children: [
+                  { path: "live", element: <Telemetry /> },
+                  { path: "overview", element: <SessionOverviewPage /> },
+                ],
               },
             ],
           },

@@ -643,7 +643,7 @@ export default function TelemetryPage() {
           }
 
           await finishSession(sessionId);
-          navigate(`/sessions/${sessionId}/summary`);
+          navigate(`/sessions/${sessionId}/overview`);
         }}
       >
         Finish Session

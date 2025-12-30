@@ -44,3 +44,18 @@ export async function finishSession(id: string) {
   });
   if (!res.ok) throw new Error("Failed to finish session");
 }
+
+export async function getSessionOverview(sessionId: string) {
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/sessions/${sessionId}/overview`,
+    {
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch session overview");
+  }
+
+  return res.json();
+}

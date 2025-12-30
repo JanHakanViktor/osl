@@ -25,9 +25,14 @@ const CreateSessionPage = () => {
   const onSubmit = async (data: SessionFormValues) => {
     try {
       const created = await createSession(data);
+
+      if (!created?._id) {
+        throw new Error("Session ID missing");
+      }
+
       await startSession(created._id);
 
-      navigate(`/telemetry/${created._id}`);
+      navigate(`/sessions/${created._id}/live`);
     } catch (err) {
       console.error(err);
       alert("Failed to create session");
