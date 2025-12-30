@@ -27,11 +27,17 @@ export class Session extends Document {
   @Prop()
   lapLimit?: number;
 
-  @Prop()
+  @Prop({ default: 0 })
   fastestLapMs?: number;
 
   @Prop({ default: 0 })
   topSpeedKmh: number;
+
+  @Prop()
+  startedAt?: Date;
+
+  @Prop()
+  finishedAt?: Date;
 }
 
 export const SessionSchema = SchemaFactory.createForClass(Session);

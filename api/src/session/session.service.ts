@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Session } from './session.schema';
 import { CreateSessionDto } from 'src/session/session.dto';
-
 @Injectable()
 export class SessionService {
   constructor(
@@ -11,17 +10,20 @@ export class SessionService {
     private readonly sessionModel: Model<Session>,
   ) {}
 
-  async create(userId: string, dto: CreateSessionDto) {
+  async create(userId: string, dto: CreateSessionDto): Promise<Session> {
     return this.sessionModel.create({
       ...dto,
-      userId,
+      userId: new Types.ObjectId(userId),
+      status: 'CREATED',
+      fastestLapMs: 0,
+      topSpeedKmh: 0,
     });
   }
 
-  async start(sessionId: string, userId: string) {
+  async start(sessionId: string, userId: string): Promise<Session> {
     const session = await this.sessionModel.findOne({
       _id: sessionId,
-      userId,
+      userId: new Types.ObjectId(userId),
     });
 
     if (!session) {
@@ -29,6 +31,7 @@ export class SessionService {
     }
 
     session.status = 'ACTIVE';
+    session.startedAt = new Date();
     await session.save();
 
     return session;
