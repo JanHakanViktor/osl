@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Session } from './session.schema';
 import { CreateSessionDto } from 'src/session/session.dto';
+import CircuitLibrary from 'src/data/circuit';
 @Injectable()
 export class SessionService {
   constructor(
@@ -11,9 +12,22 @@ export class SessionService {
   ) {}
 
   async create(userId: string, dto: CreateSessionDto): Promise<Session> {
+    const circuit = CircuitLibrary.find(
+      (c) => Number(c.trackId) === dto.circuitId,
+    );
+
+    if (!circuit) {
+      throw new NotFoundException('No circuit Found');
+    }
+
     return this.sessionModel.create({
-      ...dto,
       userId: new Types.ObjectId(userId),
+      sessionName: dto.sessionName,
+      circuitId: dto.circuitId,
+      circuitName: circuit.circuit,
+      limitType: dto.limitType,
+      timeLimitSeconds: dto.timeLimitSeconds,
+      lapLimit: dto.lapLimit,
       status: 'CREATED',
       fastestLapMs: 0,
       topSpeedKmh: 0,

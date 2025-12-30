@@ -10,7 +10,14 @@ import { Server, Socket } from 'socket.io';
 @Injectable()
 @WebSocketGateway({
   namespace: '/telemetry',
-  cors: { origin: ['*'] },
+  cors: {
+    origin: [
+      'http://localhost:3002',
+      'https://osl-f1.com',
+      'https://www.osl-f1.com',
+    ],
+    credentials: true,
+  },
 })
 export class TelemetryGateway
   implements OnGatewayConnection, OnGatewayDisconnect

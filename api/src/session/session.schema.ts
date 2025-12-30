@@ -12,7 +12,7 @@ export class Session extends Document {
   @Prop({ required: true })
   circuitId: number;
 
-  @Prop()
+  @Prop({ required: true })
   circuitName: string;
 
   @Prop({ default: 'CREATED' })

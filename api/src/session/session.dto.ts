@@ -7,9 +7,6 @@ export class CreateSessionDto {
   @IsNumber()
   circuitId: number;
 
-  @IsString()
-  circuitName: string;
-
   @IsEnum(['TIME', 'LAPS'])
   limitType: 'TIME' | 'LAPS';
 
