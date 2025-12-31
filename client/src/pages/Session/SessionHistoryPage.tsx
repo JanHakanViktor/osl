@@ -35,7 +35,7 @@ export default function SessionHistoryPage() {
       <BackButton path="/" />
       <Stack spacing={3}>
         <Typography fontWeight="bold" textAlign="center" variant="h3">
-          SESSION SETTINGS
+          SESSION HISTORY
         </Typography>
 
         {loading && <Typography>Loading sessions…</Typography>}

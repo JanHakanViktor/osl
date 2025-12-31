@@ -1,13 +1,23 @@
 import { Box, Typography } from "@mui/material";
-import { useSignUpStore } from "../store/signupStore";
 import "flag-icons/css/flag-icons.min.css";
 import { TEAMS } from "../data/team";
 import TeamLogo from "./TeamLogo";
 
-export function DriverProfileChip() {
-  const { drivername, country, teamId } = useSignUpStore();
+export interface DriverProfile {
+  id: string;
+  name: string;
+  country?: string;
+  teamId?: string;
+}
+
+type DriverProfileProps = {
+  driver: DriverProfile;
+};
+
+export function DriverProfileChip({ driver }: DriverProfileProps) {
   const team =
-    TEAMS.find((t) => t.id === teamId) ?? TEAMS.find((t) => t.id === "redbull");
+    TEAMS.find((t) => t.id === driver.teamId) ??
+    TEAMS.find((t) => t.id === "redbull");
 
   const getSurnameAbbreviation = (drivername: string) =>
     drivername.split(/\s+/).slice(1).join(" ").slice(0, 3).toUpperCase() ||
@@ -29,9 +39,9 @@ export function DriverProfileChip() {
           flex: 0.5,
         }}
       >
-        {(country && (
+        {(driver.country && (
           <span
-            className={`fi fi-${country.toLowerCase()}`}
+            className={`fi fi-${driver.country ?? "nl".toLowerCase()}`}
             style={{
               width: "161px",
             }}
@@ -57,10 +67,10 @@ export function DriverProfileChip() {
         }}
       >
         <Typography fontSize="18px" fontWeight="bold">
-          {drivername.toUpperCase() || "MAX VERSTAPPEN"}
+          {driver.name.toUpperCase() || "MAX VERSTAPPEN"}
         </Typography>
         <Typography fontSize="24px" fontWeight="bold">
-          {getSurnameAbbreviation(drivername)}
+          {getSurnameAbbreviation(driver.name)}
         </Typography>
       </Box>
 
