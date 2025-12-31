@@ -104,4 +104,22 @@ export class SessionService {
       telemetry: session.telemetry,
     };
   }
+
+  async getSessionHistory(userId: string) {
+    const sessions = await this.sessionModel
+      .find({
+        userId: new Types.ObjectId(userId),
+        status: 'FINISHED',
+      })
+      .sort({ finishedAt: -1 })
+      .lean();
+
+    return sessions.map((s) => ({
+      id: s._id.toString(),
+      sessionName: s.sessionName,
+      circuitName: s.circuitName,
+      fastestLapMs: s.telemetry?.fastestLapMs ?? 0,
+      finishedAt: s.finishedAt,
+    }));
+  }
 }
