@@ -42,7 +42,7 @@ const CreateSessionPage = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box maxWidth={600} mx="auto" p={2}>
-        <BackButton path="/" />
+        <BackButton path="/" sx={{}} />
         <Typography
           fontWeight="bold"
           mt={4}

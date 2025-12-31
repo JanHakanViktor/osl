@@ -59,3 +59,15 @@ export async function getSessionOverview(sessionId: string) {
 
   return res.json();
 }
+
+export async function getSessionHistory() {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/sessions`, {
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to load sessions");
+  }
+
+  return res.json();
+}

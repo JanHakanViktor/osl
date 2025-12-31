@@ -36,4 +36,9 @@ export class SessionController {
   getOverview(@Req() req: Request, @Param('id') id: string) {
     return this.sessionService.getOverview(id, req.session!.user!.id);
   }
+
+  @Get()
+  getSessionHistory(@Req() req: Request) {
+    return this.sessionService.getSessionHistory(req.session!.user!.id);
+  }
 }

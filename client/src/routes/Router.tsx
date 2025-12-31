@@ -6,6 +6,7 @@ import AppLayout from "../pages/AppLayout.tsx";
 import ProtectedRoute from "./ProtectecRoute.tsx";
 import CreateSessionPage from "../pages/Session/CreateSessionPage.tsx";
 import SessionOverviewPage from "../pages/Session/SessionOverviewPage.tsx";
+import SessionHistoryPage from "../pages/Session/SessionHistoryPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
           {
             path: "sessions",
             children: [
+              { index: true, element: <SessionHistoryPage /> },
               { path: "new", element: <CreateSessionPage /> },
 
               {
