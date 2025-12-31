@@ -139,7 +139,7 @@ function ResponsiveAppBar() {
                 fontSize={"30px"}
                 fontWeight={"bold"}
                 onClick={() => {
-                  navigate("/sessions/new");
+                  navigate("/sessions");
                 }}
               >
                 SESSION HISTORY
