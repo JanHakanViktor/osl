@@ -160,7 +160,12 @@ function SectorChip({
   return (
     <Card
       variant="outlined"
-      sx={{ minWidth: 120, p: 1, bgcolor: "background.paper" }}
+      sx={{
+        minWidth: { xs: "100%", sm: 120 },
+        flex: 1,
+        p: 1,
+        bgcolor: "background.paper",
+      }}
     >
       <Stack spacing={0.25}>
         <Typography variant="caption" color="text.secondary">
@@ -198,7 +203,12 @@ function TelemetryGauges({
   return (
     <Stack spacing={1}>
       <Box
-        sx={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}
+        sx={{
+          display: "flex",
+          gap: 3,
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: "flex-start",
+        }}
       >
         <Box>
           <Typography variant="caption" color="text.secondary">
@@ -367,32 +377,42 @@ export default function TelemetryPage() {
           gap: 2,
         }}
       >
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Avatar sx={{ bgcolor: "primary.main", width: 48, height: 48 }}>
-            F1
-          </Avatar>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1.5}
+          alignItems={{ xs: "flex-start", sm: "center" }}
+        >
           <Box>
-            <Typography variant="h6" sx={{ letterSpacing: 0.3 }}>
-              Telemetry Components
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Live hotlap telemetry — clean minimal UI
+            <Typography
+              variant="h4"
+              sx={{ fontSize: { xs: "1.5rem", md: "2rem" } }}
+              fontWeight={"bold"}
+            >
+              ACTIVE SESSION
             </Typography>
           </Box>
-          <Chip
-            label={connected ? "LIVE" : "OFFLINE"}
-            color={connected ? "success" : "default"}
-            sx={{ ml: 2 }}
-          />
-        </Stack>
-
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Chip label={`Player: ${playerIndex}`} />
-          <Chip
-            label={`Session: ${
-              sessionPkt?.m_header?.m_sessionTime?.toFixed(1) ?? "—"
-            }s`}
-          />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Connection:
+            </Typography>
+            <Chip
+              label={connected ? "Connected" : "Disconnected"}
+              color={connected ? "success" : "default"}
+              size="small"
+            />
+          </Box>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Chip
+              label={`Session: ${
+                sessionPkt?.m_header?.m_sessionTime?.toFixed(1) ?? "—"
+              }s`}
+            />
+          </Stack>
         </Stack>
       </Box>
 
@@ -425,7 +445,10 @@ export default function TelemetryPage() {
                   </Typography>
                   <Typography
                     variant="h3"
-                    sx={{ fontFamily: "'Roboto Mono', monospace" }}
+                    sx={{
+                      fontFamily: "'Roboto Mono', monospace",
+                      fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
+                    }}
                   >
                     {fmtMs(currentLapMs)}
                   </Typography>
@@ -462,7 +485,7 @@ export default function TelemetryPage() {
                 </Box>
               </Stack>
 
-              <Stack direction="row" spacing={1} mt={2}>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} mt={2}>
                 <SectorChip
                   label="Sector 1"
                   valueSec={s1 ?? null}
@@ -544,21 +567,6 @@ export default function TelemetryPage() {
                           {sessionPkt?.m_totalLaps ?? "—"}
                         </Typography>
                       </Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Typography variant="body2" color="text.secondary">
-                          Connection
-                        </Typography>
-                        <Chip
-                          label={connected ? "Connected" : "Disconnected"}
-                          color={connected ? "success" : "default"}
-                          size="small"
-                        />
-                      </Box>
                     </Stack>
                   </CardContent>
                 </Card>
@@ -575,9 +583,6 @@ export default function TelemetryPage() {
                 mb={1}
               >
                 <Typography variant="h6">Run History</Typography>
-                <Button size="small" variant="outlined">
-                  Export
-                </Button>
               </Stack>
 
               <List dense>
@@ -630,24 +635,26 @@ export default function TelemetryPage() {
           </Card>
         </Box>
       </Box>
-      <Button
-        color="error"
-        variant="contained"
-        onClick={async () => {
-          if (!sessionId) {
-            return (
-              <Container>
-                <Typography color="error">MISSING SESSION</Typography>
-              </Container>
-            );
-          }
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Button
+          color="error"
+          variant="contained"
+          onClick={async () => {
+            if (!sessionId) {
+              return (
+                <Container>
+                  <Typography color="error">MISSING SESSION</Typography>
+                </Container>
+              );
+            }
 
-          await finishSession(sessionId);
-          navigate(`/sessions/${sessionId}/overview`);
-        }}
-      >
-        Finish Session
-      </Button>
+            await finishSession(sessionId);
+            navigate(`/sessions/${sessionId}/overview`);
+          }}
+        >
+          Finish Session
+        </Button>
+      </Box>
     </Container>
   );
 }

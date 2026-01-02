@@ -37,6 +37,18 @@ function ResponsiveAppBar() {
     }
 
     navigate("/sessions/new");
+    closeDrawer();
+  };
+  const handleSessionOverview = () => {
+    if (!user) {
+      openSignInDialog(
+        "You are not signed in. Sign in to visit your session overview."
+      );
+      return;
+    }
+
+    navigate("/sessions");
+    closeDrawer();
   };
 
   return (
@@ -46,7 +58,6 @@ function ResponsiveAppBar() {
         backgroundColor: "#ffffffff",
         color: "white",
         top: 0,
-        zIndex: (theme) => theme.zIndex.drawer + 1,
         transition: "box-shadow 0.3s ease",
       }}
     >
@@ -84,12 +95,8 @@ function ResponsiveAppBar() {
                   <ListItemText primary="Create Session" />
                 </ListItem>
 
-                <ListItem onClick={() => navigate("/sessions")}>
+                <ListItem onClick={handleSessionOverview}>
                   <ListItemText primary="Session History" />
-                </ListItem>
-
-                <ListItem onClick={() => navigate("/drivers")}>
-                  <ListItemText primary="Drivers" />
                 </ListItem>
               </List>
 
@@ -138,36 +145,9 @@ function ResponsiveAppBar() {
                 textAlign="center"
                 fontSize={"30px"}
                 fontWeight={"bold"}
-                onClick={() => {
-                  navigate("/sessions");
-                }}
+                onClick={handleSessionOverview}
               >
                 SESSION HISTORY
-              </Typography>
-            </MenuItem>
-
-            <MenuItem
-              sx={{
-                height: "100%",
-                transition: "all 0.3s ease",
-                color: "#000000ff",
-                ":hover": {
-                  color: "#ff0000ff",
-                  transform: "scale(1.05)",
-                  bgcolor: "rgba(255, 255, 255, 1)",
-                  borderRadius: "10px",
-                },
-              }}
-            >
-              <Typography
-                textAlign="center"
-                fontSize={"30px"}
-                fontWeight={"bold"}
-                onClick={() => {
-                  navigate("/sessions/new");
-                }}
-              >
-                DRIVERS
               </Typography>
             </MenuItem>
 
