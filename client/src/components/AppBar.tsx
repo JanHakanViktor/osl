@@ -58,7 +58,6 @@ function ResponsiveAppBar() {
         backgroundColor: "#ffffffff",
         color: "white",
         top: 0,
-        zIndex: (theme) => theme.zIndex.drawer + 1,
         transition: "box-shadow 0.3s ease",
       }}
     >

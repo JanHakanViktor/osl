@@ -160,7 +160,12 @@ function SectorChip({
   return (
     <Card
       variant="outlined"
-      sx={{ minWidth: 120, p: 1, bgcolor: "background.paper" }}
+      sx={{
+        minWidth: { xs: "100%", sm: 120 },
+        flex: 1,
+        p: 1,
+        bgcolor: "background.paper",
+      }}
     >
       <Stack spacing={0.25}>
         <Typography variant="caption" color="text.secondary">
@@ -198,7 +203,12 @@ function TelemetryGauges({
   return (
     <Stack spacing={1}>
       <Box
-        sx={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}
+        sx={{
+          display: "flex",
+          gap: 3,
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: "flex-start",
+        }}
       >
         <Box>
           <Typography variant="caption" color="text.secondary">
@@ -367,9 +377,17 @@ export default function TelemetryPage() {
           gap: 2,
         }}
       >
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1.5}
+          alignItems={{ xs: "flex-start", sm: "center" }}
+        >
           <Box>
-            <Typography variant="h4" sx={{ letterSpacing: 0.3 }}>
+            <Typography
+              variant="h4"
+              sx={{ fontSize: { xs: "1.5rem", md: "2rem" } }}
+              fontWeight={"bold"}
+            >
               ACTIVE SESSION
             </Typography>
           </Box>
@@ -388,14 +406,13 @@ export default function TelemetryPage() {
               size="small"
             />
           </Box>
-        </Stack>
-
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Chip
-            label={`Session: ${
-              sessionPkt?.m_header?.m_sessionTime?.toFixed(1) ?? "—"
-            }s`}
-          />
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Chip
+              label={`Session: ${
+                sessionPkt?.m_header?.m_sessionTime?.toFixed(1) ?? "—"
+              }s`}
+            />
+          </Stack>
         </Stack>
       </Box>
 
@@ -428,7 +445,10 @@ export default function TelemetryPage() {
                   </Typography>
                   <Typography
                     variant="h3"
-                    sx={{ fontFamily: "'Roboto Mono', monospace" }}
+                    sx={{
+                      fontFamily: "'Roboto Mono', monospace",
+                      fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
+                    }}
                   >
                     {fmtMs(currentLapMs)}
                   </Typography>
@@ -465,7 +485,7 @@ export default function TelemetryPage() {
                 </Box>
               </Stack>
 
-              <Stack direction="row" spacing={1} mt={2}>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} mt={2}>
                 <SectorChip
                   label="Sector 1"
                   valueSec={s1 ?? null}
