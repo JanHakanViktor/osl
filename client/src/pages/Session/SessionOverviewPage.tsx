@@ -13,10 +13,6 @@ import {
 import { useNavigate, useParams } from "react-router";
 import { getSessionOverview } from "../../service/session";
 
-/* -------------------------
-   Types (matches backend DTO)
-------------------------- */
-
 interface TelemetryOverview {
   fastestLapMs: number;
   topSpeedKmh: number;
@@ -32,10 +28,6 @@ interface SessionOverview {
   telemetry: TelemetryOverview;
 }
 
-/* -------------------------
-   Helpers
-------------------------- */
-
 function fmtMs(ms?: number | null) {
   if (!ms) return "—";
   const s = Math.floor(ms / 1000);
@@ -49,10 +41,6 @@ function fmtDate(value?: string) {
   if (!value) return "—";
   return new Date(value).toLocaleString();
 }
-
-/* -------------------------
-   Page
-------------------------- */
 
 export default function SessionOverviewPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -109,7 +97,6 @@ export default function SessionOverviewPage() {
           </Typography>
         </Box>
 
-        {/* Timing */}
         <Card>
           <CardContent>
             <Stack spacing={1}>
@@ -130,7 +117,6 @@ export default function SessionOverviewPage() {
           </CardContent>
         </Card>
 
-        {/* Performance */}
         <Card>
           <CardContent>
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -163,7 +149,6 @@ export default function SessionOverviewPage() {
           </CardContent>
         </Card>
 
-        {/* Actions */}
         <Stack direction="row" spacing={2}>
           <Button variant="contained" onClick={() => navigate("/")}>
             Back to Home

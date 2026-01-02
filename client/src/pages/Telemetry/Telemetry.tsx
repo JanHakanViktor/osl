@@ -368,26 +368,29 @@ export default function TelemetryPage() {
         }}
       >
         <Stack direction="row" spacing={2} alignItems="center">
-          <Avatar sx={{ bgcolor: "primary.main", width: 48, height: 48 }}>
-            F1
-          </Avatar>
           <Box>
-            <Typography variant="h6" sx={{ letterSpacing: 0.3 }}>
-              Telemetry Components
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Live hotlap telemetry — clean minimal UI
+            <Typography variant="h4" sx={{ letterSpacing: 0.3 }}>
+              ACTIVE SESSION
             </Typography>
           </Box>
-          <Chip
-            label={connected ? "LIVE" : "OFFLINE"}
-            color={connected ? "success" : "default"}
-            sx={{ ml: 2 }}
-          />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Connection:
+            </Typography>
+            <Chip
+              label={connected ? "Connected" : "Disconnected"}
+              color={connected ? "success" : "default"}
+              size="small"
+            />
+          </Box>
         </Stack>
 
         <Stack direction="row" spacing={1} alignItems="center">
-          <Chip label={`Player: ${playerIndex}`} />
           <Chip
             label={`Session: ${
               sessionPkt?.m_header?.m_sessionTime?.toFixed(1) ?? "—"
@@ -544,21 +547,6 @@ export default function TelemetryPage() {
                           {sessionPkt?.m_totalLaps ?? "—"}
                         </Typography>
                       </Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Typography variant="body2" color="text.secondary">
-                          Connection
-                        </Typography>
-                        <Chip
-                          label={connected ? "Connected" : "Disconnected"}
-                          color={connected ? "success" : "default"}
-                          size="small"
-                        />
-                      </Box>
                     </Stack>
                   </CardContent>
                 </Card>
@@ -575,9 +563,6 @@ export default function TelemetryPage() {
                 mb={1}
               >
                 <Typography variant="h6">Run History</Typography>
-                <Button size="small" variant="outlined">
-                  Export
-                </Button>
               </Stack>
 
               <List dense>
@@ -630,24 +615,26 @@ export default function TelemetryPage() {
           </Card>
         </Box>
       </Box>
-      <Button
-        color="error"
-        variant="contained"
-        onClick={async () => {
-          if (!sessionId) {
-            return (
-              <Container>
-                <Typography color="error">MISSING SESSION</Typography>
-              </Container>
-            );
-          }
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Button
+          color="error"
+          variant="contained"
+          onClick={async () => {
+            if (!sessionId) {
+              return (
+                <Container>
+                  <Typography color="error">MISSING SESSION</Typography>
+                </Container>
+              );
+            }
 
-          await finishSession(sessionId);
-          navigate(`/sessions/${sessionId}/overview`);
-        }}
-      >
-        Finish Session
-      </Button>
+            await finishSession(sessionId);
+            navigate(`/sessions/${sessionId}/overview`);
+          }}
+        >
+          Finish Session
+        </Button>
+      </Box>
     </Container>
   );
 }
