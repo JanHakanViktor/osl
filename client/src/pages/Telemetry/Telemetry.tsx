@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Avatar,
   Box,
-  Button,
   Card,
   CardContent,
   Chip,
@@ -19,7 +18,6 @@ import {
 } from "@mui/material";
 import { io, Socket } from "socket.io-client";
 import { useNavigate, useParams } from "react-router";
-import { finishSession } from "../../service/session";
 
 /* -------------------------
    Types (trimmed & focused)
@@ -66,6 +64,10 @@ interface SessionPacket {
   m_totalLaps?: number;
 }
 
+interface SessionFinishedPayload {
+  sessionId: string;
+}
+
 function fmtMs(ms?: number | null) {
   if (ms == null || !isFinite(ms)) return "--:--.---";
   const totalMs = Math.max(0, Math.round(ms));
@@ -93,6 +95,8 @@ function useTelemetry(
   );
   const [lapDataPkt, setLapDataPkt] = useState<LapDataPacket | null>(null);
   const [sessionPkt, setSessionPkt] = useState<SessionPacket | null>(null);
+  const [sessionFinished, setSessionFinished] =
+    useState<SessionFinishedPayload | null>(null);
 
   useEffect(() => {
     const url = `${serverUrl.replace(/\/$/, "")}${namespace}`;
@@ -112,6 +116,9 @@ function useTelemetry(
     );
     socket.on("lapData", (d: LapDataPacket) => setLapDataPkt(() => d));
     socket.on("session", (d: SessionPacket) => setSessionPkt(() => d));
+    socket.on("sessionFinished", (d: SessionFinishedPayload) =>
+      setSessionFinished(() => d)
+    );
     socket.on("connect_error", (err: unknown) =>
       console.warn("Telemetry socket connect_error:", err)
     );
@@ -122,11 +129,12 @@ function useTelemetry(
       socket.off("carTelemetry");
       socket.off("lapData");
       socket.off("session");
+      socket.off("sessionFinished");
       socket.disconnect();
     };
   }, [serverUrl, namespace]);
 
-  return { connected, carTelemetry, lapDataPkt, sessionPkt };
+  return { connected, carTelemetry, lapDataPkt, sessionPkt, sessionFinished };
 }
 
 /* -----------
@@ -293,12 +301,14 @@ function TelemetryGauges({
 export default function TelemetryPage() {
   const navigate = useNavigate();
   const { sessionId } = useParams<{ sessionId: string }>();
-  const { connected, carTelemetry, lapDataPkt, sessionPkt } = useTelemetry();
+  const { connected, carTelemetry, lapDataPkt, sessionPkt, sessionFinished } =
+    useTelemetry();
   const [history, setHistory] = useState<
     Array<{ lapMs: number; valid: boolean; sectors?: number[] }>
   >([]);
 
   const prevBestRef = useRef<number | null>(null);
+  const hasNavigatedToOverviewRef = useRef(false);
 
   // pick player index in header of whichever packet is present
   const playerIndex = useMemo(() => {
@@ -365,6 +375,20 @@ export default function TelemetryPage() {
   const topSpeed = telemetryArray.length
     ? Math.max(...telemetryArray.map((t) => t.m_speed ?? 0))
     : null;
+
+  useEffect(() => {
+    if (
+      !sessionId ||
+      !sessionFinished ||
+      sessionFinished.sessionId !== sessionId ||
+      hasNavigatedToOverviewRef.current
+    ) {
+      return;
+    }
+
+    hasNavigatedToOverviewRef.current = true;
+    navigate(`/sessions/${sessionId}/overview`);
+  }, [navigate, sessionFinished, sessionId]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -634,26 +658,6 @@ export default function TelemetryPage() {
             </CardContent>
           </Card>
         </Box>
-      </Box>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Button
-          color="error"
-          variant="contained"
-          onClick={async () => {
-            if (!sessionId) {
-              return (
-                <Container>
-                  <Typography color="error">MISSING SESSION</Typography>
-                </Container>
-              );
-            }
-
-            await finishSession(sessionId);
-            navigate(`/sessions/${sessionId}/overview`);
-          }}
-        >
-          Finish Session
-        </Button>
       </Box>
     </Container>
   );
