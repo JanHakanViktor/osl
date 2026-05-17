@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TelemetryGateway } from './telemetry.gateway';
 import { safeJsonify } from './sanitize.utils';
-import { SessionTelemetryService } from 'src/telemetry/session-telemetry.service';
+import { SessionTelemetryService } from './session-telemetry.service';
 
 @Injectable()
 export class TelemetryService {
@@ -14,9 +14,18 @@ export class TelemetryService {
     eventName: string,
     data: any,
   ): Promise<void> {
-    await this.sessionTelemetry.handlePacket(eventName, data);
+    const sessionResult = await this.sessionTelemetry.handlePacket(
+      eventName,
+      data,
+    );
 
-    const sanitizedJson = safeJsonify(data);
-    this.gateway.broadcast(eventName, sanitizedJson);
+    const sanitizedPayload = safeJsonify(data);
+    this.gateway.broadcast(eventName, sanitizedPayload);
+
+    if (sessionResult.finishedSessionId) {
+      this.gateway.broadcast('sessionFinished', {
+        sessionId: sessionResult.finishedSessionId,
+      });
+    }
   }
 }

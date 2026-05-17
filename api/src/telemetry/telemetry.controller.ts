@@ -1,7 +1,7 @@
 import type { Request } from 'express';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { TelemetryService } from './telemetry.service';
-import { TelemetryAuthGuard } from 'src/telemetry/telemetry.guard';
+import { TelemetryAuthGuard } from './telemetry.guard';
 
 @Controller('telemetry')
 export class TelemetryController {
