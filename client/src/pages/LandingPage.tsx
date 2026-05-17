@@ -1,11 +1,43 @@
 import "../index.css";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import HeroBanner from "../components/HeroBanner";
-import RecentSessions from "../components/widgets/RecentSessions";
-import MostPlayedCircuit from "../components/widgets/MostPlayedCircuit";
-import ScoreBoard from "../components/widgets/ScoreBoard";
+import LiveTelemetryPreview from "../components/widgets/LiveTelemetryPreview";
+import LatestSessionRecap from "../components/widgets/LatestSessionRecap";
+import FastestLapBreakdown from "../components/widgets/FastestLapBreakdown";
+import DriverImprovementTrend from "../components/widgets/DriverImprovementTrend";
+import { getLandingSummary } from "../service/session";
+import type { LandingSummary } from "../types/session.types";
 
 function LandingPage() {
+  const [summary, setSummary] = useState<LandingSummary | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadSummary = () => {
+      getLandingSummary()
+        .then((data) => {
+          if (mounted) setSummary(data);
+        })
+        .catch((error) => {
+          console.warn("Failed to load landing summary", error);
+        });
+    };
+
+    loadSummary();
+    const intervalId = window.setInterval(loadSummary, 3000);
+
+    const onFocus = () => loadSummary();
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      mounted = false;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
   return (
     <>
       <HeroBanner />
@@ -23,34 +55,18 @@ function LandingPage() {
         }}
       >
         <Box>
-          <RecentSessions />
+          <LiveTelemetryPreview activeSession={summary?.activeSession ?? null} />
         </Box>
 
         <Box>
-          <MostPlayedCircuit />
+          <LatestSessionRecap session={summary?.latestSession ?? null} />
         </Box>
 
         <Box>
-          <ScoreBoard
-            id={1}
-            sessionId={42}
-            topDrivers={[]}
-            cleanLaps={7}
-            topSpeed={342}
-            podiumPlacement={[]}
-            title="CLEAN LAPS RECORD"
-          />
+          <FastestLapBreakdown circuits={summary?.fastestLapByCircuit ?? []} />
         </Box>
         <Box>
-          <ScoreBoard
-            title="SPEED TRAP"
-            id={1}
-            sessionId={42}
-            topDrivers={[]}
-            cleanLaps={0}
-            topSpeed={342}
-            podiumPlacement={[]}
-          />
+          <DriverImprovementTrend trend={summary?.improvementTrend ?? null} />
         </Box>
       </Box>
     </>

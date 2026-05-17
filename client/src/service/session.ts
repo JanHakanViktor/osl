@@ -1,4 +1,5 @@
 import type {
+  LandingSummary,
   SessionFormValues,
   SessionResponse,
 } from "../types/session.types";
@@ -6,7 +7,7 @@ import type {
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function createSession(
-  payload: SessionFormValues
+  payload: SessionFormValues,
 ): Promise<SessionResponse> {
   const res = await fetch(`${API_URL}/sessions`, {
     method: "POST",
@@ -23,7 +24,7 @@ export async function createSession(
 }
 
 export async function startSession(
-  sessionId: string
+  sessionId: string,
 ): Promise<SessionResponse> {
   const res = await fetch(`${API_URL}/sessions/${sessionId}/start`, {
     method: "POST",
@@ -50,7 +51,7 @@ export async function getSessionOverview(sessionId: string) {
     `${import.meta.env.VITE_API_URL}/sessions/${sessionId}/overview`,
     {
       credentials: "include",
-    }
+    },
   );
 
   if (!res.ok) {
@@ -67,6 +68,21 @@ export async function getSessionHistory() {
 
   if (!res.ok) {
     throw new Error("Failed to load sessions");
+  }
+
+  return res.json();
+}
+
+export async function getLandingSummary(): Promise<LandingSummary | null> {
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/sessions/landing-summary`,
+    {
+      credentials: "include",
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to load landing summary");
   }
 
   return res.json();

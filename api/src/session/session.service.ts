@@ -9,6 +9,14 @@ import { Session } from './session.schema';
 import { CreateSessionDto } from 'src/session/session.dto';
 import CircuitLibrary from 'src/data/circuit';
 import { SessionOverviewDto } from 'src/session/session-summary.dto';
+
+type SessionWithUser = Session & {
+  userId?: {
+    _id?: Types.ObjectId;
+    username?: string;
+  };
+};
+
 @Injectable()
 export class SessionService {
   constructor(
@@ -36,10 +44,12 @@ export class SessionService {
       status: 'CREATED',
       telemetry: {
         fastestLapMs: 0,
+        fastestLapSectorsMs: [],
         topSpeedKmh: 0,
         cleanLapStreak: 0,
         bestCleanLapStreak: 0,
         totalCleanLaps: 0,
+        lastProcessedLapNum: 0,
       },
     });
   }
@@ -121,5 +131,121 @@ export class SessionService {
       fastestLapMs: s.telemetry?.fastestLapMs ?? 0,
       finishedAt: s.finishedAt,
     }));
+  }
+
+  async getLandingSummary() {
+    const [activeSession, latestFinished, finishedSessions] = await Promise.all([
+      this.sessionModel
+        .findOne({
+          status: 'ACTIVE',
+        })
+        .sort({ startedAt: 1, _id: 1 })
+        .lean(),
+      this.sessionModel
+        .findOne({
+          status: 'FINISHED',
+        })
+        .sort({ finishedAt: -1, _id: -1 })
+        .populate<{ userId: { username: string } }>('userId', 'username')
+        .lean<SessionWithUser>(),
+      this.sessionModel
+        .find({
+          status: 'FINISHED',
+        })
+        .sort({ finishedAt: 1, _id: 1 })
+        .populate<{ userId: { username: string } }>('userId', 'username')
+        .lean<SessionWithUser[]>(),
+    ]);
+
+    const sessionsWithFastestLaps = finishedSessions.filter(
+      (session) => (session.telemetry?.fastestLapMs ?? 0) > 0,
+    );
+
+    const fastestOverall = sessionsWithFastestLaps.reduce<
+      SessionWithUser | null
+    >((best, session) => {
+      if (!best) return session;
+      return session.telemetry.fastestLapMs < best.telemetry.fastestLapMs
+        ? session
+        : best;
+    }, null);
+
+    const fastestLapByCircuit = CircuitLibrary.map((circuit) => {
+      const circuitFastest = sessionsWithFastestLaps
+        .filter((session) => session.circuitId === Number(circuit.trackId))
+        .reduce<SessionWithUser | null>((best, session) => {
+          if (!best) return session;
+          return session.telemetry.fastestLapMs < best.telemetry.fastestLapMs
+            ? session
+            : best;
+        }, null);
+
+      return {
+        circuitId: Number(circuit.trackId),
+        grandPrix: circuit.grandPrix,
+        circuitName: circuit.circuit,
+        image: circuit.image,
+        fastestLapMs: circuitFastest?.telemetry?.fastestLapMs ?? null,
+        fastestLapSectorsMs:
+          circuitFastest?.telemetry?.fastestLapSectorsMs ?? [],
+        driverName: circuitFastest?.userId?.username ?? null,
+      };
+    });
+
+    const trendSessions = fastestOverall
+      ? finishedSessions.filter(
+          (session) =>
+            session.circuitId === fastestOverall.circuitId &&
+            session.userId?._id?.toString() ===
+              fastestOverall.userId?._id?.toString() &&
+            (session.telemetry?.fastestLapMs ?? 0) > 0,
+        )
+      : [];
+    const latestSessionCircuit = latestFinished
+      ? CircuitLibrary.find(
+          (circuit) => Number(circuit.trackId) === latestFinished.circuitId,
+        )
+      : null;
+
+    return {
+      activeSession: activeSession
+        ? {
+            id: activeSession._id.toString(),
+            sessionName: activeSession.sessionName,
+            circuitName: activeSession.circuitName,
+            startedAt: activeSession.startedAt,
+          }
+        : null,
+      latestSession: latestFinished
+        ? {
+            id: latestFinished._id.toString(),
+            sessionName: latestFinished.sessionName,
+            circuitName: latestFinished.circuitName,
+            circuitId: latestFinished.circuitId,
+            image: latestSessionCircuit?.image ?? null,
+            driverName: latestFinished.userId?.username ?? 'Unknown driver',
+            fastestLapMs: latestFinished.telemetry?.fastestLapMs ?? 0,
+            topSpeedKmh: latestFinished.telemetry?.topSpeedKmh ?? 0,
+            totalCleanLaps: latestFinished.telemetry?.totalCleanLaps ?? 0,
+            bestCleanLapStreak:
+              latestFinished.telemetry?.bestCleanLapStreak ?? 0,
+            finishedAt: latestFinished.finishedAt,
+          }
+        : null,
+      fastestLapByCircuit,
+      improvementTrend: fastestOverall
+        ? {
+            driverName: fastestOverall.userId?.username ?? 'Unknown driver',
+            circuitId: fastestOverall.circuitId,
+            circuitName: fastestOverall.circuitName,
+            sessions: trendSessions.map((session, index) => ({
+              id: session._id.toString(),
+              label: `S${index + 1}`,
+              sessionName: session.sessionName,
+              fastestLapMs: session.telemetry.fastestLapMs,
+            })),
+          }
+        : null,
+    };
   }
 }
