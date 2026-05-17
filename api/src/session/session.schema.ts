@@ -39,19 +39,23 @@ export class Session extends Document {
   @Prop({
     type: {
       fastestLapMs: { type: Number, default: 0 },
+      fastestLapSectorsMs: { type: [Number], default: [] },
       topSpeedKmh: { type: Number, default: 0 },
       cleanLapStreak: { type: Number, default: 0 },
       bestCleanLapStreak: { type: Number, default: 0 },
       totalCleanLaps: { type: Number, default: 0 },
+      lastProcessedLapNum: { type: Number, default: 0 },
     },
     default: () => ({}),
   })
   telemetry: {
     fastestLapMs: number;
+    fastestLapSectorsMs?: number[];
     topSpeedKmh: number;
     cleanLapStreak: number;
     bestCleanLapStreak: number;
     totalCleanLaps: number;
+    lastProcessedLapNum?: number;
   };
 }
 
