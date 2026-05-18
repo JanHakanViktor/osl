@@ -38,8 +38,8 @@ const HeroBanner = () => {
           }}
         >
           OSL delivers real-time telemetry and performance statistics to
-          streamline the in-game experience. Record your sessions, analyze your
-          laps, and get started by creating a session.
+          streamline the in-game experience. Sign in or register to create your
+          first session, record your laps, and start analyzing your performance.
         </Typography>
       </Container>
       <Container sx={{ mt: 4 }}>

@@ -24,13 +24,17 @@ const SignInButton = () => {
   if (isLoading) return null;
 
   const buttonSx = {
-    py: isMobile ? 1 : 2,
-    px: isMobile ? 2 : 4,
-    ml: isMobile ? 4 : 4,
-    mb: isMobile ? 4 : 0,
-    mt: isMobile ? "auto" : "none",
-    width: isMobile ? "75%" : "100%",
-    fontSize: isMobile ? "16px" : "20px",
+    py: isMobile ? 1.1 : 1.25,
+    px: isMobile ? 2 : 2.5,
+    width: isMobile ? "100%" : "auto",
+    minHeight: isMobile ? 44 : 44,
+    borderRadius: 2,
+    fontSize: isMobile ? "16px" : "14px",
+    fontWeight: 900,
+    textTransform: "uppercase",
+    letterSpacing: 0,
+    whiteSpace: "nowrap",
+    boxShadow: "0 10px 24px rgba(0, 0, 0, 0.28)",
   };
 
   return (
