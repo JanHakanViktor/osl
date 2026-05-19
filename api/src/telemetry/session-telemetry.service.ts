@@ -154,10 +154,7 @@ export class SessionTelemetryService {
 
         telemetry.lastProcessedLapNum = completedLapNum;
 
-        if (
-          telemetry.fastestLapMs === 0 ||
-          lapTime < telemetry.fastestLapMs
-        ) {
+        if (telemetry.fastestLapMs === 0 || lapTime < telemetry.fastestLapMs) {
           telemetry.fastestLapMs = lapTime;
           telemetry.fastestLapSectorsMs = completedSectors;
         }
@@ -196,7 +193,9 @@ export class SessionTelemetryService {
       }
     }
 
-    if (this.hasReachedSessionLimit(session, telemetryPacket, completedLapNum)) {
+    if (
+      this.hasReachedSessionLimit(session, telemetryPacket, completedLapNum)
+    ) {
       session.status = 'FINISHED';
       session.finishedAt = new Date();
       finishedSessionId = sessionId;
@@ -260,7 +259,10 @@ export class SessionTelemetryService {
     return [sector1, sector2].filter((sectorMs) => sectorMs > 0);
   }
 
-  private completeSectorBreakdown(lapTime: number, sectors: number[]): number[] {
+  private completeSectorBreakdown(
+    lapTime: number,
+    sectors: number[],
+  ): number[] {
     const sector1 = sectors[0] ?? 0;
     const sector2 = sectors[1] ?? 0;
     const sector3 = lapTime - sector1 - sector2;
@@ -280,10 +282,7 @@ export class SessionTelemetryService {
 
     return history.reduce<{ lapTime: number; sectors: number[] } | null>(
       (best, lap) => {
-        const lapTime = this.firstNumber(
-          lap.m_lapTimeInMS,
-          lap.m_lapTimeInMs,
-        );
+        const lapTime = this.firstNumber(lap.m_lapTimeInMS, lap.m_lapTimeInMs);
         const sectors = this.readHistorySectors(lap);
         const lapIsValid =
           lap.m_lapValidBitFlags == null || (lap.m_lapValidBitFlags & 1) === 1;
