@@ -5,7 +5,7 @@ const CircuitLibrary: Circuit[] = [
     trackId: "0",
     grandPrix: "Australia",
     circuit: "Albert Park Circuit",
-    image: "/circuits/australianCircuit.png",
+    image: "/circuits/australiaCircuit.png",
   },
   {
     trackId: "1",
@@ -17,7 +17,7 @@ const CircuitLibrary: Circuit[] = [
     trackId: "2",
     grandPrix: "China",
     circuit: "Shanghai International Circuit",
-    image: "/circuits/chineseCircuit.png",
+    image: "/circuits/chinaCircuit.png",
   },
   {
     trackId: "3",
@@ -41,7 +41,7 @@ const CircuitLibrary: Circuit[] = [
     trackId: "6",
     grandPrix: "Canada",
     circuit: "Circuit Gilles Villeneuve",
-    image: "/circuits/canadianCircuit.png",
+    image: "/circuits/canadaCircuit.png",
   },
   {
     trackId: "7",
@@ -119,7 +119,7 @@ const CircuitLibrary: Circuit[] = [
     trackId: "19",
     grandPrix: "Las Vegas",
     circuit: "Las Vegas Strip Circuit",
-    image: "/circuits/lasVegasCircuit.png",
+    image: "/circuits/vegasCircuit.png",
   },
   {
     trackId: "20",
@@ -143,7 +143,7 @@ const CircuitLibrary: Circuit[] = [
     trackId: "23",
     grandPrix: "Saudi Arabia",
     circuit: "Jeddah Corniche Circuit",
-    image: "/circuits/saudiCircuit.png",
+    image: "/circuits/saudiArabianCircuit.png",
   },
 ];
 

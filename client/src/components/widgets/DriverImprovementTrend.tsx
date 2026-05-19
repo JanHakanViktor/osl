@@ -1,5 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { LineChart } from "@mui/x-charts/LineChart";
+import { alpha } from "@mui/material/styles";
+import { getOslAppShell } from "../../theme";
 import type { LandingSummary } from "../../types/session.types";
 
 type ImprovementTrend = LandingSummary["improvementTrend"];
@@ -14,7 +16,7 @@ const formatMs = (ms?: number | null) => {
   const milliseconds = totalMs % 1000;
 
   return `${minutes}:${String(remainingSeconds).padStart(2, "0")}.${String(
-    milliseconds
+    milliseconds,
   ).padStart(3, "0")}`;
 };
 
@@ -24,7 +26,7 @@ const DriverImprovementTrend = ({ trend }: { trend: ImprovementTrend }) => {
   const firstLap = sessions[0]?.fastestLapMs ?? 0;
   const bestLap = sessions.reduce(
     (best, session) => Math.min(best, session.fastestLapMs),
-    firstLap || 0
+    firstLap || 0,
   );
   const improvement = firstLap && bestLap ? firstLap - bestLap : 0;
 
@@ -35,8 +37,9 @@ const DriverImprovementTrend = ({ trend }: { trend: ImprovementTrend }) => {
         minHeight: 300,
         borderRadius: 2,
         p: { xs: 2, sm: 3 },
-        bgcolor: "#fff",
-        border: "1px solid rgba(0,0,0,0.08)",
+        bgcolor: "background.paper",
+        border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
+        boxShadow: "0 18px 42px rgba(0, 0, 0, 0.28)",
         display: "flex",
         flexDirection: "column",
         gap: 2,
@@ -44,7 +47,13 @@ const DriverImprovementTrend = ({ trend }: { trend: ImprovementTrend }) => {
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Box>
-          <Typography variant="overline" sx={{ color: "#d90000", fontWeight: 800 }}>
+          <Typography
+            variant="overline"
+            sx={{
+              color: (theme) => getOslAppShell(theme).accent,
+              fontWeight: 800,
+            }}
+          >
             Driver trend
           </Typography>
           <Typography variant="h5" sx={{ fontWeight: 900 }}>
@@ -78,11 +87,15 @@ const DriverImprovementTrend = ({ trend }: { trend: ImprovementTrend }) => {
           minHeight: 196,
           mt: "auto",
           "& .MuiChartsAxis-tickLabel": {
-            fill: "#4d4d4d !important",
+            fill: "rgba(247, 248, 251, 0.68) !important",
             fontSize: 12,
           },
           "& .MuiChartsAxis-line, & .MuiChartsAxis-tick": {
-            stroke: "rgba(0,0,0,0.22)",
+            stroke: (theme) =>
+              `${getOslAppShell(theme).borderStrong} !important`,
+          },
+          "& .MuiChartsGrid-line": {
+            stroke: (theme) => `${getOslAppShell(theme).border} !important`,
           },
         }}
       >
@@ -104,7 +117,7 @@ const DriverImprovementTrend = ({ trend }: { trend: ImprovementTrend }) => {
             series={[
               {
                 data: sessions.map((session) => session.fastestLapMs),
-                color: "#7b2cff",
+                color: "#ff3048",
                 curve: "monotoneX",
                 valueFormatter: (value: number | null) => formatMs(value),
               },
@@ -116,7 +129,9 @@ const DriverImprovementTrend = ({ trend }: { trend: ImprovementTrend }) => {
             sx={{
               height: 196,
               borderRadius: 1.5,
-              bgcolor: "rgba(0,0,0,0.04)",
+              bgcolor: (theme) => getOslAppShell(theme).surfaceGlass,
+              border: (theme) =>
+                `1px solid ${alpha(getOslAppShell(theme).accent, 0.18)}`,
               color: "text.secondary",
             }}
             alignItems="center"

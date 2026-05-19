@@ -19,7 +19,8 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { useIsMobile } from "../theme";
+import { getOslAppShell, useIsMobile } from "../theme";
+import { alpha } from "@mui/material/styles";
 
 const logo = "/osl_logo.png";
 
@@ -59,9 +60,8 @@ function ResponsiveAppBar() {
       sx={{
         top: 0,
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        borderBottom: "1px solid rgba(255, 255, 255, 0.12)",
-        background:
-          "linear-gradient(110deg, rgba(8, 10, 18, 0.96) 0%, rgba(22, 24, 34, 0.94) 48%, rgba(78, 10, 20, 0.94) 100%)",
+        borderBottom: (theme) => `1px solid ${getOslAppShell(theme).border}`,
+        background: (theme) => getOslAppShell(theme).appBarGradient,
         backdropFilter: "blur(16px)",
         boxShadow: "0 18px 42px rgba(0, 0, 0, 0.32)",
         overflow: "hidden",
@@ -72,10 +72,10 @@ function ResponsiveAppBar() {
           right: 0,
           bottom: 0,
           height: 3,
-          background:
-            "repeating-linear-gradient(90deg, #ff1e35 0px, #ffb000 180px, #ffffff 360px, #ffb000 540px, #ff1e35 720px)",
+          background: (theme) => getOslAppShell(theme).animatedAccent,
           backgroundSize: "720px 100%",
-          boxShadow: "0 0 18px rgba(255, 30, 53, 0.65)",
+          boxShadow: (theme) =>
+            `0 0 18px ${alpha(getOslAppShell(theme).accent, 0.65)}`,
           animation: "appBarAccentDrive 20s linear infinite",
         },
         "@keyframes appBarAccentDrive": {
@@ -138,11 +138,14 @@ function ResponsiveAppBar() {
               sx={{
                 width: 44,
                 height: 44,
-                color: "#fff",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                backgroundColor: "rgba(255, 255, 255, 0.08)",
+                color: "common.white",
+                border: (theme) =>
+                  `1px solid ${getOslAppShell(theme).borderStrong}`,
+                backgroundColor: (theme) => getOslAppShell(theme).surfaceGlass,
                 transition: "background-color 0.2s ease, transform 0.2s ease",
-                "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.16)" },
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.16)",
+                },
               }}
             >
               <Box
@@ -168,10 +171,10 @@ function ResponsiveAppBar() {
                 sx: {
                   zIndex: (theme) => theme.zIndex.drawer + 4,
                   width: 300,
-                  color: "#fff",
-                  background:
-                    "linear-gradient(165deg, #080a12 0%, #171923 54%, #410814 100%)",
-                  borderLeft: "1px solid rgba(255,255,255,0.14)",
+                  color: "common.white",
+                  background: (theme) => getOslAppShell(theme).drawerGradient,
+                  borderLeft: (theme) =>
+                    `1px solid ${getOslAppShell(theme).borderStrong}`,
                 },
               }}
             >
@@ -183,7 +186,8 @@ function ResponsiveAppBar() {
                   gap: 2,
                   px: 2,
                   py: 1.5,
-                  borderBottom: "1px solid rgba(255,255,255,0.12)",
+                  borderBottom: (theme) =>
+                    `1px solid ${getOslAppShell(theme).border}`,
                 }}
               >
                 <Box
@@ -205,9 +209,10 @@ function ResponsiveAppBar() {
                   sx={{
                     width: 42,
                     height: 42,
-                    color: "#fff",
-                    border: "1px solid rgba(255, 255, 255, 0.18)",
-                    backgroundColor: "rgba(255, 255, 255, 0.08)",
+                    color: "common.white",
+                    border: (theme) =>
+                      `1px solid ${getOslAppShell(theme).borderStrong}`,
+                    backgroundColor: (theme) => getOslAppShell(theme).surfaceGlass,
                     "&:hover": {
                       backgroundColor: "rgba(255, 255, 255, 0.16)",
                     },
@@ -229,17 +234,25 @@ function ResponsiveAppBar() {
                         sx={{
                           minHeight: 54,
                           borderRadius: 2,
-                          color: "#fff",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          backgroundColor: isActive
-                            ? "rgba(255, 48, 72, 0.22)"
-                            : "rgba(255,255,255,0.06)",
+                          color: "common.white",
+                          border: (theme) =>
+                            `1px solid ${getOslAppShell(theme).border}`,
+                          backgroundColor: (theme) =>
+                            isActive
+                              ? getOslAppShell(theme).accentSoft
+                              : getOslAppShell(theme).surfaceGlass,
                           "&.Mui-selected, &.Mui-selected:hover": {
-                            backgroundColor: "rgba(255, 48, 72, 0.25)",
+                            backgroundColor: (theme) =>
+                              alpha(getOslAppShell(theme).accent, 0.25),
                           },
                         }}
                       >
-                        <ListItemIcon sx={{ minWidth: 40, color: "#ff3048" }}>
+                        <ListItemIcon
+                          sx={{
+                            minWidth: 40,
+                            color: (theme) => getOslAppShell(theme).accent,
+                          }}
+                        >
                           <Icon />
                         </ListItemIcon>
                         <ListItemText primary={label} />
@@ -281,25 +294,28 @@ function ResponsiveAppBar() {
                       minHeight: 44,
                       px: { md: 1.5, lg: 2.25 },
                       borderRadius: 2,
-                      color: "#fff",
+                      color: "common.white",
                       fontWeight: 900,
                       textTransform: "uppercase",
                       letterSpacing: 0,
                       whiteSpace: "nowrap",
                       border: "1px solid",
-                      borderColor: isActive
-                        ? "rgba(255, 48, 72, 0.75)"
-                        : "rgba(255,255,255,0.14)",
-                      backgroundColor: isActive
-                        ? "rgba(255, 48, 72, 0.2)"
-                        : "rgba(255,255,255,0.07)",
-                      boxShadow: isActive
-                        ? "0 0 22px rgba(255, 48, 72, 0.28)"
-                        : "none",
+                      borderColor: (theme) =>
+                        isActive
+                          ? alpha(getOslAppShell(theme).accent, 0.75)
+                          : getOslAppShell(theme).border,
+                      backgroundColor: (theme) =>
+                        isActive
+                          ? getOslAppShell(theme).accentSoft
+                          : getOslAppShell(theme).surfaceGlass,
+                      boxShadow: (theme) =>
+                        isActive ? getOslAppShell(theme).accentGlow : "none",
                       "&:hover": {
-                        color: "#fff",
-                        borderColor: "rgba(255, 48, 72, 0.78)",
-                        backgroundColor: "rgba(255, 48, 72, 0.18)",
+                        color: "common.white",
+                        borderColor: (theme) =>
+                          alpha(getOslAppShell(theme).accent, 0.78),
+                        backgroundColor: (theme) =>
+                          alpha(getOslAppShell(theme).accent, 0.18),
                         transform: "translateY(-1px)",
                       },
                       transition:
@@ -326,7 +342,8 @@ function ResponsiveAppBar() {
               sx={{
                 ml: 1,
                 pl: 1,
-                borderLeft: "1px solid rgba(255,255,255,0.14)",
+                borderLeft: (theme) =>
+                  `1px solid ${getOslAppShell(theme).border}`,
               }}
             >
               <SignInButton />

@@ -1,5 +1,7 @@
 import { Box, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import CircuitLibrary from "../../data/circuit";
+import { getOslAppShell } from "../../theme";
 
 const MostPlayedCircuit = () => {
   const idx = CircuitLibrary[0] ? 5 : 0;
@@ -22,9 +24,11 @@ const MostPlayedCircuit = () => {
           position: "relative",
           flex: 1,
           borderRadius: 2,
-          borderColor: "red",
+          border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
+          boxShadow: "0 18px 42px rgba(0, 0, 0, 0.28)",
           overflow: "hidden",
           aspectRatio: { xs: "16 / 10", md: "16 / 9" },
+          bgcolor: "background.paper",
         }}
       >
         <Box
@@ -42,6 +46,18 @@ const MostPlayedCircuit = () => {
             pointerEvents: "none",
           }}
         />
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 1,
+            background: (theme) =>
+              `linear-gradient(135deg, ${alpha(
+                getOslAppShell(theme).surface,
+                0.82,
+              )}, ${alpha(getOslAppShell(theme).surfaceStrong, 0.44)})`,
+          }}
+        />
 
         <Box
           sx={{
@@ -55,7 +71,7 @@ const MostPlayedCircuit = () => {
         >
           <Typography
             sx={{
-              color: "#000000ff",
+              color: "common.white",
               fontWeight: 700,
               fontSize: { xs: "1.1rem", sm: "1.3rem", md: "1.6rem" },
             }}
@@ -64,7 +80,7 @@ const MostPlayedCircuit = () => {
           </Typography>
           <Typography
             sx={{
-              color: "red",
+              color: (theme) => getOslAppShell(theme).accent,
               fontWeight: 700,
               fontSize: { xs: "0.7rem", sm: "1.1rem", md: "1.3rem" },
             }}
@@ -73,7 +89,8 @@ const MostPlayedCircuit = () => {
           </Typography>
           <Box
             sx={{
-              bgcolor: "rgba(0, 0, 0, 0.61)",
+              bgcolor: (theme) => getOslAppShell(theme).surfaceGlass,
+              border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
               py: 1.5,
               px: 2.5,
               borderRadius: 2,
@@ -84,7 +101,7 @@ const MostPlayedCircuit = () => {
             <Typography
               sx={{
                 fontSize: { xs: "0.7rem", sm: "1.1rem", md: "1.3rem" },
-                color: "red",
+                color: (theme) => getOslAppShell(theme).accent,
                 fontWeight: "bold",
               }}
             >
@@ -95,7 +112,7 @@ const MostPlayedCircuit = () => {
                 display: "flex",
                 fontSize: { xs: "0.8rem", sm: "1.2rem", md: "1.4rem" },
                 fontWeight: 700,
-                color: "#ffffffff",
+                color: "common.white",
                 justifyContent: "flex-end",
               }}
             >

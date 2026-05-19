@@ -1,4 +1,6 @@
 import { Box, Container, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import { getOslAppShell } from "../../theme";
 import type { DriverProps } from "../DriverChip";
 import DriverChip from "../DriverChip";
 
@@ -67,13 +69,21 @@ const RecentSessions = () => {
       </Typography>
       <Container
         sx={{
-          backgroundImage:
-            'radial-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.12)), url("/sessionbg.png")',
+          backgroundImage: (theme) =>
+            `linear-gradient(135deg, ${alpha(
+              getOslAppShell(theme).surface,
+              0.92,
+            )}, ${alpha(
+              getOslAppShell(theme).surfaceStrong,
+              0.76,
+            )}), url("/sessionbg.png")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          color: "text.primary",
+          color: "common.white",
           borderRadius: "10px",
+          border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
+          boxShadow: "0 18px 42px rgba(0, 0, 0, 0.28)",
           pt: 3,
           pb: 1,
         }}
@@ -82,8 +92,21 @@ const RecentSessions = () => {
           .slice(0, 3)
           .map(({ id: sessionId, sessionTitle, drivers }) => (
             <Box key={sessionId} sx={{ mb: 2 }}>
-              <Box sx={{ backgroundColor: "#4747478d", p: 1, borderRadius: 2 }}>
-                <Typography variant="h5" color="#FFFFFF" fontWeight={"bold"}>
+              <Box
+                sx={{
+                  backgroundColor: (theme) =>
+                    getOslAppShell(theme).surfaceGlass,
+                  border: (theme) =>
+                    `1px solid ${getOslAppShell(theme).border}`,
+                  p: 1,
+                  borderRadius: 2,
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  color="common.white"
+                  fontWeight={"bold"}
+                >
                   {sessionTitle}
                 </Typography>
 

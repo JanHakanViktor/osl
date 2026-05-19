@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import { getOslAppShell } from "../../theme";
 import type { DriverProps } from "../DriverChip";
 import DriverChip from "../DriverChip";
 import PodiumImage from "../PodiumImage";
@@ -15,7 +16,7 @@ interface ScoreBoardProps {
 
 const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
   const rows = [0, 1, 2].map(
-    (i) => topDrivers[i] ?? { id: `p-${i}`, name: `Driver ${i + 1}` } // TODO: REAL VALUES NEEDED
+    (i) => topDrivers[i] ?? { id: `p-${i}`, name: `Driver ${i + 1}` }, // TODO: REAL VALUES NEEDED
   );
 
   return (
@@ -28,8 +29,13 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: 4,
+          gap: 2,
           flex: 1,
+          bgcolor: "background.paper",
+          border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
+          borderRadius: 2,
+          boxShadow: "0 18px 42px rgba(0, 0, 0, 0.28)",
+          p: { xs: 2, sm: 3 },
         }}
       >
         {rows.map((driver, index) => (
@@ -64,12 +70,16 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
                 sx={{
                   display: "flex",
                   p: 4,
+                  bgcolor: (theme) => getOslAppShell(theme).surfaceGlass,
+                  border: (theme) =>
+                    `1px solid ${getOslAppShell(theme).border}`,
                   "& .MuiTypography-root": {
                     flexDirection: "row",
                     fontWeight: 700,
-                    color: "#000000ff",
+                    color: "common.white",
                   },
-                  borderBottom: "2px solid black",
+                  borderBottom: (theme) =>
+                    `2px solid ${getOslAppShell(theme).accent}`,
                 }}
               />
             </Box>
@@ -77,7 +87,7 @@ const ScoreBoard = ({ topDrivers, cleanLaps, title }: ScoreBoardProps) => {
               <Box
                 sx={{
                   fontSize: "0.95rem",
-                  color: "#ff0000ff",
+                  color: (theme) => getOslAppShell(theme).accent,
                   display: "flex",
                   flexDirection: "column",
                   gap: 1,
