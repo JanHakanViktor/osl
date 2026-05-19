@@ -45,6 +45,12 @@ export class SessionController {
     return this.sessionService.getOverview(id, req.session!.user!.id);
   }
 
+  @Get(':id/live')
+  @UseGuards(AuthGuard)
+  getLiveSession(@Req() req: Request, @Param('id') id: string) {
+    return this.sessionService.getLiveSession(id, req.session!.user!.id);
+  }
+
   @Get()
   @UseGuards(AuthGuard)
   getSessionHistory(@Req() req: Request) {

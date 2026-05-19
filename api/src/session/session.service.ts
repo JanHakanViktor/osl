@@ -124,6 +124,29 @@ export class SessionService {
     };
   }
 
+  async getLiveSession(sessionId: string, userId: string) {
+    const session = await this.sessionModel
+      .findOne({
+        _id: sessionId,
+        userId: new Types.ObjectId(userId),
+        status: 'ACTIVE',
+      })
+      .lean();
+
+    if (!session) {
+      throw new NotFoundException('Active session not found');
+    }
+
+    return {
+      id: session._id.toString(),
+      sessionName: session.sessionName,
+      circuitName: session.circuitName,
+      limitType: session.limitType,
+      lapLimit: session.lapLimit,
+      timeLimitSeconds: session.timeLimitSeconds,
+      startedAt: session.startedAt,
+    };
+  }
   async getSessionHistory(userId: string) {
     const sessions = await this.sessionModel
       .find({
