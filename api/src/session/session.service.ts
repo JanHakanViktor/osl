@@ -17,6 +17,10 @@ type SessionWithUser = Session & {
   };
 };
 
+export function getValidSectorBreakdown(sectors?: number[]) {
+  return sectors?.length === 3 ? sectors : [];
+}
+
 @Injectable()
 export class SessionService {
   constructor(
@@ -190,8 +194,9 @@ export class SessionService {
         circuitName: circuit.circuit,
         image: circuit.image,
         fastestLapMs: circuitFastest?.telemetry?.fastestLapMs ?? null,
-        fastestLapSectorsMs:
-          circuitFastest?.telemetry?.fastestLapSectorsMs ?? [],
+        fastestLapSectorsMs: getValidSectorBreakdown(
+          circuitFastest?.telemetry?.fastestLapSectorsMs,
+        ),
         driverName: circuitFastest?.userId?.username ?? null,
       };
     });
