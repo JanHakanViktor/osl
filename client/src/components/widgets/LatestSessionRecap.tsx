@@ -1,9 +1,6 @@
-import {
-  Box,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Divider, Stack, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import { getOslAppShell } from "../../theme";
 import type { LandingSummary } from "../../types/session.types";
 
 type LatestSession = LandingSummary["latestSession"];
@@ -18,7 +15,7 @@ const formatMs = (ms?: number | null) => {
   const milliseconds = totalMs % 1000;
 
   return `${minutes}:${String(remainingSeconds).padStart(2, "0")}.${String(
-    milliseconds
+    milliseconds,
   ).padStart(3, "0")}`;
 };
 
@@ -27,7 +24,9 @@ const Stat = ({ label, value }: { label: string; value: string }) => (
     <Typography variant="caption" color="text.secondary">
       {label}
     </Typography>
-    <Typography sx={{ fontWeight: 900, fontSize: "1.15rem" }}>{value}</Typography>
+    <Typography sx={{ fontWeight: 900, fontSize: "1.15rem" }}>
+      {value}
+    </Typography>
   </Box>
 );
 
@@ -41,20 +40,22 @@ const LatestSessionRecap = ({ session }: { session: LatestSession }) => {
         minHeight: 320,
         borderRadius: 2,
         overflow: "hidden",
-        bgcolor: "#fff",
+        bgcolor: "background.paper",
         display: "flex",
         flexDirection: "column",
-        border: "1px solid rgba(0,0,0,0.08)",
+        border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
+        boxShadow: "0 18px 42px rgba(0, 0, 0, 0.28)",
       }}
     >
       <Box
         sx={{
           position: "relative",
           minHeight: 128,
-          color: "#fff",
+          color: "common.white",
           p: 3,
-          bgcolor: "#d90000",
+          background: (theme) => getOslAppShell(theme).appBarGradient,
           overflow: "hidden",
+          borderBottom: (theme) => `1px solid ${getOslAppShell(theme).border}`,
         }}
       >
         {session?.image && (
@@ -80,13 +81,26 @@ const LatestSessionRecap = ({ session }: { session: LatestSession }) => {
           sx={{
             position: "absolute",
             inset: 0,
-            background:
-              "linear-gradient(90deg, rgba(0,0,0,0.76), rgba(0,0,0,0.22))",
+            background: (theme) =>
+              `linear-gradient(90deg, ${alpha(
+                getOslAppShell(theme).surface,
+                0.78,
+              )}, ${alpha(getOslAppShell(theme).surface, 0.22)})`,
           }}
         />
-        <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+        >
           <Box sx={{ position: "relative", zIndex: 1 }}>
-            <Typography variant="overline" sx={{ color: "#ff4d4d", fontWeight: 800 }}>
+            <Typography
+              variant="overline"
+              sx={{
+                color: (theme) => getOslAppShell(theme).accent,
+                fontWeight: 800,
+              }}
+            >
               Latest session
             </Typography>
             <Typography variant="h5" sx={{ fontWeight: 900 }}>
@@ -112,8 +126,14 @@ const LatestSessionRecap = ({ session }: { session: LatestSession }) => {
           }}
         >
           <Stat label="Fastest lap" value={formatMs(session?.fastestLapMs)} />
-          <Stat label="Top speed" value={hasSession ? `${session?.topSpeedKmh ?? 0} km/h` : "--"} />
-          <Stat label="Clean laps" value={hasSession ? `${session?.totalCleanLaps ?? 0}` : "--"} />
+          <Stat
+            label="Top speed"
+            value={hasSession ? `${session?.topSpeedKmh ?? 0} km/h` : "--"}
+          />
+          <Stat
+            label="Clean laps"
+            value={hasSession ? `${session?.totalCleanLaps ?? 0}` : "--"}
+          />
           <Stat
             label="Best streak"
             value={hasSession ? `${session?.bestCleanLapStreak ?? 0}` : "--"}

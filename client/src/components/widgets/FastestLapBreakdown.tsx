@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import { Box, Button, Chip, Stack, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import TimerIcon from "@mui/icons-material/Timer";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CircuitLibrary from "../../data/circuit";
+import { getOslAppShell } from "../../theme";
 import type { LandingSummary } from "../../types/session.types";
 
 type CircuitLap = LandingSummary["fastestLapByCircuit"][number];
@@ -18,7 +20,7 @@ const formatMs = (ms: number | null) => {
   const milliseconds = totalMs % 1000;
 
   return `${minutes}:${String(remainingSeconds).padStart(2, "0")}.${String(
-    milliseconds
+    milliseconds,
   ).padStart(3, "0")}`;
 };
 
@@ -45,16 +47,20 @@ const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
     return [0, 1, 2].map((index) =>
       activeCircuit.fastestLapSectorsMs[index]
         ? formatMs(activeCircuit.fastestLapSectorsMs[index])
-        : "No lap recorded"
+        : "No lap recorded",
     );
-  }, [activeCircuit?.fastestLapMs, activeCircuit?.fastestLapSectorsMs]);
+  }, [activeCircuit]);
 
   const goToPrevious = () => {
-    setActiveIndex((current) => (current === 0 ? slides.length - 1 : current - 1));
+    setActiveIndex((current) =>
+      current === 0 ? slides.length - 1 : current - 1,
+    );
   };
 
   const goToNext = () => {
-    setActiveIndex((current) => (current === slides.length - 1 ? 0 : current + 1));
+    setActiveIndex((current) =>
+      current === slides.length - 1 ? 0 : current + 1,
+    );
   };
 
   return (
@@ -64,9 +70,10 @@ const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
         minHeight: 300,
         borderRadius: 2,
         p: { xs: 2, sm: 3 },
-        bgcolor: "#171717",
-        color: "#fff",
-        border: "1px solid rgba(255,255,255,0.08)",
+        bgcolor: "background.paper",
+        color: "common.white",
+        border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
+        boxShadow: "0 18px 42px rgba(0, 0, 0, 0.28)",
         display: "flex",
         flexDirection: "column",
         gap: 2.5,
@@ -74,24 +81,37 @@ const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Box>
-          <Typography variant="overline" sx={{ color: "#ff4d4d", fontWeight: 800 }}>
+          <Typography
+            variant="overline"
+            sx={{
+              color: (theme) => getOslAppShell(theme).accent,
+              fontWeight: 800,
+            }}
+          >
             Fastest lap
           </Typography>
           <Typography variant="h5" sx={{ fontWeight: 900 }}>
             {activeCircuit?.grandPrix ?? "Circuit"} Breakdown
           </Typography>
-          <Typography sx={{ color: "rgba(255,255,255,0.66)" }}>
+          <Typography sx={{ color: "text.secondary" }}>
             {activeCircuit?.circuitName}
           </Typography>
         </Box>
-        <TimerIcon sx={{ color: "#ff4d4d", fontSize: 34 }} />
+        <TimerIcon
+          sx={{ color: (theme) => getOslAppShell(theme).accent, fontSize: 34 }}
+        />
       </Stack>
 
       <Box>
-        <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.68)" }}>
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
           {activeCircuit?.driverName ?? "No lap recorded"}
         </Typography>
-        <Stack direction="row" spacing={1.5} alignItems="flex-end" flexWrap="wrap">
+        <Stack
+          direction="row"
+          spacing={1.5}
+          alignItems="flex-end"
+          flexWrap="wrap"
+        >
           <Typography
             sx={{
               fontFamily: "'Roboto Mono', monospace",
@@ -109,7 +129,8 @@ const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
             <Chip
               label="Recorded"
               size="small"
-              sx={{ bgcolor: "#1f7a38", color: "#fff", fontWeight: 800, mb: 0.5 }}
+              color="success"
+              sx={{ color: "common.white", fontWeight: 800, mb: 0.5 }}
             />
           )}
         </Stack>
@@ -128,12 +149,17 @@ const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
             key={sector}
             sx={{
               borderRadius: 1.5,
-              bgcolor: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              bgcolor: (theme) => getOslAppShell(theme).surfaceGlass,
+              border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
               p: 2,
             }}
           >
-            <Typography sx={{ color: "#ff4d4d", fontWeight: 900 }}>
+            <Typography
+              sx={{
+                color: (theme) => getOslAppShell(theme).accent,
+                fontWeight: 900,
+              }}
+            >
               {sector}
             </Typography>
             <Typography
@@ -155,8 +181,8 @@ const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
           onClick={goToPrevious}
           variant="outlined"
           sx={{
-            color: "#fff",
-            borderColor: "rgba(255,255,255,0.28)",
+            color: "common.white",
+            borderColor: (theme) => alpha(getOslAppShell(theme).accent, 0.58),
             fontWeight: 900,
           }}
         >
@@ -164,7 +190,7 @@ const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
         </Button>
         <Typography
           variant="caption"
-          sx={{ alignSelf: "center", color: "rgba(255,255,255,0.66)" }}
+          sx={{ alignSelf: "center", color: "text.secondary" }}
         >
           {activeIndex + 1} / {slides.length}
         </Typography>
@@ -173,8 +199,8 @@ const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
           onClick={goToNext}
           variant="outlined"
           sx={{
-            color: "#fff",
-            borderColor: "rgba(255,255,255,0.28)",
+            color: "common.white",
+            borderColor: (theme) => alpha(getOslAppShell(theme).accent, 0.58),
             fontWeight: 900,
           }}
         >
