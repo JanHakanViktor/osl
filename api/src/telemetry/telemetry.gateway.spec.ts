@@ -1,6 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { TestingModule, Test } from '@nestjs/testing';
 import { Server, Socket } from 'socket.io';
-import { TelemetryGateway } from './telemetry.gateway';
+import { TelemetryGateway } from 'src/telemetry/telemetry.gateway';
 
 describe('TelemetryGateway', () => {
   let gateway: TelemetryGateway;
