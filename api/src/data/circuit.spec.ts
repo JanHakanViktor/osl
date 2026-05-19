@@ -1,3 +1,5 @@
+import { describe, expect, it } from '@jest/globals';
+
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import CircuitLibrary from './circuit';

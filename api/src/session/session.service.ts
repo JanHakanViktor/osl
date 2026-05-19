@@ -134,41 +134,45 @@ export class SessionService {
   }
 
   async getLandingSummary() {
-    const [activeSession, latestFinished, finishedSessions] = await Promise.all([
-      this.sessionModel
-        .findOne({
-          status: 'ACTIVE',
-        })
-        .sort({ startedAt: 1, _id: 1 })
-        .lean(),
-      this.sessionModel
-        .findOne({
-          status: 'FINISHED',
-        })
-        .sort({ finishedAt: -1, _id: -1 })
-        .populate<{ userId: { username: string } }>('userId', 'username')
-        .lean<SessionWithUser>(),
-      this.sessionModel
-        .find({
-          status: 'FINISHED',
-        })
-        .sort({ finishedAt: 1, _id: 1 })
-        .populate<{ userId: { username: string } }>('userId', 'username')
-        .lean<SessionWithUser[]>(),
-    ]);
+    const [activeSession, latestFinished, finishedSessions] = await Promise.all(
+      [
+        this.sessionModel
+          .findOne({
+            status: 'ACTIVE',
+          })
+          .sort({ startedAt: 1, _id: 1 })
+          .lean(),
+        this.sessionModel
+          .findOne({
+            status: 'FINISHED',
+          })
+          .sort({ finishedAt: -1, _id: -1 })
+          .populate<{ userId: { username: string } }>('userId', 'username')
+          .lean<SessionWithUser>(),
+        this.sessionModel
+          .find({
+            status: 'FINISHED',
+          })
+          .sort({ finishedAt: 1, _id: 1 })
+          .populate<{ userId: { username: string } }>('userId', 'username')
+          .lean<SessionWithUser[]>(),
+      ],
+    );
 
     const sessionsWithFastestLaps = finishedSessions.filter(
       (session) => (session.telemetry?.fastestLapMs ?? 0) > 0,
     );
 
-    const fastestOverall = sessionsWithFastestLaps.reduce<
-      SessionWithUser | null
-    >((best, session) => {
-      if (!best) return session;
-      return session.telemetry.fastestLapMs < best.telemetry.fastestLapMs
-        ? session
-        : best;
-    }, null);
+    const fastestOverall =
+      sessionsWithFastestLaps.reduce<SessionWithUser | null>(
+        (best, session) => {
+          if (!best) return session;
+          return session.telemetry.fastestLapMs < best.telemetry.fastestLapMs
+            ? session
+            : best;
+        },
+        null,
+      );
 
     const fastestLapByCircuit = CircuitLibrary.map((circuit) => {
       const circuitFastest = sessionsWithFastestLaps
