@@ -5,6 +5,9 @@ export class User {
   @Prop({ unique: true, required: true })
   username: string;
 
+  @Prop()
+  drivername?: string;
+
   @Prop({ required: true, minLength: 6 })
   password: string;
 

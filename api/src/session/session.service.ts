@@ -14,8 +14,13 @@ type SessionWithUser = Session & {
   userId?: {
     _id?: Types.ObjectId;
     username?: string;
+    drivername?: string;
   };
 };
+
+function getDriverName(user?: { username?: string; drivername?: string }) {
+  return user?.drivername || user?.username || 'Unknown driver';
+}
 
 export function getValidSectorBreakdown(sectors?: number[]) {
   return sectors?.length === 3 ? sectors : [];
@@ -151,14 +156,20 @@ export class SessionService {
             status: 'FINISHED',
           })
           .sort({ finishedAt: -1, _id: -1 })
-          .populate<{ userId: { username: string } }>('userId', 'username')
+          .populate<{ userId: { username: string; drivername?: string } }>(
+            'userId',
+            'username drivername',
+          )
           .lean<SessionWithUser>(),
         this.sessionModel
           .find({
             status: 'FINISHED',
           })
           .sort({ finishedAt: 1, _id: 1 })
-          .populate<{ userId: { username: string } }>('userId', 'username')
+          .populate<{ userId: { username: string; drivername?: string } }>(
+            'userId',
+            'username drivername',
+          )
           .lean<SessionWithUser[]>(),
       ],
     );
@@ -197,7 +208,7 @@ export class SessionService {
         fastestLapSectorsMs: getValidSectorBreakdown(
           circuitFastest?.telemetry?.fastestLapSectorsMs,
         ),
-        driverName: circuitFastest?.userId?.username ?? null,
+        driverName: circuitFastest ? getDriverName(circuitFastest.userId) : null,
       };
     });
 
@@ -232,7 +243,7 @@ export class SessionService {
             circuitName: latestFinished.circuitName,
             circuitId: latestFinished.circuitId,
             image: latestSessionCircuit?.image ?? null,
-            driverName: latestFinished.userId?.username ?? 'Unknown driver',
+            driverName: getDriverName(latestFinished.userId),
             fastestLapMs: latestFinished.telemetry?.fastestLapMs ?? 0,
             topSpeedKmh: latestFinished.telemetry?.topSpeedKmh ?? 0,
             totalCleanLaps: latestFinished.telemetry?.totalCleanLaps ?? 0,
@@ -244,7 +255,7 @@ export class SessionService {
       fastestLapByCircuit,
       improvementTrend: fastestOverall
         ? {
-            driverName: fastestOverall.userId?.username ?? 'Unknown driver',
+            driverName: getDriverName(fastestOverall.userId),
             circuitId: fastestOverall.circuitId,
             circuitName: fastestOverall.circuitName,
             sessions: trendSessions.map((session, index) => ({

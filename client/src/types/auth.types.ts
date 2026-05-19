@@ -1,6 +1,7 @@
 export type AuthUser = {
   id: string;
   username: string;
+  drivername: string;
   isAdmin: boolean;
 };
 
