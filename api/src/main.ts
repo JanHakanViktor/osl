@@ -4,6 +4,7 @@ import { json } from 'express';
 import cookieSession from 'cookie-session';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
+import { isAllowedCorsOrigin } from './cors/cors-origin.guard';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -23,17 +24,7 @@ async function bootstrap(): Promise<void> {
 
   app.enableCors({
     origin: (origin, callback) => {
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      const allowedOrigins = ['https://osl-f1.com', 'https://www.osl-f1.com'];
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      if (origin.startsWith('http://localhost')) {
+      if (isAllowedCorsOrigin(origin)) {
         return callback(null, true);
       }
 
