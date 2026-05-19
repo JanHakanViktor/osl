@@ -14,8 +14,17 @@ type SessionWithUser = Session & {
   userId?: {
     _id?: Types.ObjectId;
     username?: string;
+    drivername?: string;
   };
 };
+
+function getDriverName(user?: { username?: string; drivername?: string }) {
+  return user?.drivername || user?.username || 'Unknown driver';
+}
+
+export function getValidSectorBreakdown(sectors?: number[]) {
+  return sectors?.length === 3 ? sectors : [];
+}
 
 @Injectable()
 export class SessionService {
@@ -115,6 +124,29 @@ export class SessionService {
     };
   }
 
+  async getLiveSession(sessionId: string, userId: string) {
+    const session = await this.sessionModel
+      .findOne({
+        _id: sessionId,
+        userId: new Types.ObjectId(userId),
+        status: 'ACTIVE',
+      })
+      .lean();
+
+    if (!session) {
+      throw new NotFoundException('Active session not found');
+    }
+
+    return {
+      id: session._id.toString(),
+      sessionName: session.sessionName,
+      circuitName: session.circuitName,
+      limitType: session.limitType,
+      lapLimit: session.lapLimit,
+      timeLimitSeconds: session.timeLimitSeconds,
+      startedAt: session.startedAt,
+    };
+  }
   async getSessionHistory(userId: string) {
     const sessions = await this.sessionModel
       .find({
@@ -147,14 +179,20 @@ export class SessionService {
             status: 'FINISHED',
           })
           .sort({ finishedAt: -1, _id: -1 })
-          .populate<{ userId: { username: string } }>('userId', 'username')
+          .populate<{ userId: { username: string; drivername?: string } }>(
+            'userId',
+            'username drivername',
+          )
           .lean<SessionWithUser>(),
         this.sessionModel
           .find({
             status: 'FINISHED',
           })
           .sort({ finishedAt: 1, _id: 1 })
-          .populate<{ userId: { username: string } }>('userId', 'username')
+          .populate<{ userId: { username: string; drivername?: string } }>(
+            'userId',
+            'username drivername',
+          )
           .lean<SessionWithUser[]>(),
       ],
     );
@@ -190,9 +228,10 @@ export class SessionService {
         circuitName: circuit.circuit,
         image: circuit.image,
         fastestLapMs: circuitFastest?.telemetry?.fastestLapMs ?? null,
-        fastestLapSectorsMs:
-          circuitFastest?.telemetry?.fastestLapSectorsMs ?? [],
-        driverName: circuitFastest?.userId?.username ?? null,
+        fastestLapSectorsMs: getValidSectorBreakdown(
+          circuitFastest?.telemetry?.fastestLapSectorsMs,
+        ),
+        driverName: circuitFastest ? getDriverName(circuitFastest.userId) : null,
       };
     });
 
@@ -227,7 +266,7 @@ export class SessionService {
             circuitName: latestFinished.circuitName,
             circuitId: latestFinished.circuitId,
             image: latestSessionCircuit?.image ?? null,
-            driverName: latestFinished.userId?.username ?? 'Unknown driver',
+            driverName: getDriverName(latestFinished.userId),
             fastestLapMs: latestFinished.telemetry?.fastestLapMs ?? 0,
             topSpeedKmh: latestFinished.telemetry?.topSpeedKmh ?? 0,
             totalCleanLaps: latestFinished.telemetry?.totalCleanLaps ?? 0,
@@ -239,7 +278,7 @@ export class SessionService {
       fastestLapByCircuit,
       improvementTrend: fastestOverall
         ? {
-            driverName: fastestOverall.userId?.username ?? 'Unknown driver',
+            driverName: getDriverName(fastestOverall.userId),
             circuitId: fastestOverall.circuitId,
             circuitName: fastestOverall.circuitName,
             sessions: trendSessions.map((session, index) => ({

@@ -1,5 +1,6 @@
 import type {
   LandingSummary,
+  LiveSessionDetails,
   SessionFormValues,
   SessionResponse,
 } from "../types/session.types";
@@ -56,6 +57,23 @@ export async function getSessionOverview(sessionId: string) {
 
   if (!res.ok) {
     throw new Error("Failed to fetch session overview");
+  }
+
+  return res.json();
+}
+
+export async function getLiveSessionDetails(
+  sessionId: string,
+): Promise<LiveSessionDetails> {
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL}/sessions/${sessionId}/live`,
+    {
+      credentials: "include",
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch live session");
   }
 
   return res.json();

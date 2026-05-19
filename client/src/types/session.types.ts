@@ -12,6 +12,16 @@ export type SessionResponse = {
   status: "CREATED" | "ACTIVE" | "FINISHED";
 };
 
+export type LiveSessionDetails = {
+  id: string;
+  sessionName: string;
+  circuitName: string;
+  limitType: "TIME" | "LAPS";
+  timeLimitSeconds?: number;
+  lapLimit?: number;
+  startedAt?: string;
+};
+
 export type LandingSummary = {
   activeSession: {
     id: string;

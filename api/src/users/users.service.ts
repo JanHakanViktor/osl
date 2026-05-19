@@ -12,7 +12,7 @@ import bcrypt from 'bcrypt';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async createUser(username: string, password: string) {
+  async createUser(username: string, password: string, drivername?: string) {
     const userExists = await this.userModel.findOne({ username });
 
     if (userExists) {
@@ -23,6 +23,7 @@ export class UsersService {
 
     return this.userModel.create({
       username,
+      drivername: drivername?.trim() || username,
       password: hashedPassword,
       isAdmin: false,
     });
@@ -42,5 +43,9 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async findSessionUser(userId: string) {
+    return this.userModel.findById(userId).select('username drivername isAdmin');
   }
 }

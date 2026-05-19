@@ -14,11 +14,13 @@ export class AuthController {
     const user = await this.usersService.createUser(
       body.username,
       body.password,
+      body.drivername,
     );
 
     const sessionUser: SessionUser = {
       id: user._id.toString(),
       username: user.username,
+      drivername: user.drivername || user.username,
       isAdmin: user.isAdmin,
     };
 
@@ -43,6 +45,7 @@ export class AuthController {
     const sessionUser: SessionUser = {
       id: user._id.toString(),
       username: user.username,
+      drivername: user.drivername || user.username,
       isAdmin: user.isAdmin,
     };
 
@@ -62,7 +65,25 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(AuthGuard)
-  me(@Req() req: Request): SessionUser {
-    return req.session!.user!;
+  async me(@Req() req: Request): Promise<SessionUser> {
+    const sessionUser = req.session!.user!;
+    const user = await this.usersService.findSessionUser(sessionUser.id);
+
+    if (!user) {
+      return {
+        ...sessionUser,
+        drivername: sessionUser.drivername || sessionUser.username,
+      };
+    }
+
+    const currentUser: SessionUser = {
+      id: user._id.toString(),
+      username: user.username,
+      drivername: user.drivername || user.username,
+      isAdmin: user.isAdmin,
+    };
+
+    req.session!.user = currentUser;
+    return currentUser;
   }
 }

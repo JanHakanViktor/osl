@@ -263,11 +263,19 @@ export class SessionTelemetryService {
     lapTime: number,
     sectors: number[],
   ): number[] {
-    const sector1 = sectors[0] ?? 0;
-    const sector2 = sectors[1] ?? 0;
+    const [sector1, sector2] = sectors;
+
+    if (!sector1 || !sector2) {
+      return [];
+    }
+
     const sector3 = lapTime - sector1 - sector2;
 
-    return [sector1, sector2, sector3].filter((sectorMs) => sectorMs > 0);
+    if (sector3 <= 0) {
+      return [];
+    }
+
+    return [sector1, sector2, sector3];
   }
 
   private findFastestHistoryLap(
