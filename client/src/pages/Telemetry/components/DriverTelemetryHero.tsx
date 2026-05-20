@@ -1,9 +1,8 @@
 import SensorsIcon from "@mui/icons-material/Sensors";
-import SpeedIcon from "@mui/icons-material/Speed";
 import { Box, Chip, LinearProgress, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { getOslAppShell } from "../../../theme";
-import { formatLapTime, formatSessionClock } from "../telemetryFormatters";
+import { formatSessionClock } from "../telemetryFormatters";
 import SpeedGearGauge from "./SpeedGearGauge";
 
 type DriverTelemetryHeroProps = {
@@ -14,7 +13,6 @@ type DriverTelemetryHeroProps = {
   gear?: number;
   throttle?: number;
   brake?: number;
-  currentLapMs?: number | null;
   sessionElapsedSeconds?: number | null;
 };
 
@@ -26,7 +24,6 @@ export default function DriverTelemetryHero({
   gear,
   throttle,
   brake,
-  currentLapMs,
   sessionElapsedSeconds,
 }: DriverTelemetryHeroProps) {
   const throttleValue = Math.round((throttle ?? 0) * 100);
@@ -116,24 +113,6 @@ export default function DriverTelemetryHero({
       </Stack>
 
       <Stack spacing={1.5}>
-        <Stack
-          direction="row"
-          spacing={1}
-          justifyContent="center"
-          alignItems="center"
-        >
-          <SpeedIcon sx={{ color: (theme) => getOslAppShell(theme).accent }} />
-          <Typography
-            sx={{
-              color: "text.secondary",
-              fontWeight: 900,
-              textTransform: "uppercase",
-            }}
-          >
-            Current lap {formatLapTime(currentLapMs)}
-          </Typography>
-        </Stack>
-
         <Stack
           direction={{ xs: "column", sm: "row" }}
           spacing={2}

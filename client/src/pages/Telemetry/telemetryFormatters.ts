@@ -1,5 +1,6 @@
 import type {
   CompletedLap,
+  FastestLapDeltaInput,
   LapData,
   LapHistoryEntry,
   SectorDisplay,
@@ -36,6 +37,30 @@ export function formatLapTime(ms?: number | null): string {
   return `${minutes}:${String(seconds).padStart(2, "0")}.${String(
     milliseconds,
   ).padStart(3, "0")}`;
+}
+
+export function formatSignedLapDelta(ms?: number | null): string | null {
+  if (ms == null || !Number.isFinite(ms) || ms === 0) return null;
+
+  const sign = ms > 0 ? "+" : "-";
+  return `${sign}${(Math.abs(ms) / 1000).toFixed(3)}`;
+}
+
+export function buildFastestLapDeltaLabel({
+  fastestLapMs,
+  previousFastestLapMs,
+  previousFastestDriverName,
+}: FastestLapDeltaInput): string | null {
+  if (
+    fastestLapMs == null ||
+    previousFastestLapMs == null ||
+    !previousFastestDriverName
+  ) {
+    return null;
+  }
+
+  const delta = formatSignedLapDelta(fastestLapMs - previousFastestLapMs);
+  return delta ? `(${delta} from ${previousFastestDriverName})` : null;
 }
 
 export function formatSessionClock(seconds?: number | null): string {
@@ -156,18 +181,48 @@ export function findFastestLap(laps: CompletedLap[]): CompletedLap | null {
   }, null);
 }
 
+export function calculateLapsRemaining(
+  lapTarget?: number | null,
+  currentLapNumber?: number | null,
+  completedLapCount = 0,
+): number | null {
+  if (lapTarget == null || !Number.isFinite(lapTarget) || lapTarget <= 0) {
+    return null;
+  }
+
+  const completedFromCurrentLap =
+    currentLapNumber != null && Number.isFinite(currentLapNumber)
+      ? Math.max(currentLapNumber - 1, 0)
+      : 0;
+  const completed = Math.max(completedFromCurrentLap, completedLapCount);
+
+  return Math.max(lapTarget - completed, 0);
+}
+
+export function calculateLapProgress(
+  lapDistance?: number | null,
+  trackLength?: number | null,
+): number | null {
+  if (
+    lapDistance == null ||
+    trackLength == null ||
+    !Number.isFinite(lapDistance) ||
+    !Number.isFinite(trackLength) ||
+    trackLength <= 0
+  ) {
+    return null;
+  }
+
+  const normalizedDistance = ((lapDistance % trackLength) + trackLength) % trackLength;
+  return normalizedDistance / trackLength;
+}
+
 export function buildSectorDisplays(
   currentSectors: Array<number | null>,
   completedLaps: CompletedLap[],
   fastestLap: CompletedLap | null,
 ): SectorDisplay[] {
-  const latestLap = completedLaps[completedLaps.length - 1] ?? null;
   const previousLap = completedLaps[completedLaps.length - 2] ?? null;
-  const latestSectors = [
-    latestLap?.sector1Ms ?? null,
-    latestLap?.sector2Ms ?? null,
-    latestLap?.sector3Ms ?? null,
-  ];
   const previousSectors = [
     previousLap?.sector1Ms ?? null,
     previousLap?.sector2Ms ?? null,
@@ -180,7 +235,7 @@ export function buildSectorDisplays(
   ];
 
   return (["S1", "S2", "S3"] as const).map((label, index) => {
-    const valueMs = currentSectors[index] ?? latestSectors[index] ?? null;
+    const valueMs = currentSectors[index] ?? null;
     const bestSector = bestSectors[index];
     const previousSector = previousSectors[index];
 

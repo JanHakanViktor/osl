@@ -124,7 +124,7 @@ export function useTelemetrySocket(
             : current.liveLaps,
           heldSector3Ms:
             completedLap?.sector3Ms ?? (hasHeldSector3 ? current.heldSector3Ms : null),
-          heldSector3Until: completedLap?.sector3Ms ? now + 5_000 : current.heldSector3Until,
+          heldSector3Until: completedLap?.sector3Ms ? now + 3_000 : current.heldSector3Until,
         };
       }),
     );

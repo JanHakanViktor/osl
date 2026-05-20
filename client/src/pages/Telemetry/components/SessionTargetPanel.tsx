@@ -5,24 +5,33 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { getOslAppShell } from "../../../theme";
 import { formatLapTime } from "../telemetryFormatters";
+import CircuitPositionMap from "./CircuitPositionMap";
 
 type SessionTargetPanelProps = {
+  currentLapMs?: number | null;
   fastestLapMs?: number | null;
+  fastestLapDeltaLabel?: string | null;
   remainingLabel: string;
   remainingValue: string;
   showTarget: boolean;
-  topSpeed?: number | null;
+  circuitName: string;
+  circuitImage?: string | null;
+  lapProgress?: number | null;
   finishDisabled: boolean;
   finishing: boolean;
   onFinishSession: () => void;
 };
 
 export default function SessionTargetPanel({
+  currentLapMs,
   fastestLapMs,
+  fastestLapDeltaLabel,
   remainingLabel,
   remainingValue,
   showTarget,
-  topSpeed,
+  circuitName,
+  circuitImage,
+  lapProgress,
   finishDisabled,
   finishing,
   onFinishSession,
@@ -48,7 +57,7 @@ export default function SessionTargetPanel({
               textTransform: "uppercase",
             }}
           >
-            Fastest Lap
+            Current Lap
           </Typography>
         </Stack>
         <Box
@@ -68,7 +77,7 @@ export default function SessionTargetPanel({
               lineHeight: 1,
             }}
           >
-            {formatLapTime(fastestLapMs)}
+            {formatLapTime(currentLapMs)}
           </Typography>
         </Box>
       </Box>
@@ -120,15 +129,54 @@ export default function SessionTargetPanel({
             {remainingValue}
           </Typography>
 
-          <Typography
-            sx={{
-              alignSelf: "flex-end",
-              color: "text.secondary",
-              fontWeight: 900,
-            }}
-          >
-            Top speed {topSpeed ?? "--"}
-          </Typography>
+          <Box sx={{ mt: 2 }}>
+            <Typography
+              sx={{
+                color: "text.secondary",
+                fontSize: "0.76rem",
+                fontWeight: 900,
+                textTransform: "uppercase",
+              }}
+            >
+              Fastest lap
+            </Typography>
+            <Stack
+              direction="row"
+              spacing={1}
+              flexWrap="wrap"
+              alignItems="baseline"
+              justifyContent="flex-end"
+            >
+              <Typography
+                sx={{
+                  fontFamily: "'Roboto Mono', monospace",
+                  fontSize: { xs: "1.7rem", md: "2.25rem" },
+                  fontWeight: 900,
+                  lineHeight: 1,
+                }}
+              >
+                {formatLapTime(fastestLapMs)}
+              </Typography>
+              {fastestLapDeltaLabel && (
+                <Typography
+                  sx={{
+                    color: (theme) => getOslAppShell(theme).accent,
+                    fontFamily: "'Roboto Mono', monospace",
+                    fontSize: "0.9rem",
+                    fontWeight: 900,
+                  }}
+                >
+                  {fastestLapDeltaLabel}
+                </Typography>
+              )}
+            </Stack>
+          </Box>
+
+          <CircuitPositionMap
+            circuitName={circuitName}
+            circuitImage={circuitImage}
+            progress={lapProgress}
+          />
         </Box>
       )}
 

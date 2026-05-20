@@ -50,6 +50,8 @@ export type LandingSummary = {
     fastestLapMs: number | null;
     fastestLapSectorsMs: number[];
     driverName: string | null;
+    previousFastestLapMs?: number | null;
+    previousFastestDriverName?: string | null;
   }>;
   improvementTrend: {
     driverName: string;
