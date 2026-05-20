@@ -4,6 +4,7 @@ import {
   buildSectorDisplays,
   calculateLapsRemaining,
   getLapDataSectors,
+  mergeCompletedLaps,
 } from "./telemetryFormatters";
 import type { CompletedLap } from "./telemetryTypes";
 
@@ -60,9 +61,15 @@ assert.equal(
   buildFastestLapDeltaLabel({
     fastestLapMs: 92_800,
     previousFastestLapMs: 93_000,
-    previousFastestDriverName: "Driver",
   }),
-  "(-0.200 from Driver)",
+  "(-0.200)",
+);
+
+assert.equal(
+  JSON.stringify(
+    mergeCompletedLaps([laps[0]], [laps[0], laps[1]]).map((lap) => lap.lapNumber),
+  ),
+  JSON.stringify([1, 2]),
 );
 
 assert.equal(

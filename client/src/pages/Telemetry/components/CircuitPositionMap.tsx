@@ -22,9 +22,10 @@ export default function CircuitPositionMap({
   const tracePath = buildSvgPolylinePoints(tracePoints);
   const traceViewBox = buildCircuitTraceViewBox(tracePoints);
   const currentPoint =
-    traceViewBox && tracePoints.length > 0
+    traceViewBox && tracePoints.length > 1
       ? mapWorldPositionToViewBox(tracePoints[tracePoints.length - 1], traceViewBox)
       : null;
+  const hasLiveTrace = tracePoints.length > 1 && Boolean(tracePath);
 
   return (
     <Box
@@ -60,7 +61,7 @@ export default function CircuitPositionMap({
           border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
         }}
       >
-        {circuitImage && (
+        {circuitImage && !hasLiveTrace && (
           <Box
             component="img"
             src={circuitImage}
@@ -89,7 +90,7 @@ export default function CircuitPositionMap({
             overflow: "visible",
           }}
         >
-          {tracePath && (
+          {hasLiveTrace && (
             <>
               <polyline
                 points={tracePath}
@@ -107,26 +108,39 @@ export default function CircuitPositionMap({
                 strokeLinejoin="round"
                 strokeWidth="3.8"
               />
+              {currentPoint && (
+                <circle
+                  cx={currentPoint.x}
+                  cy={currentPoint.y}
+                  r="4.2"
+                  fill="#ff3048"
+                  stroke="#fff"
+                  strokeWidth="1.7"
+                  style={{
+                    filter: "drop-shadow(0 0 8px rgba(255,48,72,0.9))",
+                    transition: "cx 180ms linear, cy 180ms linear",
+                  }}
+                />
+              )}
             </>
           )}
         </Box>
 
-        {currentPoint && (
-          <Box
+        {!hasLiveTrace && (
+          <Typography
             sx={{
               position: "absolute",
-              left: `${8 + currentPoint.x * 0.84}%`,
-              top: `${8 + currentPoint.y * 0.84}%`,
-              width: 14,
-              height: 14,
-              borderRadius: "50%",
-              backgroundColor: "#ff3048",
-              border: "2px solid #fff",
-              boxShadow: "0 0 18px rgba(255, 48, 72, 0.85)",
-              transform: "translate(-50%, -50%)",
-              transition: "left 180ms linear, top 180ms linear",
+              left: 16,
+              bottom: 14,
+              color: "text.secondary",
+              fontSize: "0.72rem",
+              fontWeight: 900,
+              letterSpacing: 0,
+              textTransform: "uppercase",
             }}
-          />
+          >
+            Collecting live circuit trace
+          </Typography>
         )}
       </Box>
     </Box>

@@ -49,18 +49,13 @@ export function formatSignedLapDelta(ms?: number | null): string | null {
 export function buildFastestLapDeltaLabel({
   fastestLapMs,
   previousFastestLapMs,
-  previousFastestDriverName,
 }: FastestLapDeltaInput): string | null {
-  if (
-    fastestLapMs == null ||
-    previousFastestLapMs == null ||
-    !previousFastestDriverName
-  ) {
+  if (fastestLapMs == null || previousFastestLapMs == null) {
     return null;
   }
 
   const delta = formatSignedLapDelta(fastestLapMs - previousFastestLapMs);
-  return delta ? `(${delta} from ${previousFastestDriverName})` : null;
+  return delta ? `(${delta})` : null;
 }
 
 export function formatSessionClock(seconds?: number | null): string {
@@ -187,6 +182,26 @@ export function findFastestLap(laps: CompletedLap[]): CompletedLap | null {
 
     return fastest;
   }, null);
+}
+
+export function mergeCompletedLaps(
+  historyLaps: CompletedLap[],
+  liveLaps: CompletedLap[],
+): CompletedLap[] {
+  const mergedByLap = new Map<number, CompletedLap>();
+
+  for (const lap of historyLaps) {
+    mergedByLap.set(lap.lapNumber, lap);
+  }
+
+  for (const lap of liveLaps) {
+    const existingLap = mergedByLap.get(lap.lapNumber);
+    if (!existingLap || existingLap.lapTimeMs == null) {
+      mergedByLap.set(lap.lapNumber, lap);
+    }
+  }
+
+  return [...mergedByLap.values()].sort((a, b) => a.lapNumber - b.lapNumber);
 }
 
 export function calculateLapsRemaining(

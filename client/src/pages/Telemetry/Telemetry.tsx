@@ -20,6 +20,7 @@ import {
   formatDuration,
   getLapDataSectors,
   mapHistoryLaps,
+  mergeCompletedLaps,
 } from "./telemetryFormatters";
 
 function getPlayerIndex(
@@ -109,7 +110,7 @@ export default function TelemetryPage() {
     return mapHistoryLaps(historyData ?? []);
   }, [playerSessionHistory]);
 
-  const completedLaps = historyLaps.length > 0 ? historyLaps : liveLaps;
+  const completedLaps = mergeCompletedLaps(historyLaps, liveLaps);
   const fastestCompletedLap = findFastestLap(completedLaps);
   const fastestLapMs = fastestCompletedLap?.lapTimeMs ?? bestLapMs;
   const previousFastestLap = fastestCompletedLap
@@ -120,7 +121,6 @@ export default function TelemetryPage() {
   const fastestLapDeltaLabel = buildFastestLapDeltaLabel({
     fastestLapMs,
     previousFastestLapMs: previousFastestLap?.lapTimeMs,
-    previousFastestDriverName: driverName,
   });
   const sectorDisplays = buildSectorDisplays(
     visibleSectors,
