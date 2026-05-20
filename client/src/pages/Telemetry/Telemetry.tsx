@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
 import { getOslAppShell } from "../../theme";
 import { useCurrentUser } from "../../components/auth/auth.queries";
+import CircuitLibrary from "../../data/circuit";
 import { finishSession, getLiveSessionDetails } from "../../service/session";
 import CompletedLapsList from "./components/CompletedLapsList";
 import DriverTelemetryHero from "./components/DriverTelemetryHero";
@@ -12,6 +13,9 @@ import SessionTargetPanel from "./components/SessionTargetPanel";
 import { useTelemetrySocket } from "./hooks/useTelemetrySocket";
 import {
   buildSectorDisplays,
+  buildFastestLapDeltaLabel,
+  calculateLapProgress,
+  calculateLapsRemaining,
   findFastestLap,
   firstFiniteNumber,
   formatDuration,
@@ -39,7 +43,6 @@ export default function TelemetryPage() {
     playerSessionHistory,
     liveLaps,
     heldSector3Ms,
-    topSpeed,
     sessionFinished,
   } = useTelemetrySocket();
   const { data: liveSession } = useQuery({
@@ -50,6 +53,10 @@ export default function TelemetryPage() {
   });
   const [finishingSession, setFinishingSession] = useState(false);
   const hasNavigatedToOverviewRef = useRef(false);
+  const driverName =
+    user?.drivername && user.drivername !== user.username
+      ? user.drivername
+      : "Driver";
 
   const playerIndex = useMemo(
     () =>
@@ -96,20 +103,31 @@ export default function TelemetryPage() {
   const completedLaps = historyLaps.length > 0 ? historyLaps : liveLaps;
   const fastestCompletedLap = findFastestLap(completedLaps);
   const fastestLapMs = fastestCompletedLap?.lapTimeMs ?? bestLapMs;
+  const previousFastestLap = fastestCompletedLap
+    ? findFastestLap(
+        completedLaps.filter((lap) => lap.lapNumber < fastestCompletedLap.lapNumber),
+      )
+    : null;
+  const fastestLapDeltaLabel = buildFastestLapDeltaLabel({
+    fastestLapMs,
+    previousFastestLapMs: previousFastestLap?.lapTimeMs,
+    previousFastestDriverName: driverName,
+  });
   const sectorDisplays = buildSectorDisplays(
     visibleSectors,
     completedLaps,
     fastestCompletedLap,
   );
   const sessionElapsedSeconds = session?.m_header?.m_sessionTime ?? null;
-  const completedLapCount =
-    currentLapNumber != null
-      ? Math.max(currentLapNumber - 1, completedLaps.length)
-      : completedLaps.length;
   const lapTarget =
     liveSession?.limitType === "LAPS"
       ? liveSession.lapLimit
       : session?.m_totalLaps;
+  const lapsRemaining = calculateLapsRemaining(
+    lapTarget,
+    currentLapNumber,
+    completedLaps.length,
+  );
   const remainingSeconds = firstFiniteNumber(
     session?.m_sessionTimeLeft,
     liveSession?.limitType === "TIME" &&
@@ -121,11 +139,11 @@ export default function TelemetryPage() {
         : null,
   );
   const target =
-    typeof lapTarget === "number" && lapTarget > 0
+    lapsRemaining != null
       ? {
           kind: "laps" as const,
           label: "Laps Remaining",
-          value: String(Math.max(lapTarget - completedLapCount, 0)),
+          value: String(lapsRemaining),
         }
       : liveSession?.limitType === "LAPS"
         ? {
@@ -169,10 +187,13 @@ export default function TelemetryPage() {
     }
   };
 
-  const driverName =
-    user?.drivername && user.drivername !== user.username
-      ? user.drivername
-      : "Driver";
+  const activeCircuit = CircuitLibrary.find(
+    (circuit) => circuit.circuit === liveSession?.circuitName,
+  );
+  const lapProgress = calculateLapProgress(
+    playerLap?.m_lapDistance,
+    session?.m_trackLength,
+  );
 
   return (
     <Box
@@ -207,15 +228,18 @@ export default function TelemetryPage() {
             gear={gear}
             throttle={throttle}
             brake={brake}
-            currentLapMs={currentLapMs}
             sessionElapsedSeconds={sessionElapsedSeconds}
           />
           <SessionTargetPanel
+            currentLapMs={currentLapMs}
             fastestLapMs={fastestLapMs}
+            fastestLapDeltaLabel={fastestLapDeltaLabel}
             remainingLabel={target.label}
             remainingValue={target.value}
             showTarget={showTargetPanel}
-            topSpeed={topSpeed}
+            circuitName={liveSession?.circuitName ?? "Selected circuit"}
+            circuitImage={activeCircuit?.image}
+            lapProgress={lapProgress}
             finishDisabled={!sessionId}
             finishing={finishingSession}
             onFinishSession={handleFinishSession}

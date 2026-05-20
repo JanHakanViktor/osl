@@ -21,6 +21,8 @@ export type LapData = {
   m_lastLapTimeInMs?: number;
   m_currentLapTimeInMS?: number;
   m_currentLapTimeInMs?: number;
+  m_lapDistance?: number;
+  m_totalDistance?: number;
   m_sector1TimeMSPart?: number;
   m_sector1TimeMsPart?: number;
   m_sector1TimeMinutesPart?: number;
@@ -43,6 +45,7 @@ export type SessionPacket = {
   m_totalLaps?: number;
   m_sessionDuration?: number;
   m_sessionTimeLeft?: number;
+  m_trackLength?: number;
 };
 
 export type LapHistoryEntry = {
@@ -89,4 +92,10 @@ export type CompletedLap = {
   sector3Ms: number | null;
   lapTimeMs: number | null;
   valid: boolean;
+};
+
+export type FastestLapDeltaInput = {
+  fastestLapMs?: number | null;
+  previousFastestLapMs?: number | null;
+  previousFastestDriverName?: string | null;
 };

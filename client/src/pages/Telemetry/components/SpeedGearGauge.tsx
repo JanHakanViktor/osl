@@ -12,7 +12,7 @@ const maxDisplaySpeed = 360;
 export default function SpeedGearGauge({ speed, gear }: SpeedGearGaugeProps) {
   const normalizedSpeed =
     typeof speed === "number" ? Math.min(Math.max(speed / maxDisplaySpeed, 0), 1) : 0;
-  const rotation = 150 + normalizedSpeed * 240;
+  const arcDegrees = Math.max(normalizedSpeed * 240, 8);
   const speedLabel = speed ?? "--";
   const gearLabel = gear ?? "--";
 
@@ -31,20 +31,28 @@ export default function SpeedGearGauge({ speed, gear }: SpeedGearGaugeProps) {
           position: "absolute",
           inset: "5%",
           borderRadius: "50%",
-          background: (theme) =>
-            `conic-gradient(from 210deg, ${getOslAppShell(theme).accent} 0deg, ${
-              getOslAppShell(theme).warningAccent
-            } ${Math.max(normalizedSpeed * 240, 8)}deg, ${alpha(
-              theme.palette.common.white,
-              0.1,
-            )} ${Math.max(normalizedSpeed * 240, 8)}deg, ${alpha(
-              theme.palette.common.white,
-              0.1,
-            )} 240deg, transparent 240deg)`,
+          background: (theme) => {
+            const shell = getOslAppShell(theme);
+            return [
+              `repeating-conic-gradient(from 210deg, ${alpha(
+                theme.palette.common.white,
+                0.52,
+              )} 0deg 1.4deg, transparent 1.4deg 10deg)`,
+              `conic-gradient(from 210deg, ${shell.accent} 0deg, ${
+                shell.warningAccent
+              } ${arcDegrees}deg, ${alpha(
+                theme.palette.common.white,
+                0.12,
+              )} ${arcDegrees}deg, ${alpha(
+                theme.palette.common.white,
+                0.12,
+              )} 240deg, transparent 240deg)`,
+            ].join(", ");
+          },
           mask:
-            "radial-gradient(circle, transparent 0 56%, #000 57% 70%, transparent 71%)",
+            "radial-gradient(circle, transparent 0 52%, #000 53% 67%, transparent 68%)",
           WebkitMask:
-            "radial-gradient(circle, transparent 0 56%, #000 57% 70%, transparent 71%)",
+            "radial-gradient(circle, transparent 0 52%, #000 53% 67%, transparent 68%)",
           filter: (theme) =>
             `drop-shadow(0 0 28px ${alpha(getOslAppShell(theme).accent, 0.34)})`,
         }}
@@ -53,26 +61,18 @@ export default function SpeedGearGauge({ speed, gear }: SpeedGearGaugeProps) {
       <Box
         sx={{
           position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: "36%",
-          height: 4,
-          borderRadius: 999,
-          background: (theme) => theme.palette.text.primary,
-          transformOrigin: "0 50%",
-          transform: `rotate(${rotation}deg)`,
-          boxShadow: "0 0 18px rgba(255, 255, 255, 0.36)",
-        }}
-      />
-
-      <Box
-        sx={{
-          position: "absolute",
-          width: 18,
-          height: 18,
+          inset: "12%",
           borderRadius: "50%",
-          backgroundColor: "text.primary",
-          boxShadow: "0 0 22px rgba(255, 255, 255, 0.42)",
+          border: (theme) =>
+            `1px solid ${alpha(theme.palette.common.white, 0.14)}`,
+          boxShadow: (theme) =>
+            `inset 0 0 34px ${alpha(theme.palette.common.black, 0.24)}`,
+          mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          WebkitMask:
+            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          maskComposite: "exclude",
+          WebkitMaskComposite: "xor",
+          p: 1.25,
         }}
       />
 

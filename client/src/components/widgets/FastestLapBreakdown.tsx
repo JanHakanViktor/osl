@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Box, Button, Chip, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import TimerIcon from "@mui/icons-material/Timer";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
@@ -7,6 +7,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CircuitLibrary from "../../data/circuit";
 import { getOslAppShell } from "../../theme";
 import type { LandingSummary } from "../../types/session.types";
+import { buildFastestLapDeltaLabel } from "../../pages/Telemetry/telemetryFormatters";
 
 type CircuitLap = LandingSummary["fastestLapByCircuit"][number];
 
@@ -32,12 +33,19 @@ const fallbackCircuits: CircuitLap[] = CircuitLibrary.map((circuit) => ({
   fastestLapMs: null,
   fastestLapSectorsMs: [],
   driverName: null,
+  previousFastestLapMs: null,
+  previousFastestDriverName: null,
 }));
 
 const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const slides = circuits.length > 0 ? circuits : fallbackCircuits;
   const activeCircuit = slides[activeIndex] ?? slides[0];
+  const fastestLapDeltaLabel = buildFastestLapDeltaLabel({
+    fastestLapMs: activeCircuit?.fastestLapMs,
+    previousFastestLapMs: activeCircuit?.previousFastestLapMs,
+    previousFastestDriverName: activeCircuit?.previousFastestDriverName,
+  });
 
   const sectorTimes = useMemo(() => {
     if (!activeCircuit?.fastestLapMs) {
@@ -125,13 +133,18 @@ const FastestLapBreakdown = ({ circuits }: { circuits: CircuitLap[] }) => {
           >
             {formatMs(activeCircuit?.fastestLapMs ?? null)}
           </Typography>
-          {activeCircuit?.fastestLapMs && (
-            <Chip
-              label="Recorded"
-              size="small"
-              color="success"
-              sx={{ color: "common.white", fontWeight: 800, mb: 0.5 }}
-            />
+          {fastestLapDeltaLabel && (
+            <Typography
+              sx={{
+                color: (theme) => getOslAppShell(theme).accent,
+                fontFamily: "'Roboto Mono', monospace",
+                fontSize: "0.95rem",
+                fontWeight: 900,
+                mb: 0.45,
+              }}
+            >
+              {fastestLapDeltaLabel}
+            </Typography>
           )}
         </Stack>
       </Box>
