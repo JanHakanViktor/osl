@@ -114,6 +114,10 @@ export function getLapDataSectors(lap?: LapData | null): [
   number | null,
 ] {
   if (!lap) return [null, null, null];
+  const activeSector =
+    typeof lap.m_sector === "number" && Number.isFinite(lap.m_sector)
+      ? lap.m_sector
+      : null;
 
   const sector1 = combineSectorMs(
     lap.m_sector1TimeMinutesPart,
@@ -124,7 +128,11 @@ export function getLapDataSectors(lap?: LapData | null): [
     firstFiniteNumber(lap.m_sector2TimeMSPart, lap.m_sector2TimeMsPart),
   );
 
-  return [sector1, sector2, null];
+  return [
+    activeSector == null || activeSector >= 1 ? sector1 : null,
+    activeSector == null || activeSector >= 2 ? sector2 : null,
+    null,
+  ];
 }
 
 export function mapHistoryLaps(entries: LapHistoryEntry[] = []): CompletedLap[] {

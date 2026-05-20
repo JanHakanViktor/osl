@@ -3,6 +3,7 @@ import {
   buildFastestLapDeltaLabel,
   buildSectorDisplays,
   calculateLapsRemaining,
+  getLapDataSectors,
 } from "./telemetryFormatters";
 import type { CompletedLap } from "./telemetryTypes";
 
@@ -28,6 +29,32 @@ const laps: CompletedLap[] = [
 assert.equal(calculateLapsRemaining(5, 2, 1), 4);
 assert.equal(calculateLapsRemaining(5, null, 3), 2);
 assert.equal(calculateLapsRemaining(null, 2, 1), null);
+
+assert.equal(
+  JSON.stringify(
+    getLapDataSectors({
+      m_sector: 0,
+      m_sector1TimeMSPart: 31_000,
+      m_sector1TimeMinutesPart: 0,
+      m_sector2TimeMSPart: 32_000,
+      m_sector2TimeMinutesPart: 0,
+    }),
+  ),
+  JSON.stringify([null, null, null]),
+);
+
+assert.equal(
+  JSON.stringify(
+    getLapDataSectors({
+      m_sector: 1,
+      m_sector1TimeMSPart: 31_000,
+      m_sector1TimeMinutesPart: 0,
+      m_sector2TimeMSPart: 32_000,
+      m_sector2TimeMinutesPart: 0,
+    }),
+  ),
+  JSON.stringify([31_000, null, null]),
+);
 
 assert.equal(
   buildFastestLapDeltaLabel({

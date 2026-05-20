@@ -14,7 +14,6 @@ import { useTelemetrySocket } from "./hooks/useTelemetrySocket";
 import {
   buildSectorDisplays,
   buildFastestLapDeltaLabel,
-  calculateLapProgress,
   calculateLapsRemaining,
   findFastestLap,
   firstFiniteNumber,
@@ -26,9 +25,16 @@ import {
 function getPlayerIndex(
   lapDataPlayerIndex?: number,
   telemetryPlayerIndex?: number,
+  motionPlayerIndex?: number,
   sessionPlayerIndex?: number,
 ): number {
-  return lapDataPlayerIndex ?? telemetryPlayerIndex ?? sessionPlayerIndex ?? 0;
+  return (
+    lapDataPlayerIndex ??
+    telemetryPlayerIndex ??
+    motionPlayerIndex ??
+    sessionPlayerIndex ??
+    0
+  );
 }
 
 export default function TelemetryPage() {
@@ -38,10 +44,12 @@ export default function TelemetryPage() {
   const {
     connected,
     carTelemetry,
+    motion,
     lapData,
     session,
     playerSessionHistory,
     liveLaps,
+    circuitTracePoints,
     heldSector3Ms,
     sessionFinished,
   } = useTelemetrySocket();
@@ -63,9 +71,10 @@ export default function TelemetryPage() {
       getPlayerIndex(
         lapData?.m_header?.m_playerCarIndex,
         carTelemetry?.m_header?.m_playerCarIndex,
+        motion?.m_header?.m_playerCarIndex,
         session?.m_header?.m_playerCarIndex,
       ),
-    [carTelemetry, lapData, session],
+    [carTelemetry, lapData, motion, session],
   );
 
   const playerLap = lapData?.m_lapData?.[playerIndex] ?? null;
@@ -190,10 +199,6 @@ export default function TelemetryPage() {
   const activeCircuit = CircuitLibrary.find(
     (circuit) => circuit.circuit === liveSession?.circuitName,
   );
-  const lapProgress = calculateLapProgress(
-    playerLap?.m_lapDistance,
-    session?.m_trackLength,
-  );
 
   return (
     <Box
@@ -239,7 +244,7 @@ export default function TelemetryPage() {
             showTarget={showTargetPanel}
             circuitName={liveSession?.circuitName ?? "Selected circuit"}
             circuitImage={activeCircuit?.image}
-            lapProgress={lapProgress}
+            tracePoints={circuitTracePoints}
             finishDisabled={!sessionId}
             finishing={finishingSession}
             onFinishSession={handleFinishSession}

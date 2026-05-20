@@ -1,32 +1,30 @@
 import { Box, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { getOslAppShell } from "../../../theme";
+import {
+  buildCircuitTraceViewBox,
+  buildSvgPolylinePoints,
+  mapWorldPositionToViewBox,
+} from "../circuitTrace";
+import type { CircuitTracePoint } from "../telemetryTypes";
 
 type CircuitPositionMapProps = {
   circuitName: string;
   circuitImage?: string | null;
-  progress?: number | null;
+  tracePoints: CircuitTracePoint[];
 };
-
-function getMarkerPosition(progress?: number | null) {
-  const normalized =
-    progress == null || !Number.isFinite(progress)
-      ? 0
-      : Math.min(Math.max(progress, 0), 1);
-  const angle = normalized * Math.PI * 2 - Math.PI / 2;
-
-  return {
-    left: `${50 + Math.cos(angle) * 35}%`,
-    top: `${50 + Math.sin(angle) * 31}%`,
-  };
-}
 
 export default function CircuitPositionMap({
   circuitName,
   circuitImage,
-  progress,
+  tracePoints,
 }: CircuitPositionMapProps) {
-  const markerPosition = getMarkerPosition(progress);
+  const tracePath = buildSvgPolylinePoints(tracePoints);
+  const traceViewBox = buildCircuitTraceViewBox(tracePoints);
+  const currentPoint =
+    traceViewBox && tracePoints.length > 0
+      ? mapWorldPositionToViewBox(tracePoints[tracePoints.length - 1], traceViewBox)
+      : null;
 
   return (
     <Box
@@ -80,30 +78,56 @@ export default function CircuitPositionMap({
         )}
 
         <Box
+          component="svg"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="xMidYMid meet"
           sx={{
             position: "absolute",
-            inset: "16%",
-            borderRadius: "50%",
-            border: (theme) =>
-              `1px dashed ${alpha(theme.palette.common.white, 0.18)}`,
+            inset: "8%",
+            width: "84%",
+            height: "84%",
+            overflow: "visible",
           }}
-        />
+        >
+          {tracePath && (
+            <>
+              <polyline
+                points={tracePath}
+                fill="none"
+                stroke="rgba(255,255,255,0.22)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="8"
+              />
+              <polyline
+                points={tracePath}
+                fill="none"
+                stroke="rgba(255,255,255,0.76)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="3.8"
+              />
+            </>
+          )}
+        </Box>
 
-        <Box
-          sx={{
-            position: "absolute",
-            left: markerPosition.left,
-            top: markerPosition.top,
-            width: 14,
-            height: 14,
-            borderRadius: "50%",
-            backgroundColor: "#ff3048",
-            border: "2px solid #fff",
-            boxShadow: "0 0 18px rgba(255, 48, 72, 0.85)",
-            transform: "translate(-50%, -50%)",
-            transition: "left 360ms ease, top 360ms ease",
-          }}
-        />
+        {currentPoint && (
+          <Box
+            sx={{
+              position: "absolute",
+              left: `${8 + currentPoint.x * 0.84}%`,
+              top: `${8 + currentPoint.y * 0.84}%`,
+              width: 14,
+              height: 14,
+              borderRadius: "50%",
+              backgroundColor: "#ff3048",
+              border: "2px solid #fff",
+              boxShadow: "0 0 18px rgba(255, 48, 72, 0.85)",
+              transform: "translate(-50%, -50%)",
+              transition: "left 180ms linear, top 180ms linear",
+            }}
+          />
+        )}
       </Box>
     </Box>
   );
