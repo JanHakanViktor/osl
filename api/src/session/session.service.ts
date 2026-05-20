@@ -18,12 +18,51 @@ type SessionWithUser = Session & {
   };
 };
 
+type FastestLapSession = {
+  telemetry?: {
+    fastestLapMs?: number;
+  };
+  userId?: {
+    username?: string;
+    drivername?: string;
+  };
+};
+
 function getDriverName(user?: { username?: string; drivername?: string }) {
   return user?.drivername || user?.username || 'Unknown driver';
 }
 
 export function getValidSectorBreakdown(sectors?: number[]) {
   return sectors?.length === 3 ? sectors : [];
+}
+
+export function getFastestLapRecord<TSession extends FastestLapSession>(
+  sessions: TSession[],
+) {
+  let fastest: TSession | null = null;
+  let previousFastest: TSession | null = null;
+
+  for (const session of sessions) {
+    const lapTime = session.telemetry?.fastestLapMs ?? 0;
+    const fastestTime = fastest?.telemetry?.fastestLapMs ?? 0;
+
+    if (lapTime <= 0) continue;
+
+    if (!fastest || fastestTime <= 0 || lapTime < fastestTime) {
+      previousFastest = fastest;
+      fastest = session;
+    }
+  }
+
+  if (!fastest) return null;
+
+  return {
+    fastest,
+    previousFastest,
+    previousFastestDriverName: previousFastest
+      ? getDriverName(previousFastest.userId)
+      : null,
+  };
 }
 
 @Injectable()
@@ -213,14 +252,13 @@ export class SessionService {
       );
 
     const fastestLapByCircuit = CircuitLibrary.map((circuit) => {
-      const circuitFastest = sessionsWithFastestLaps
-        .filter((session) => session.circuitId === Number(circuit.trackId))
-        .reduce<SessionWithUser | null>((best, session) => {
-          if (!best) return session;
-          return session.telemetry.fastestLapMs < best.telemetry.fastestLapMs
-            ? session
-            : best;
-        }, null);
+      const fastestLapRecord = getFastestLapRecord(
+        sessionsWithFastestLaps.filter(
+          (session) => session.circuitId === Number(circuit.trackId),
+        ),
+      );
+      const circuitFastest = fastestLapRecord?.fastest ?? null;
+      const previousFastest = fastestLapRecord?.previousFastest ?? null;
 
       return {
         circuitId: Number(circuit.trackId),
@@ -232,6 +270,10 @@ export class SessionService {
           circuitFastest?.telemetry?.fastestLapSectorsMs,
         ),
         driverName: circuitFastest ? getDriverName(circuitFastest.userId) : null,
+        previousFastestLapMs:
+          previousFastest?.telemetry?.fastestLapMs ?? null,
+        previousFastestDriverName:
+          fastestLapRecord?.previousFastestDriverName ?? null,
       };
     });
 
