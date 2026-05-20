@@ -49,17 +49,6 @@ export type SessionPacket = {
   m_trackLength?: number;
 };
 
-export type CarMotionData = {
-  m_worldPositionX?: number;
-  m_worldPositionY?: number;
-  m_worldPositionZ?: number;
-};
-
-export type MotionPacket = {
-  m_header?: PacketHeader;
-  m_carMotionData?: CarMotionData[];
-};
-
 export type LapHistoryEntry = {
   m_lapTimeInMS?: number;
   m_lapTimeInMs?: number;
@@ -110,9 +99,4 @@ export type FastestLapDeltaInput = {
   fastestLapMs?: number | null;
   previousFastestLapMs?: number | null;
   previousFastestDriverName?: string | null;
-};
-
-export type CircuitTracePoint = {
-  x: number;
-  z: number;
 };

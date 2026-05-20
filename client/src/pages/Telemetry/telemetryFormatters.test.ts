@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   buildFastestLapDeltaLabel,
   buildSectorDisplays,
+  calculateLapProgress,
   calculateLapsRemaining,
   getLapDataSectors,
   mergeCompletedLaps,
@@ -30,6 +31,9 @@ const laps: CompletedLap[] = [
 assert.equal(calculateLapsRemaining(5, 2, 1), 4);
 assert.equal(calculateLapsRemaining(5, null, 3), 2);
 assert.equal(calculateLapsRemaining(null, 2, 1), null);
+assert.equal(calculateLapProgress(0, 5_000), 0);
+assert.equal(calculateLapProgress(1_250, 5_000), 0.25);
+assert.equal(calculateLapProgress(5_250, 5_000), 0.05);
 
 assert.equal(
   JSON.stringify(

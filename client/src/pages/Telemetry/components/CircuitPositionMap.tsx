@@ -2,30 +2,23 @@ import { Box, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { getOslAppShell } from "../../../theme";
 import {
-  buildCircuitTraceViewBox,
-  buildSvgPolylinePoints,
-  mapWorldPositionToViewBox,
-} from "../circuitTrace";
-import type { CircuitTracePoint } from "../telemetryTypes";
+  buildCircuitPolylinePoints,
+  getCircuitLayout,
+  getPointAtCircuitProgress,
+} from "../circuitLayouts";
 
 type CircuitPositionMapProps = {
   circuitName: string;
-  circuitImage?: string | null;
-  tracePoints: CircuitTracePoint[];
+  lapProgress?: number | null;
 };
 
 export default function CircuitPositionMap({
   circuitName,
-  circuitImage,
-  tracePoints,
+  lapProgress,
 }: CircuitPositionMapProps) {
-  const tracePath = buildSvgPolylinePoints(tracePoints);
-  const traceViewBox = buildCircuitTraceViewBox(tracePoints);
-  const currentPoint =
-    traceViewBox && tracePoints.length > 1
-      ? mapWorldPositionToViewBox(tracePoints[tracePoints.length - 1], traceViewBox)
-      : null;
-  const hasLiveTrace = tracePoints.length > 1 && Boolean(tracePath);
+  const layout = getCircuitLayout(circuitName);
+  const circuitPath = buildCircuitPolylinePoints(layout.points);
+  const currentPoint = getPointAtCircuitProgress(layout.points, lapProgress);
 
   return (
     <Box
@@ -61,23 +54,6 @@ export default function CircuitPositionMap({
           border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
         }}
       >
-        {circuitImage && !hasLiveTrace && (
-          <Box
-            component="img"
-            src={circuitImage}
-            alt=""
-            sx={{
-              position: "absolute",
-              inset: "12%",
-              width: "76%",
-              height: "76%",
-              objectFit: "contain",
-              opacity: 0.66,
-              filter: "drop-shadow(0 14px 22px rgba(0, 0, 0, 0.42))",
-            }}
-          />
-        )}
-
         <Box
           component="svg"
           viewBox="0 0 100 100"
@@ -90,58 +66,43 @@ export default function CircuitPositionMap({
             overflow: "visible",
           }}
         >
-          {hasLiveTrace && (
-            <>
-              <polyline
-                points={tracePath}
-                fill="none"
-                stroke="rgba(255,255,255,0.22)"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="8"
-              />
-              <polyline
-                points={tracePath}
-                fill="none"
-                stroke="rgba(255,255,255,0.76)"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="3.8"
-              />
-              {currentPoint && (
-                <circle
-                  cx={currentPoint.x}
-                  cy={currentPoint.y}
-                  r="4.2"
-                  fill="#ff3048"
-                  stroke="#fff"
-                  strokeWidth="1.7"
-                  style={{
-                    filter: "drop-shadow(0 0 8px rgba(255,48,72,0.9))",
-                    transition: "cx 180ms linear, cy 180ms linear",
-                  }}
-                />
-              )}
-            </>
-          )}
-        </Box>
-
-        {!hasLiveTrace && (
-          <Typography
-            sx={{
-              position: "absolute",
-              left: 16,
-              bottom: 14,
-              color: "text.secondary",
-              fontSize: "0.72rem",
-              fontWeight: 900,
-              letterSpacing: 0,
-              textTransform: "uppercase",
+          <polyline
+            points={circuitPath}
+            fill="none"
+            stroke="rgba(255,255,255,0.2)"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="8.5"
+          />
+          <polyline
+            points={circuitPath}
+            fill="none"
+            stroke="rgba(255,255,255,0.84)"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="4"
+          />
+          <polyline
+            points={circuitPath}
+            fill="none"
+            stroke="rgba(12,16,26,0.55)"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.6"
+          />
+          <circle
+            cx={currentPoint.x}
+            cy={currentPoint.y}
+            r="4.2"
+            fill="#ff3048"
+            stroke="#fff"
+            strokeWidth="1.7"
+            style={{
+              filter: "drop-shadow(0 0 8px rgba(255,48,72,0.9))",
+              transition: "cx 180ms linear, cy 180ms linear",
             }}
-          >
-            Collecting live circuit trace
-          </Typography>
-        )}
+          />
+        </Box>
       </Box>
     </Box>
   );

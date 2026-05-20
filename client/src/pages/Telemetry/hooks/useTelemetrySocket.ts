@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import type {
   CarTelemetryPacket,
-  CircuitTracePoint,
   CompletedLap,
   LapDataPacket,
-  MotionPacket,
   SessionFinishedPayload,
   SessionHistoryPacket,
   SessionPacket,
@@ -15,13 +13,11 @@ import { firstFiniteNumber, getLapDataSectors } from "../telemetryFormatters";
 type TelemetrySocketState = {
   connected: boolean;
   carTelemetry: CarTelemetryPacket | null;
-  motion: MotionPacket | null;
   lapData: LapDataPacket | null;
   session: SessionPacket | null;
   sessionHistory: SessionHistoryPacket | null;
   playerSessionHistory: SessionHistoryPacket | null;
   liveLaps: CompletedLap[];
-  circuitTracePoints: CircuitTracePoint[];
   heldSector3Ms: number | null;
   heldSector3Until: number | null;
   topSpeed: number | null;
@@ -31,54 +27,16 @@ type TelemetrySocketState = {
 const defaultSocketState: TelemetrySocketState = {
   connected: false,
   carTelemetry: null,
-  motion: null,
   lapData: null,
   session: null,
   sessionHistory: null,
   playerSessionHistory: null,
   liveLaps: [],
-  circuitTracePoints: [],
   heldSector3Ms: null,
   heldSector3Until: null,
   topSpeed: null,
   sessionFinished: null,
 };
-
-function readPlayerWorldPosition(packet: MotionPacket): CircuitTracePoint | null {
-  const playerIndex = packet.m_header?.m_playerCarIndex ?? 0;
-  const motion = packet.m_carMotionData?.[playerIndex];
-
-  if (
-    typeof motion?.m_worldPositionX !== "number" ||
-    typeof motion.m_worldPositionZ !== "number" ||
-    !Number.isFinite(motion.m_worldPositionX) ||
-    !Number.isFinite(motion.m_worldPositionZ)
-  ) {
-    return null;
-  }
-
-  return {
-    x: motion.m_worldPositionX,
-    z: motion.m_worldPositionZ,
-  };
-}
-
-function appendTracePoint(
-  points: CircuitTracePoint[],
-  nextPoint: CircuitTracePoint | null,
-) {
-  if (!nextPoint) return points;
-
-  const latestPoint = points[points.length - 1];
-  if (
-    latestPoint &&
-    Math.hypot(latestPoint.x - nextPoint.x, latestPoint.z - nextPoint.z) < 1
-  ) {
-    return points;
-  }
-
-  return [...points, nextPoint].slice(-900);
-}
 
 function readCompletedLap(
   liveLaps: CompletedLap[],
@@ -149,16 +107,6 @@ export function useTelemetrySocket(
             : current.topSpeed,
       }));
     });
-    socket.on("motion", (packet: MotionPacket) =>
-      setState((current) => ({
-        ...current,
-        motion: packet,
-        circuitTracePoints: appendTracePoint(
-          current.circuitTracePoints,
-          readPlayerWorldPosition(packet),
-        ),
-      })),
-    );
     socket.on("lapData", (packet: LapDataPacket) =>
       setState((current) => {
         const completedLap = readCompletedLap(current.liveLaps, packet);

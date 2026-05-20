@@ -5,7 +5,6 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { getOslAppShell } from "../../../theme";
 import { formatLapTime } from "../telemetryFormatters";
-import type { CircuitTracePoint } from "../telemetryTypes";
 import CircuitPositionMap from "./CircuitPositionMap";
 
 type SessionTargetPanelProps = {
@@ -16,8 +15,7 @@ type SessionTargetPanelProps = {
   remainingValue: string;
   showTarget: boolean;
   circuitName: string;
-  circuitImage?: string | null;
-  tracePoints: CircuitTracePoint[];
+  lapProgress?: number | null;
   finishDisabled: boolean;
   finishing: boolean;
   onFinishSession: () => void;
@@ -31,8 +29,7 @@ export default function SessionTargetPanel({
   remainingValue,
   showTarget,
   circuitName,
-  circuitImage,
-  tracePoints,
+  lapProgress,
   finishDisabled,
   finishing,
   onFinishSession,
@@ -175,8 +172,7 @@ export default function SessionTargetPanel({
 
           <CircuitPositionMap
             circuitName={circuitName}
-            circuitImage={circuitImage}
-            tracePoints={tracePoints}
+            lapProgress={lapProgress}
           />
         </Box>
       )}
