@@ -1,15 +1,45 @@
+import { CIRCUIT_GEO_LAYOUTS } from "./circuitGeoData";
+
 export type CircuitLayoutPoint = {
   x: number;
   y: number;
 };
 
+export type CircuitMarkerKind = "startFinish" | "drs";
+
+export type CircuitMarker = {
+  kind: CircuitMarkerKind;
+  label: string;
+  progress: number;
+};
+
+export type CircuitMarkerLine = {
+  start: CircuitLayoutPoint;
+  end: CircuitLayoutPoint;
+};
+
 export type CircuitLayout = {
   circuitName: string;
   points: CircuitLayoutPoint[];
+  source: "fallback" | "geojson";
+  markers: CircuitMarker[];
 };
+
+const startFinishMarker: CircuitMarker = {
+  kind: "startFinish",
+  label: "S/F",
+  progress: 0,
+};
+
+const circuitGeoLayouts: Record<
+  string,
+  readonly (readonly [number, number])[]
+> = CIRCUIT_GEO_LAYOUTS;
 
 const fallbackCircuitLayout: CircuitLayout = {
   circuitName: "Selected circuit",
+  source: "fallback",
+  markers: [startFinishMarker],
   points: [
     { x: 18, y: 55 },
     { x: 26, y: 38 },
@@ -21,35 +51,6 @@ const fallbackCircuitLayout: CircuitLayout = {
     { x: 28, y: 72 },
     { x: 18, y: 55 },
   ],
-};
-
-const circuitLayoutsByName: Record<string, CircuitLayout> = {
-  "Albert Park Circuit": {
-    circuitName: "Albert Park Circuit",
-    points: [
-      { x: 15, y: 58 },
-      { x: 23, y: 48 },
-      { x: 33, y: 43 },
-      { x: 45, y: 51 },
-      { x: 55, y: 62 },
-      { x: 67, y: 64 },
-      { x: 78, y: 56 },
-      { x: 83, y: 44 },
-      { x: 76, y: 34 },
-      { x: 65, y: 29 },
-      { x: 58, y: 18 },
-      { x: 48, y: 12 },
-      { x: 42, y: 18 },
-      { x: 48, y: 30 },
-      { x: 60, y: 39 },
-      { x: 54, y: 50 },
-      { x: 43, y: 47 },
-      { x: 32, y: 39 },
-      { x: 23, y: 44 },
-      { x: 16, y: 52 },
-      { x: 15, y: 58 },
-    ],
-  },
 };
 
 function normalizeProgress(progress: number): number {
@@ -65,12 +66,77 @@ function measureSegmentLength(
   return Math.hypot(end.x - start.x, end.y - start.y);
 }
 
+function toLayoutPoints(
+  points: readonly (readonly [number, number])[],
+): CircuitLayoutPoint[] {
+  return points.map(([x, y]) => ({ x, y }));
+}
+
+function getCircuitSegments(points: CircuitLayoutPoint[]): number[] {
+  return points.slice(1).map((point, index) =>
+    measureSegmentLength(points[index], point),
+  );
+}
+
+function getCircuitSegmentAtProgress(
+  points: CircuitLayoutPoint[],
+  progress: number,
+): {
+  start: CircuitLayoutPoint;
+  end: CircuitLayoutPoint;
+  segmentProgress: number;
+} | null {
+  if (points.length < 2) return null;
+
+  const segmentLengths = getCircuitSegments(points);
+  const totalLength = segmentLengths.reduce((sum, length) => sum + length, 0);
+
+  if (totalLength <= 0) return null;
+
+  const targetDistance = totalLength * normalizeProgress(progress);
+  let travelledDistance = 0;
+
+  for (let index = 0; index < segmentLengths.length; index += 1) {
+    const segmentLength = segmentLengths[index];
+    const nextTravelledDistance = travelledDistance + segmentLength;
+
+    if (targetDistance <= nextTravelledDistance) {
+      return {
+        start: points[index],
+        end: points[index + 1],
+        segmentProgress:
+          segmentLength === 0
+            ? 0
+            : (targetDistance - travelledDistance) / segmentLength,
+      };
+    }
+
+    travelledDistance = nextTravelledDistance;
+  }
+
+  return {
+    start: points[points.length - 2],
+    end: points[points.length - 1],
+    segmentProgress: 1,
+  };
+}
+
 export function getCircuitLayout(circuitName?: string | null): CircuitLayout {
   if (!circuitName) return fallbackCircuitLayout;
 
-  return circuitLayoutsByName[circuitName] ?? {
-    ...fallbackCircuitLayout,
+  const geoPoints = circuitGeoLayouts[circuitName];
+  if (!geoPoints) {
+    return {
+      ...fallbackCircuitLayout,
+      circuitName,
+    };
+  }
+
+  return {
     circuitName,
+    source: "geojson",
+    markers: [startFinishMarker],
+    points: toLayoutPoints(geoPoints),
   };
 }
 
@@ -85,34 +151,62 @@ export function getPointAtCircuitProgress(
   if (points.length === 0) return { x: 50, y: 50 };
   if (points.length === 1) return points[0];
 
-  const segmentLengths = points.slice(1).map((point, index) =>
-    measureSegmentLength(points[index], point),
-  );
-  const totalLength = segmentLengths.reduce((sum, length) => sum + length, 0);
+  const segment = getCircuitSegmentAtProgress(points, progress ?? 0);
+  if (!segment) return points[0];
 
-  if (totalLength <= 0) return points[0];
+  return {
+    x: segment.start.x + (segment.end.x - segment.start.x) * segment.segmentProgress,
+    y: segment.start.y + (segment.end.y - segment.start.y) * segment.segmentProgress,
+  };
+}
 
-  const targetDistance = totalLength * normalizeProgress(progress ?? 0);
-  let travelledDistance = 0;
+export function getCircuitMarkerLine(
+  points: CircuitLayoutPoint[],
+  progress: number,
+  length = 7,
+): CircuitMarkerLine | null {
+  const segment = getCircuitSegmentAtProgress(points, progress);
+  if (!segment) return null;
 
-  for (let index = 0; index < segmentLengths.length; index += 1) {
-    const segmentLength = segmentLengths[index];
-    const nextTravelledDistance = travelledDistance + segmentLength;
+  const center = getPointAtCircuitProgress(points, progress);
+  const tangentLength = measureSegmentLength(segment.start, segment.end);
+  if (tangentLength <= 0) return null;
 
-    if (targetDistance <= nextTravelledDistance) {
-      const segmentProgress =
-        segmentLength === 0 ? 0 : (targetDistance - travelledDistance) / segmentLength;
-      const start = points[index];
-      const end = points[index + 1];
+  const normal = {
+    x: -(segment.end.y - segment.start.y) / tangentLength,
+    y: (segment.end.x - segment.start.x) / tangentLength,
+  };
+  const halfLength = length / 2;
 
-      return {
-        x: start.x + (end.x - start.x) * segmentProgress,
-        y: start.y + (end.y - start.y) * segmentProgress,
-      };
-    }
+  return {
+    start: {
+      x: center.x - normal.x * halfLength,
+      y: center.y - normal.y * halfLength,
+    },
+    end: {
+      x: center.x + normal.x * halfLength,
+      y: center.y + normal.y * halfLength,
+    },
+  };
+}
 
-    travelledDistance = nextTravelledDistance;
+export function shouldAnimateCircuitMarker(
+  previousProgress?: number | null,
+  nextProgress?: number | null,
+): boolean {
+  if (
+    previousProgress == null ||
+    nextProgress == null ||
+    !Number.isFinite(previousProgress) ||
+    !Number.isFinite(nextProgress)
+  ) {
+    return false;
   }
 
-  return points[points.length - 1];
+  const directDistance = Math.abs(
+    normalizeProgress(nextProgress) - normalizeProgress(previousProgress),
+  );
+  const wrappedDistance = Math.min(directDistance, 1 - directDistance);
+
+  return wrappedDistance <= 0.18;
 }

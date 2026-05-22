@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import {
   buildCircuitPolylinePoints,
+  getCircuitMarkerLine,
   getCircuitLayout,
   getPointAtCircuitProgress,
+  shouldAnimateCircuitMarker,
 } from "./circuitLayouts";
 
 const simpleCircuit = [
@@ -19,8 +21,19 @@ assert.deepEqual(getPointAtCircuitProgress(simpleCircuit, 1.25), { x: 50, y: 0 }
 
 const albertParkLayout = getCircuitLayout("Albert Park Circuit");
 assert.equal(albertParkLayout.circuitName, "Albert Park Circuit");
+assert.equal(albertParkLayout.source, "geojson");
+assert.ok(albertParkLayout.points.length > 80);
 assert.equal(albertParkLayout.points[0].x, albertParkLayout.points.at(-1)?.x);
 assert.equal(albertParkLayout.points[0].y, albertParkLayout.points.at(-1)?.y);
+
+const startFinishMarker = getCircuitMarkerLine(albertParkLayout.points, 0);
+assert.ok(startFinishMarker);
+assert.notEqual(startFinishMarker?.start.x, startFinishMarker?.end.x);
+assert.notEqual(startFinishMarker?.start.y, startFinishMarker?.end.y);
+
+assert.equal(shouldAnimateCircuitMarker(0.2, 0.24), true);
+assert.equal(shouldAnimateCircuitMarker(0.98, 0.01), true);
+assert.equal(shouldAnimateCircuitMarker(0.65, 0.02), false);
 
 const fallbackLayout = getCircuitLayout("Unknown Test Circuit");
 assert.equal(fallbackLayout.circuitName, "Unknown Test Circuit");

@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { getOslAppShell } from "../../../theme";
 import {
   buildCircuitPolylinePoints,
+  getCircuitMarkerLine,
   getCircuitLayout,
   getPointAtCircuitProgress,
+  shouldAnimateCircuitMarker,
 } from "../circuitLayouts";
 
 type CircuitPositionMapProps = {
@@ -18,7 +21,28 @@ export default function CircuitPositionMap({
 }: CircuitPositionMapProps) {
   const layout = getCircuitLayout(circuitName);
   const circuitPath = buildCircuitPolylinePoints(layout.points);
-  const currentPoint = getPointAtCircuitProgress(layout.points, lapProgress);
+  const markerProgress = lapProgress ?? 0;
+  const normalizedLapProgress = lapProgress ?? null;
+  const [progressTransition, setProgressTransition] = useState<{
+    previous: number | null;
+    current: number | null;
+  }>({
+    previous: null,
+    current: normalizedLapProgress,
+  });
+
+  if (progressTransition.current !== normalizedLapProgress) {
+    setProgressTransition({
+      previous: progressTransition.current,
+      current: normalizedLapProgress,
+    });
+  }
+
+  const animateMarker = shouldAnimateCircuitMarker(
+    progressTransition.previous,
+    progressTransition.current,
+  );
+  const currentPoint = getPointAtCircuitProgress(layout.points, markerProgress);
 
   return (
     <Box
@@ -90,6 +114,27 @@ export default function CircuitPositionMap({
             strokeLinejoin="round"
             strokeWidth="1.6"
           />
+          {layout.markers.map((marker) => {
+            const line = getCircuitMarkerLine(layout.points, marker.progress);
+            if (!line) return null;
+
+            return (
+              <line
+                key={`${marker.kind}-${marker.progress}`}
+                x1={line.start.x}
+                y1={line.start.y}
+                x2={line.end.x}
+                y2={line.end.y}
+                stroke={
+                  marker.kind === "drs"
+                    ? "rgba(74, 222, 128, 0.95)"
+                    : "rgba(255,255,255,0.95)"
+                }
+                strokeLinecap="round"
+                strokeWidth={marker.kind === "drs" ? "1.8" : "2.4"}
+              />
+            );
+          })}
           <circle
             cx={currentPoint.x}
             cy={currentPoint.y}
@@ -99,7 +144,9 @@ export default function CircuitPositionMap({
             strokeWidth="1.7"
             style={{
               filter: "drop-shadow(0 0 8px rgba(255,48,72,0.9))",
-              transition: "cx 180ms linear, cy 180ms linear",
+              transition: animateMarker
+                ? "cx 180ms linear, cy 180ms linear"
+                : "none",
             }}
           />
         </Box>
