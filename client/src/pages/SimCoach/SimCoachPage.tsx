@@ -30,6 +30,7 @@ import type {
   SimCoachLapSummary,
 } from "../../types/sim-coach.types";
 import CornerCoachPanel from "./CornerCoachPanel";
+import RacingLineReplay from "./RacingLineReplay";
 
 function formatLapTime(ms: number): string {
   const minutes = Math.floor(ms / 60_000);
@@ -370,6 +371,7 @@ export default function SimCoachPage() {
                 ) : null}
 
                 <CornerCoachPanel analysis={analysisQuery.data} />
+                <RacingLineReplay analysis={analysisQuery.data} />
                 <CoachChart analysis={analysisQuery.data} />
               </>
             ) : null}
