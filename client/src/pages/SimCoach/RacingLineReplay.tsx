@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import {
   Alert,
   Box,
@@ -16,9 +17,12 @@ import { alpha } from "@mui/material/styles";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
+import CenterFocusStrongRoundedIcon from "@mui/icons-material/CenterFocusStrongRounded";
 import SkipNextRoundedIcon from "@mui/icons-material/SkipNextRounded";
 import SkipPreviousRoundedIcon from "@mui/icons-material/SkipPreviousRounded";
 import SyncRoundedIcon from "@mui/icons-material/SyncRounded";
+import ZoomInRoundedIcon from "@mui/icons-material/ZoomInRounded";
+import ZoomOutRoundedIcon from "@mui/icons-material/ZoomOutRounded";
 import type {
   SimCoachAnalysis,
   SimCoachCornerAnalysis,
@@ -36,6 +40,9 @@ const VIEWBOX_WIDTH = 1000;
 const VIEWBOX_HEIGHT = 520;
 const VIEWBOX_PADDING = 44;
 const PLAYBACK_TICK_MS = 40;
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 3.5;
+const ZOOM_STEP = 0.5;
 const SPEEDS = [0.25, 0.5, 1, 2] as const;
 const EMPTY_RACING_LINE: SimCoachRacingLineSample[] = [];
 
@@ -72,6 +79,16 @@ type TrackEvent = {
   point: ProjectedPoint;
 };
 
+type PanPosition = {
+  x: number;
+  y: number;
+};
+
+type DragState = {
+  clientX: number;
+  clientY: number;
+  pan: PanPosition;
+};
 
 function hasPosition(
   sample: SimCoachRacingLineSample,
@@ -231,6 +248,15 @@ function getCornerPhase(
   return "EXIT";
 }
 
+function clampPan(pan: PanPosition, zoom: number): PanPosition {
+  const maximumX = (VIEWBOX_WIDTH - VIEWBOX_WIDTH / zoom) / 2;
+  const maximumY = (VIEWBOX_HEIGHT - VIEWBOX_HEIGHT / zoom) / 2;
+  return {
+    x: Math.max(-maximumX, Math.min(maximumX, pan.x)),
+    y: Math.max(-maximumY, Math.min(maximumY, pan.y)),
+  };
+}
+
 function buildTrackEvents(
   projection: Projection | undefined,
   corner: SimCoachCornerAnalysis | undefined,
@@ -371,6 +397,9 @@ export default function RacingLineReplay({
   const [playing, setPlaying] = useState(false);
   const [synchronized, setSynchronized] = useState(true);
   const [speedIndex, setSpeedIndex] = useState(2);
+  const [zoom, setZoom] = useState(MIN_ZOOM);
+  const [pan, setPan] = useState<PanPosition>({ x: 0, y: 0 });
+  const dragState = useRef<DragState | undefined>(undefined);
   const targetSamples = analysis.racingLines?.target ?? EMPTY_RACING_LINE;
   const referenceSamples =
     analysis.racingLines?.reference ?? EMPTY_RACING_LINE;
@@ -451,6 +480,53 @@ export default function RacingLineReplay({
     currentCorner,
     currentTarget?.distanceM ?? 0,
   );
+  const viewBoxWidth = VIEWBOX_WIDTH / zoom;
+  const viewBoxHeight = VIEWBOX_HEIGHT / zoom;
+  const viewBoxX = (VIEWBOX_WIDTH - viewBoxWidth) / 2 - pan.x;
+  const viewBoxY = (VIEWBOX_HEIGHT - viewBoxHeight) / 2 - pan.y;
+
+  const changeZoom = (nextZoom: number) => {
+    const clampedZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, nextZoom));
+    setZoom(clampedZoom);
+    setPan((current) => clampPan(current, clampedZoom));
+  };
+
+  const resetView = () => {
+    setZoom(MIN_ZOOM);
+    setPan({ x: 0, y: 0 });
+  };
+
+  const startPan = (event: ReactPointerEvent<SVGSVGElement>) => {
+    if (zoom <= MIN_ZOOM) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragState.current = {
+      clientX: event.clientX,
+      clientY: event.clientY,
+      pan,
+    };
+  };
+
+  const movePan = (event: ReactPointerEvent<SVGSVGElement>) => {
+    const drag = dragState.current;
+    if (!drag) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const nextPan = {
+      x: drag.pan.x +
+        ((event.clientX - drag.clientX) / Math.max(1, bounds.width)) *
+          viewBoxWidth,
+      y: drag.pan.y +
+        ((event.clientY - drag.clientY) / Math.max(1, bounds.height)) *
+          viewBoxHeight,
+    };
+    setPan(clampPan(nextPan, zoom));
+  };
+
+  const endPan = (event: ReactPointerEvent<SVGSVGElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    dragState.current = undefined;
+  };
 
   const nudgeReplay = (deltaMs: number) => {
     if (sharedDuration <= 0) return;
@@ -536,9 +612,13 @@ export default function RacingLineReplay({
             />
             <Box
               component="svg"
-              viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+              viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`}
               preserveAspectRatio="xMidYMid meet"
               aria-label="Animated comparison of target and reference racing lines"
+              onPointerDown={startPan}
+              onPointerMove={movePan}
+              onPointerUp={endPan}
+              onPointerCancel={endPan}
               sx={{
                 position: "absolute",
                 top: { xs: 42, md: 0 },
@@ -547,6 +627,11 @@ export default function RacingLineReplay({
                 right: { xs: 0, md: 245 },
                 width: "auto",
                 height: "auto",
+                cursor: zoom > MIN_ZOOM ? "grab" : "default",
+                touchAction: "none",
+                "&:active": {
+                  cursor: zoom > MIN_ZOOM ? "grabbing" : "default",
+                },
               }}
             >
               {referencePath ? (
@@ -645,6 +730,64 @@ export default function RacingLineReplay({
                 }}
                 variant="outlined"
               />
+            </Stack>
+            <Stack
+              direction="row"
+              spacing={0.5}
+              alignItems="center"
+              sx={{
+                position: "absolute",
+                zIndex: 4,
+                top: 12,
+                right: 14,
+                p: 0.5,
+                borderRadius: 1.5,
+                bgcolor: "rgba(8,10,18,.82)",
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <Tooltip title="Zoom out">
+                <span>
+                  <IconButton
+                    aria-label="Zoom circuit out"
+                    disabled={zoom <= MIN_ZOOM}
+                    size="small"
+                    onClick={() => changeZoom(zoom - ZOOM_STEP)}
+                  >
+                    <ZoomOutRoundedIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Typography
+                variant="caption"
+                sx={{ minWidth: 34, textAlign: "center", fontWeight: 900 }}
+              >
+                {zoom.toFixed(1)}×
+              </Typography>
+              <Tooltip title="Zoom in">
+                <span>
+                  <IconButton
+                    aria-label="Zoom circuit in"
+                    disabled={zoom >= MAX_ZOOM}
+                    size="small"
+                    onClick={() => changeZoom(zoom + ZOOM_STEP)}
+                  >
+                    <ZoomInRoundedIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip title="Reset circuit view">
+                <span>
+                  <IconButton
+                    aria-label="Reset circuit zoom and position"
+                    disabled={zoom === MIN_ZOOM && pan.x === 0 && pan.y === 0}
+                    size="small"
+                    onClick={resetView}
+                  >
+                    <CenterFocusStrongRoundedIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </Tooltip>
             </Stack>
             <Stack
               direction="row"
