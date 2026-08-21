@@ -1,4 +1,5 @@
 import { SessionTelemetryService } from './session-telemetry.service';
+import { beforeEach, describe, expect, it } from '@jest/globals';
 
 describe('SessionTelemetryService', () => {
   let service: SessionTelemetryService;

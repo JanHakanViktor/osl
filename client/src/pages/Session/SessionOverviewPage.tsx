@@ -157,6 +157,13 @@ export default function SessionOverviewPage() {
           <Button variant="outlined" onClick={() => navigate("/sessions/new")}>
             New Session
           </Button>
+
+          <Button
+            variant="outlined"
+            onClick={() => navigate(`/sessions/${sessionId}/coach`)}
+          >
+            Open Sim Coach
+          </Button>
         </Stack>
       </Stack>
     </Container>

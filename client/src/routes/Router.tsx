@@ -28,6 +28,14 @@ const router = createBrowserRouter([
                 children: [
                   { path: "live", element: <Telemetry /> },
                   { path: "overview", element: <SessionOverviewPage /> },
+                  {
+                    path: "coach",
+                    lazy: async () => ({
+                      Component: (
+                        await import("../pages/SimCoach/SimCoachPage.tsx")
+                      ).default,
+                    }),
+                  },
                 ],
               },
             ],
