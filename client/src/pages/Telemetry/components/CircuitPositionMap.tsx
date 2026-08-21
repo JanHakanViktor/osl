@@ -7,22 +7,25 @@ import {
   getCircuitMarkerLine,
   getCircuitLayout,
   getPointAtCircuitProgress,
+  getTelemetryCircuitProgress,
   shouldAnimateCircuitMarker,
 } from "../circuitLayouts";
 
 type CircuitPositionMapProps = {
   circuitName: string;
+  circuitImage?: string | null;
   lapProgress?: number | null;
 };
 
 export default function CircuitPositionMap({
   circuitName,
+  circuitImage,
   lapProgress,
 }: CircuitPositionMapProps) {
   const layout = getCircuitLayout(circuitName);
   const circuitPath = buildCircuitPolylinePoints(layout.points);
-  const markerProgress = lapProgress ?? 0;
-  const normalizedLapProgress = lapProgress ?? null;
+  const markerProgress = getTelemetryCircuitProgress(layout, lapProgress);
+  const normalizedLapProgress = lapProgress == null ? null : markerProgress;
   const [progressTransition, setProgressTransition] = useState<{
     previous: number | null;
     current: number | null;
@@ -78,6 +81,23 @@ export default function CircuitPositionMap({
           border: (theme) => `1px solid ${getOslAppShell(theme).border}`,
         }}
       >
+        {circuitImage && (
+          <Box
+            component="img"
+            src={circuitImage}
+            alt=""
+            sx={{
+              position: "absolute",
+              inset: "8%",
+              width: "84%",
+              height: "84%",
+              objectFit: "contain",
+              opacity: 0.88,
+              filter: "drop-shadow(0 14px 22px rgba(0, 0, 0, 0.42))",
+            }}
+          />
+        )}
+
         <Box
           component="svg"
           viewBox="0 0 100 100"
@@ -90,30 +110,34 @@ export default function CircuitPositionMap({
             overflow: "visible",
           }}
         >
-          <polyline
-            points={circuitPath}
-            fill="none"
-            stroke="rgba(255,255,255,0.2)"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="8.5"
-          />
-          <polyline
-            points={circuitPath}
-            fill="none"
-            stroke="rgba(255,255,255,0.84)"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="4"
-          />
-          <polyline
-            points={circuitPath}
-            fill="none"
-            stroke="rgba(12,16,26,0.55)"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.6"
-          />
+          {!circuitImage && (
+            <>
+              <polyline
+                points={circuitPath}
+                fill="none"
+                stroke="rgba(255,255,255,0.2)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="8.5"
+              />
+              <polyline
+                points={circuitPath}
+                fill="none"
+                stroke="rgba(255,255,255,0.84)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="4"
+              />
+              <polyline
+                points={circuitPath}
+                fill="none"
+                stroke="rgba(12,16,26,0.55)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.6"
+              />
+            </>
+          )}
           {layout.markers.map((marker) => {
             const line = getCircuitMarkerLine(layout.points, marker.progress);
             if (!line) return null;

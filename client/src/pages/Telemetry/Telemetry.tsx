@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
 import { getOslAppShell } from "../../theme";
 import { useCurrentUser } from "../../components/auth/auth.queries";
+import CircuitLibrary from "../../data/circuit";
 import { finishSession, getLiveSessionDetails } from "../../service/session";
 import CompletedLapsList from "./components/CompletedLapsList";
 import DriverTelemetryHero from "./components/DriverTelemetryHero";
@@ -195,6 +196,10 @@ export default function TelemetryPage() {
     }
   };
 
+  const activeCircuit = CircuitLibrary.find(
+    (circuit) => circuit.circuit === liveSession?.circuitName,
+  );
+
   return (
     <Box
       sx={{
@@ -238,6 +243,7 @@ export default function TelemetryPage() {
             remainingValue={target.value}
             showTarget={showTargetPanel}
             circuitName={liveSession?.circuitName ?? "Selected circuit"}
+            circuitImage={activeCircuit?.image}
             lapProgress={lapProgress}
             finishDisabled={!sessionId}
             finishing={finishingSession}

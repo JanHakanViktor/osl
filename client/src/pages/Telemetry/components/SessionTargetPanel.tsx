@@ -15,6 +15,7 @@ type SessionTargetPanelProps = {
   remainingValue: string;
   showTarget: boolean;
   circuitName: string;
+  circuitImage?: string | null;
   lapProgress?: number | null;
   finishDisabled: boolean;
   finishing: boolean;
@@ -29,6 +30,7 @@ export default function SessionTargetPanel({
   remainingValue,
   showTarget,
   circuitName,
+  circuitImage,
   lapProgress,
   finishDisabled,
   finishing,
@@ -172,6 +174,7 @@ export default function SessionTargetPanel({
 
           <CircuitPositionMap
             circuitName={circuitName}
+            circuitImage={circuitImage}
             lapProgress={lapProgress}
           />
         </Box>
