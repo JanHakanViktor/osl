@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import {
   buildFastestLapDeltaLabel,
   buildSectorDisplays,
+  calculateLapProgress,
   calculateLapsRemaining,
+  getLapDataSectors,
+  mergeCompletedLaps,
 } from "./telemetryFormatters";
 import type { CompletedLap } from "./telemetryTypes";
 
@@ -28,14 +31,49 @@ const laps: CompletedLap[] = [
 assert.equal(calculateLapsRemaining(5, 2, 1), 4);
 assert.equal(calculateLapsRemaining(5, null, 3), 2);
 assert.equal(calculateLapsRemaining(null, 2, 1), null);
+assert.equal(calculateLapProgress(0, 5_000), 0);
+assert.equal(calculateLapProgress(1_250, 5_000), 0.25);
+assert.equal(calculateLapProgress(5_250, 5_000), 0.05);
+
+assert.equal(
+  JSON.stringify(
+    getLapDataSectors({
+      m_sector: 0,
+      m_sector1TimeMSPart: 31_000,
+      m_sector1TimeMinutesPart: 0,
+      m_sector2TimeMSPart: 32_000,
+      m_sector2TimeMinutesPart: 0,
+    }),
+  ),
+  JSON.stringify([null, null, null]),
+);
+
+assert.equal(
+  JSON.stringify(
+    getLapDataSectors({
+      m_sector: 1,
+      m_sector1TimeMSPart: 31_000,
+      m_sector1TimeMinutesPart: 0,
+      m_sector2TimeMSPart: 32_000,
+      m_sector2TimeMinutesPart: 0,
+    }),
+  ),
+  JSON.stringify([31_000, null, null]),
+);
 
 assert.equal(
   buildFastestLapDeltaLabel({
     fastestLapMs: 92_800,
     previousFastestLapMs: 93_000,
-    previousFastestDriverName: "Driver",
   }),
-  "(-0.200 from Driver)",
+  "(-0.200)",
+);
+
+assert.equal(
+  JSON.stringify(
+    mergeCompletedLaps([laps[0]], [laps[0], laps[1]]).map((lap) => lap.lapNumber),
+  ),
+  JSON.stringify([1, 2]),
 );
 
 assert.equal(

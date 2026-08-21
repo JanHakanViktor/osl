@@ -1,32 +1,51 @@
+import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { getOslAppShell } from "../../../theme";
+import {
+  buildCircuitPolylinePoints,
+  getCircuitMarkerLine,
+  getCircuitLayout,
+  getPointAtCircuitProgress,
+  getTelemetryCircuitProgress,
+  shouldAnimateCircuitMarker,
+} from "../circuitLayouts";
 
 type CircuitPositionMapProps = {
   circuitName: string;
   circuitImage?: string | null;
-  progress?: number | null;
+  lapProgress?: number | null;
 };
-
-function getMarkerPosition(progress?: number | null) {
-  const normalized =
-    progress == null || !Number.isFinite(progress)
-      ? 0
-      : Math.min(Math.max(progress, 0), 1);
-  const angle = normalized * Math.PI * 2 - Math.PI / 2;
-
-  return {
-    left: `${50 + Math.cos(angle) * 35}%`,
-    top: `${50 + Math.sin(angle) * 31}%`,
-  };
-}
 
 export default function CircuitPositionMap({
   circuitName,
   circuitImage,
-  progress,
+  lapProgress,
 }: CircuitPositionMapProps) {
-  const markerPosition = getMarkerPosition(progress);
+  const layout = getCircuitLayout(circuitName);
+  const circuitPath = buildCircuitPolylinePoints(layout.points);
+  const markerProgress = getTelemetryCircuitProgress(layout, lapProgress);
+  const normalizedLapProgress = lapProgress == null ? null : markerProgress;
+  const [progressTransition, setProgressTransition] = useState<{
+    previous: number | null;
+    current: number | null;
+  }>({
+    previous: null,
+    current: normalizedLapProgress,
+  });
+
+  if (progressTransition.current !== normalizedLapProgress) {
+    setProgressTransition({
+      previous: progressTransition.current,
+      current: normalizedLapProgress,
+    });
+  }
+
+  const animateMarker = shouldAnimateCircuitMarker(
+    progressTransition.previous,
+    progressTransition.current,
+  );
+  const currentPoint = getPointAtCircuitProgress(layout.points, markerProgress);
 
   return (
     <Box
@@ -69,41 +88,92 @@ export default function CircuitPositionMap({
             alt=""
             sx={{
               position: "absolute",
-              inset: "12%",
-              width: "76%",
-              height: "76%",
+              inset: "8%",
+              width: "84%",
+              height: "84%",
               objectFit: "contain",
-              opacity: 0.66,
+              opacity: 0.88,
               filter: "drop-shadow(0 14px 22px rgba(0, 0, 0, 0.42))",
             }}
           />
         )}
 
         <Box
+          component="svg"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="xMidYMid meet"
           sx={{
             position: "absolute",
-            inset: "16%",
-            borderRadius: "50%",
-            border: (theme) =>
-              `1px dashed ${alpha(theme.palette.common.white, 0.18)}`,
+            inset: "8%",
+            width: "84%",
+            height: "84%",
+            overflow: "visible",
           }}
-        />
+        >
+          {!circuitImage && (
+            <>
+              <polyline
+                points={circuitPath}
+                fill="none"
+                stroke="rgba(255,255,255,0.2)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="8.5"
+              />
+              <polyline
+                points={circuitPath}
+                fill="none"
+                stroke="rgba(255,255,255,0.84)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="4"
+              />
+              <polyline
+                points={circuitPath}
+                fill="none"
+                stroke="rgba(12,16,26,0.55)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.6"
+              />
+            </>
+          )}
+          {layout.markers.map((marker) => {
+            const line = getCircuitMarkerLine(layout.points, marker.progress);
+            if (!line) return null;
 
-        <Box
-          sx={{
-            position: "absolute",
-            left: markerPosition.left,
-            top: markerPosition.top,
-            width: 14,
-            height: 14,
-            borderRadius: "50%",
-            backgroundColor: "#ff3048",
-            border: "2px solid #fff",
-            boxShadow: "0 0 18px rgba(255, 48, 72, 0.85)",
-            transform: "translate(-50%, -50%)",
-            transition: "left 360ms ease, top 360ms ease",
-          }}
-        />
+            return (
+              <line
+                key={`${marker.kind}-${marker.progress}`}
+                x1={line.start.x}
+                y1={line.start.y}
+                x2={line.end.x}
+                y2={line.end.y}
+                stroke={
+                  marker.kind === "drs"
+                    ? "rgba(74, 222, 128, 0.95)"
+                    : "rgba(255,255,255,0.95)"
+                }
+                strokeLinecap="round"
+                strokeWidth={marker.kind === "drs" ? "1.8" : "2.4"}
+              />
+            );
+          })}
+          <circle
+            cx={currentPoint.x}
+            cy={currentPoint.y}
+            r="4.2"
+            fill="#ff3048"
+            stroke="#fff"
+            strokeWidth="1.7"
+            style={{
+              filter: "drop-shadow(0 0 8px rgba(255,48,72,0.9))",
+              transition: animateMarker
+                ? "cx 180ms linear, cy 180ms linear"
+                : "none",
+            }}
+          />
+        </Box>
       </Box>
     </Box>
   );

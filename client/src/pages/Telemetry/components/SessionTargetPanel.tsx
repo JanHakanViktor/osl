@@ -175,7 +175,7 @@ export default function SessionTargetPanel({
           <CircuitPositionMap
             circuitName={circuitName}
             circuitImage={circuitImage}
-            progress={lapProgress}
+            lapProgress={lapProgress}
           />
         </Box>
       )}

@@ -66,6 +66,8 @@ async function forward(eventName: string, data: unknown) {
 
 client.on(PACKETS.carTelemetry, (data: any) => forward("carTelemetry", data));
 
+client.on(PACKETS.motion, (data: any) => forward("motion", data));
+
 client.on(PACKETS.lapData, (data: any) => forward("lapData", data));
 
 client.on(PACKETS.sessionHistory, (data: any) =>

@@ -31,6 +31,7 @@ export type LapData = {
   m_sector2TimeMinutesPart?: number;
   m_bestLapTimeInMS?: number;
   m_bestLapTimeInMs?: number;
+  m_sector?: number;
   m_currentLapInvalid?: number;
   m_currentLapNum?: number;
 };

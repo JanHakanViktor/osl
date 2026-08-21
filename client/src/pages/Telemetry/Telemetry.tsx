@@ -21,6 +21,7 @@ import {
   formatDuration,
   getLapDataSectors,
   mapHistoryLaps,
+  mergeCompletedLaps,
 } from "./telemetryFormatters";
 
 function getPlayerIndex(
@@ -28,7 +29,12 @@ function getPlayerIndex(
   telemetryPlayerIndex?: number,
   sessionPlayerIndex?: number,
 ): number {
-  return lapDataPlayerIndex ?? telemetryPlayerIndex ?? sessionPlayerIndex ?? 0;
+  return (
+    lapDataPlayerIndex ??
+    telemetryPlayerIndex ??
+    sessionPlayerIndex ??
+    0
+  );
 }
 
 export default function TelemetryPage() {
@@ -83,6 +89,10 @@ export default function TelemetryPage() {
     playerLap?.m_bestLapTimeInMs,
   );
   const currentLapNumber = playerLap?.m_currentLapNum;
+  const lapProgress = calculateLapProgress(
+    playerLap?.m_lapDistance,
+    session?.m_trackLength,
+  );
   const currentSectors = getLapDataSectors(playerLap);
   const visibleSectors = [
     currentSectors[0],
@@ -100,7 +110,7 @@ export default function TelemetryPage() {
     return mapHistoryLaps(historyData ?? []);
   }, [playerSessionHistory]);
 
-  const completedLaps = historyLaps.length > 0 ? historyLaps : liveLaps;
+  const completedLaps = mergeCompletedLaps(historyLaps, liveLaps);
   const fastestCompletedLap = findFastestLap(completedLaps);
   const fastestLapMs = fastestCompletedLap?.lapTimeMs ?? bestLapMs;
   const previousFastestLap = fastestCompletedLap
@@ -111,7 +121,6 @@ export default function TelemetryPage() {
   const fastestLapDeltaLabel = buildFastestLapDeltaLabel({
     fastestLapMs,
     previousFastestLapMs: previousFastestLap?.lapTimeMs,
-    previousFastestDriverName: driverName,
   });
   const sectorDisplays = buildSectorDisplays(
     visibleSectors,
@@ -189,10 +198,6 @@ export default function TelemetryPage() {
 
   const activeCircuit = CircuitLibrary.find(
     (circuit) => circuit.circuit === liveSession?.circuitName,
-  );
-  const lapProgress = calculateLapProgress(
-    playerLap?.m_lapDistance,
-    session?.m_trackLength,
   );
 
   return (
