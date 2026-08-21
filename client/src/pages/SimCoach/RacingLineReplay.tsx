@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type {
+  PointerEvent as ReactPointerEvent,
+  WheelEvent as ReactWheelEvent,
+} from "react";
 import {
   Alert,
   Box,
@@ -528,6 +531,11 @@ export default function RacingLineReplay({
     dragState.current = undefined;
   };
 
+  const zoomWithWheel = (event: ReactWheelEvent<SVGSVGElement>) => {
+    event.preventDefault();
+    changeZoom(zoom + (event.deltaY < 0 ? 0.25 : -0.25));
+  };
+
   const nudgeReplay = (deltaMs: number) => {
     if (sharedDuration <= 0) return;
     setPlaying(false);
@@ -619,6 +627,7 @@ export default function RacingLineReplay({
               onPointerMove={movePan}
               onPointerUp={endPan}
               onPointerCancel={endPan}
+              onWheel={zoomWithWheel}
               sx={{
                 position: "absolute",
                 top: { xs: 42, md: 0 },
@@ -731,6 +740,19 @@ export default function RacingLineReplay({
                 variant="outlined"
               />
             </Stack>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{
+                position: "absolute",
+                zIndex: 4,
+                top: 58,
+                right: 16,
+                display: { xs: "none", md: "block" },
+              }}
+            >
+              Scroll to zoom · drag to pan
+            </Typography>
             <Stack
               direction="row"
               spacing={0.5}
