@@ -4,8 +4,16 @@ import {
   getCircuitMarkerLine,
   getCircuitLayout,
   getPointAtCircuitProgress,
+  getTelemetryCircuitProgress,
   shouldAnimateCircuitMarker,
 } from "./circuitLayouts";
+
+function assertNear(actual: number, expected: number, tolerance = 0.02) {
+  assert.ok(
+    Math.abs(actual - expected) <= tolerance,
+    `Expected ${actual} to be within ${tolerance} of ${expected}`,
+  );
+}
 
 const simpleCircuit = [
   { x: 0, y: 0 },
@@ -25,6 +33,10 @@ assert.equal(albertParkLayout.source, "geojson");
 assert.ok(albertParkLayout.points.length > 80);
 assert.equal(albertParkLayout.points[0].x, albertParkLayout.points.at(-1)?.x);
 assert.equal(albertParkLayout.points[0].y, albertParkLayout.points.at(-1)?.y);
+assertNear(albertParkLayout.points[0].x, 59.03);
+assertNear(albertParkLayout.points[0].y, 72.1);
+assertNear(getTelemetryCircuitProgress(albertParkLayout, 0.2), 0.1);
+assertNear(getTelemetryCircuitProgress(albertParkLayout, 0.04), 0.94);
 
 const startFinishMarker = getCircuitMarkerLine(albertParkLayout.points, 0);
 assert.ok(startFinishMarker);
