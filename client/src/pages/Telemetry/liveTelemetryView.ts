@@ -5,6 +5,7 @@ import {
   calculateLapProgress,
   calculateLapsRemaining,
   countGameLapsCompleted,
+  filterSessionLaps,
   findFastestLap,
   firstFiniteNumber,
   formatDuration,
@@ -30,6 +31,12 @@ export type LiveTelemetryInput = {
   heldSector3Ms: number | null;
 };
 
+/** Limits the dashboard's laps to the ones an OSL session recorded. */
+export type SessionLapScope = {
+  /** Game lap the session's recorded laps start from; null shows none yet. */
+  firstRecordedLapNumber: number | null;
+};
+
 export type LiveTelemetryView = {
   speed?: number;
   gear?: number;
@@ -41,6 +48,8 @@ export type LiveTelemetryView = {
   fastestLapDeltaLabel: string | null;
   sectorDisplays: SectorDisplay[];
   completedLaps: CompletedLap[];
+  /** Laps the game has completed, including any the session scope hides. */
+  gameLapsCompleted: number;
   lapProgress: number | null;
   sessionElapsedSeconds: number | null;
 };
@@ -70,9 +79,20 @@ function getHistoryLaps(history: SessionHistoryPacket | null): CompletedLap[] {
   return mapHistoryLaps(historyData ?? []);
 }
 
-/** Derives everything the live dashboard shows from the latest packets. */
+/** The player's lap number in the game, which changes on every new lap. */
+export function readCurrentLapNumber(
+  input: LiveTelemetryInput,
+): number | undefined {
+  return input.lapData?.m_lapData?.[getPlayerIndex(input)]?.m_currentLapNum;
+}
+
+/**
+ * Derives everything the live dashboard shows from the latest packets.
+ * Without a session scope, every lap of the game session is shown.
+ */
 export function buildLiveTelemetryView(
   input: LiveTelemetryInput,
+  sessionScope?: SessionLapScope,
 ): LiveTelemetryView {
   const playerIndex = getPlayerIndex(input);
   const playerLap = input.lapData?.m_lapData?.[playerIndex] ?? null;
@@ -89,10 +109,13 @@ export function buildLiveTelemetryView(
     currentSectors[2] ?? input.heldSector3Ms,
   ];
 
-  const completedLaps = mergeCompletedLaps(
+  const gameLaps = mergeCompletedLaps(
     getHistoryLaps(input.playerSessionHistory),
     input.liveLaps,
   );
+  const completedLaps = sessionScope
+    ? filterSessionLaps(gameLaps, sessionScope.firstRecordedLapNumber)
+    : gameLaps;
   const fastestCompletedLap = findFastestLap(completedLaps);
   const fastestLapMs = fastestCompletedLap?.lapTimeMs ?? bestLapMs;
   const previousFastestLap = fastestCompletedLap
@@ -124,6 +147,10 @@ export function buildLiveTelemetryView(
       fastestCompletedLap,
     ),
     completedLaps,
+    gameLapsCompleted: countGameLapsCompleted(
+      playerLap?.m_currentLapNum,
+      gameLaps.length,
+    ),
     lapProgress: calculateLapProgress(
       playerLap?.m_lapDistance,
       input.session?.m_trackLength,
@@ -144,13 +171,7 @@ export function buildSessionTarget(
   const lapsRemaining =
     liveSession?.limitType === "LAPS"
       ? calculateLapsRemaining(liveSession.lapLimit, liveSession.lapsCompleted)
-      : calculateLapsRemaining(
-          session?.m_totalLaps,
-          countGameLapsCompleted(
-            view.currentLapNumber,
-            view.completedLaps.length,
-          ),
-        );
+      : calculateLapsRemaining(session?.m_totalLaps, view.gameLapsCompleted);
   const remainingSeconds = firstFiniteNumber(
     session?.m_sessionTimeLeft,
     liveSession?.limitType === "TIME" &&

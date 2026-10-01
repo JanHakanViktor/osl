@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   buildLiveTelemetryView,
   buildSessionTarget,
+  readCurrentLapNumber,
   type LiveTelemetryInput,
 } from "./liveTelemetryView";
 
@@ -57,6 +58,39 @@ assert.equal(view.fastestLapMs, 92_800);
 assert.equal(view.fastestLapDeltaLabel, "(-0.200)");
 assert.equal(view.lapProgress, 0.25);
 assert.equal(view.sessionElapsedSeconds, 300);
+assert.equal(readCurrentLapNumber(input), 3);
+
+// An OSL session only shows the laps it recorded. Game lap 1 was finished
+// before the session started, so it is neither listed nor the delta baseline.
+const sessionView = buildLiveTelemetryView(input, { firstRecordedLapNumber: 2 });
+
+assert.deepEqual(
+  sessionView.completedLaps.map((lap) => lap.lapNumber),
+  [2],
+);
+assert.equal(sessionView.fastestLapMs, 92_800);
+assert.equal(sessionView.fastestLapDeltaLabel, null);
+
+// Before the session records a lap, none of the game's laps belong to it.
+const unrecordedView = buildLiveTelemetryView(input, {
+  firstRecordedLapNumber: null,
+});
+
+assert.deepEqual(unrecordedView.completedLaps, []);
+assert.equal(unrecordedView.fastestLapMs, null);
+
+// The game's race distance still counts every game lap, including hidden ones.
+assert.deepEqual(
+  buildSessionTarget(
+    undefined,
+    buildLiveTelemetryView(
+      { ...input, lapData: null },
+      { firstRecordedLapNumber: null },
+    ),
+    { ...input.session, m_totalLaps: 5 },
+  ),
+  { label: "Laps Remaining", value: "3", visible: true },
+);
 
 const lapsSession = {
   id: "s",
@@ -64,6 +98,7 @@ const lapsSession = {
   circuitName: "C",
   limitType: "LAPS" as const,
   lapLimit: 5,
+  firstRecordedLapNumber: null,
 };
 
 assert.deepEqual(
@@ -93,6 +128,7 @@ assert.deepEqual(
       limitType: "TIME",
       timeLimitSeconds: 900,
       lapsCompleted: 0,
+      firstRecordedLapNumber: null,
     },
     view,
     input.session,
