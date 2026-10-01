@@ -56,8 +56,13 @@ function seedTournament(
           ruleSetId: 'LADDER',
         },
         drivers: [
-          { userId: 'viktor', driverName: 'Viktor' },
-          { userId: 'tim', driverName: 'Tim' },
+          {
+            userId: 'viktor',
+            driverName: 'Viktor',
+            country: null,
+            teamId: null,
+          },
+          { userId: 'tim', driverName: 'Tim', country: null, teamId: null },
         ],
         circuitIds: [MONACO_CIRCUIT_ID],
       },

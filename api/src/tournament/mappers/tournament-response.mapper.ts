@@ -33,12 +33,22 @@ function createDriverLookup(state: TournamentState): DriverLookup {
   const drivers = new Map(
     state.drivers.map((driver) => [
       driver.userId,
-      { id: driver.userId, driverName: driver.driverName },
+      {
+        id: driver.userId,
+        driverName: driver.driverName,
+        country: driver.country,
+        teamId: driver.teamId,
+      },
     ]),
   );
 
   return (userId) =>
-    drivers.get(userId) ?? { id: userId, driverName: 'Unknown driver' };
+    drivers.get(userId) ?? {
+      id: userId,
+      driverName: 'Unknown driver',
+      country: null,
+      teamId: null,
+    };
 }
 
 export function toCircuitDto(circuitId: number): CircuitDto {

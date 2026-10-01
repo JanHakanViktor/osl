@@ -9,6 +9,10 @@ import type {
 export type DriverDto = {
   id: string;
   driverName: string;
+  /** ISO 3166-1 alpha-2 code for the driver's flag, or null when unknown. */
+  country: string | null;
+  /** Team id (see client/src/data/team.ts), or null when unknown. */
+  teamId: string | null;
 };
 
 export type DriverOptionDto = DriverDto & {

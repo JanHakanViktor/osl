@@ -24,6 +24,8 @@ const settings: TournamentSettings = {
 const drivers = ['viktor', 'carlos', 'tim', 'felix'].map((userId) => ({
   userId,
   driverName: userId,
+  country: null,
+  teamId: null,
 }));
 
 function lap(

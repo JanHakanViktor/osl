@@ -53,6 +53,8 @@ export function toTournamentState(
     drivers: record.drivers.map((driver) => ({
       userId: driver.userId.toString(),
       driverName: driver.driverName,
+      country: driver.country ?? null,
+      teamId: driver.teamId ?? null,
     })),
     rounds: record.rounds.map((round) => ({
       circuitId: round.circuitId,
@@ -96,6 +98,8 @@ export function toTournamentRecord(
     drivers: state.drivers.map((driver) => ({
       userId: objectId(driver.userId),
       driverName: driver.driverName,
+      country: driver.country,
+      teamId: driver.teamId,
     })),
     rounds: state.rounds.map((round) => ({
       circuitId: round.circuitId,
