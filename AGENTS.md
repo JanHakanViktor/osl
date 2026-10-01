@@ -256,6 +256,9 @@ If a command cannot be run, explain why and state the residual risk.
 
 - Keep commits focused and reviewable.
 - Use clear branch names with the `codex/` prefix unless instructed otherwise.
+- Keep frontend and backend PRs separate when the work meaningfully crosses layers.
+- If working primarily in `client/` and backend changes become necessary, pause before editing `api/` or `telemetry-relay/`, explain the backend need, and create a separate backend branch so the backend PR can be reviewed independently.
+- Name related split branches consistently, for example `feature/appbar-rework` for frontend and `feature/appbar-rework-api` for backend, unless the user requests another naming style.
 - Write PR descriptions that explain the problem, the approach, and the verification performed.
 - Link issues when relevant.
 - Address review feedback with technical judgment. Verify comments against the code before changing behavior.
