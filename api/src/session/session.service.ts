@@ -249,17 +249,6 @@ export class SessionService {
       (session) => (session.telemetry?.fastestLapMs ?? 0) > 0,
     );
 
-    const fastestOverall =
-      sessionsWithFastestLaps.reduce<SessionWithUser | null>(
-        (best, session) => {
-          if (!best) return session;
-          return session.telemetry.fastestLapMs < best.telemetry.fastestLapMs
-            ? session
-            : best;
-        },
-        null,
-      );
-
     const fastestLapByCircuit = CircuitLibrary.map((circuit) => {
       const fastestLapRecord = getFastestLapRecord(
         sessionsWithFastestLaps.filter(
@@ -286,15 +275,6 @@ export class SessionService {
       };
     });
 
-    const trendSessions = fastestOverall
-      ? finishedSessions.filter(
-          (session) =>
-            session.circuitId === fastestOverall.circuitId &&
-            session.userId?._id?.toString() ===
-              fastestOverall.userId?._id?.toString() &&
-            (session.telemetry?.fastestLapMs ?? 0) > 0,
-        )
-      : [];
     const latestSessionCircuit = latestFinished
       ? CircuitLibrary.find(
           (circuit) => Number(circuit.trackId) === latestFinished.circuitId,
@@ -327,19 +307,6 @@ export class SessionService {
           }
         : null,
       fastestLapByCircuit,
-      improvementTrend: fastestOverall
-        ? {
-            driverName: getDriverName(fastestOverall.userId),
-            circuitId: fastestOverall.circuitId,
-            circuitName: fastestOverall.circuitName,
-            sessions: trendSessions.map((session, index) => ({
-              id: session._id.toString(),
-              label: `S${index + 1}`,
-              sessionName: session.sessionName,
-              fastestLapMs: session.telemetry.fastestLapMs,
-            })),
-          }
-        : null,
     };
   }
 }
