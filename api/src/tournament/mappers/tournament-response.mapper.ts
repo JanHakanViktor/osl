@@ -24,6 +24,7 @@ import type {
   RoundDto,
   RuleSetDto,
   TournamentDto,
+  TournamentHighlightDto,
   TournamentSummaryDto,
 } from '../dto/tournament-response.dto';
 
@@ -220,6 +221,56 @@ export function toTournamentDto(
     awards: state.status === 'FINISHED' ? toAwardsDto(state, driver) : null,
     createdAt: state.createdAt,
     finishedAt: state.finishedAt,
+  };
+}
+
+/** Highlights are public, so they are built without a viewer. */
+export function toTournamentHighlightDto(
+  state: TournamentState,
+): TournamentHighlightDto {
+  const tournament = toTournamentDto(state, '');
+  const heat = tournament.activeHeat;
+
+  return {
+    id: tournament.id,
+    name: tournament.name,
+    status: tournament.status,
+    ruleSetName: tournament.settings.ruleSet.name,
+    weather: tournament.settings.weather,
+    lapsPerDriver: tournament.settings.lapsPerDriver,
+    roundsCompleted: tournament.rounds.filter(
+      (round) => round.status === 'COMPLETE',
+    ).length,
+    roundsTotal: tournament.rounds.length,
+    currentRoundNumber: tournament.currentRoundNumber,
+    rounds: tournament.rounds.map((round) => ({
+      roundNumber: round.roundNumber,
+      circuit: round.circuit,
+      status: round.status,
+      winner:
+        round.status === 'COMPLETE'
+          ? (round.results.find((result) => result.position === 1)?.driver ??
+            null)
+          : null,
+    })),
+    standings: tournament.standings,
+    activeHeat: heat
+      ? {
+          roundNumber: heat.roundNumber,
+          circuit: heat.circuit,
+          driver: heat.driver,
+          status: heat.status,
+          lapsCompleted: heat.lapsCompleted,
+          lapsTarget: heat.lapsTarget,
+          bestLapMs: heat.bestLapMs,
+        }
+      : null,
+    champion:
+      tournament.status === 'FINISHED'
+        ? (tournament.standings[0]?.driver ?? null)
+        : null,
+    createdAt: tournament.createdAt,
+    finishedAt: tournament.finishedAt,
   };
 }
 

@@ -131,3 +131,41 @@ export type TournamentSummaryDto = {
   createdAt: Date;
   finishedAt: Date | null;
 };
+
+/** Public, compact view of a tournament for the landing page. */
+export type TournamentHighlightDto = {
+  id: string;
+  name: string;
+  status: TournamentStatus;
+  ruleSetName: string;
+  weather: TournamentWeather;
+  lapsPerDriver: number;
+  roundsCompleted: number;
+  roundsTotal: number;
+  currentRoundNumber: number | null;
+  rounds: Array<{
+    roundNumber: number;
+    circuit: CircuitDto;
+    status: RoundDto['status'];
+    /** Fastest driver once every driver has driven the track. */
+    winner: DriverDto | null;
+  }>;
+  standings: StandingDto[];
+  activeHeat: Pick<
+    ActiveHeatDto,
+    | 'roundNumber'
+    | 'circuit'
+    | 'driver'
+    | 'status'
+    | 'lapsCompleted'
+    | 'lapsTarget'
+    | 'bestLapMs'
+  > | null;
+  champion: DriverDto | null;
+  createdAt: Date;
+  finishedAt: Date | null;
+};
+
+export type LatestTournamentHighlightDto = {
+  tournament: TournamentHighlightDto | null;
+};

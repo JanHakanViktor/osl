@@ -5,6 +5,7 @@ import type {
 } from '../domain/tournament.types';
 import {
   toTournamentDto,
+  toTournamentHighlightDto,
   toTournamentSummaryDto,
 } from './tournament-response.mapper';
 
@@ -189,5 +190,94 @@ describe('toTournamentDto', () => {
       country: null,
       teamId: null,
     });
+  });
+});
+
+describe('toTournamentHighlightDto', () => {
+  it('summarizes a running tournament for the landing page', () => {
+    const highlight = toTournamentHighlightDto(
+      tournament({
+        status: 'HEAT_LIVE',
+        activeHeat: {
+          roundIndex: 1,
+          driverUserId: 'viktor',
+          status: 'LIVE',
+          stagedAt: date,
+          stagedGameSessionUid: null,
+          startedAt: date,
+          gameSessionUid: 'uid',
+          laps: [
+            {
+              gameSessionUid: 'uid',
+              lapNumber: 1,
+              lapTimeMs: 80_500,
+              sectorsMs: [],
+              valid: true,
+            },
+          ],
+          topSpeedKmh: 290,
+          detectedCircuitId: null,
+        },
+      }),
+    );
+
+    expect(highlight).toMatchObject({
+      id: 'tournament-1',
+      name: 'Friday League',
+      status: 'HEAT_LIVE',
+      ruleSetName: 'Ladder',
+      weather: 'WET',
+      roundsCompleted: 1,
+      roundsTotal: 3,
+      currentRoundNumber: 2,
+      champion: null,
+      activeHeat: {
+        roundNumber: 2,
+        status: 'LIVE',
+        circuit: { id: 13 },
+        driver: { id: 'viktor', country: 'SE', teamId: 'ferrari' },
+        lapsCompleted: 1,
+        lapsTarget: 1,
+        bestLapMs: 80_500,
+      },
+    });
+    expect(
+      highlight.rounds.map(({ roundNumber, status, winner }) => [
+        roundNumber,
+        status,
+        winner?.id ?? null,
+      ]),
+    ).toEqual([
+      [1, 'COMPLETE', 'viktor'],
+      [2, 'IN_PROGRESS', null],
+      [3, 'UPCOMING', null],
+    ]);
+    expect(highlight.standings.map((standing) => standing.driver.id)).toEqual([
+      'viktor',
+      'tim',
+    ]);
+  });
+
+  it('names the champion once the tournament is finished', () => {
+    const highlight = toTournamentHighlightDto(
+      tournament({
+        rounds: [
+          {
+            circuitId: 5,
+            heats: [heat('viktor', 72_000), heat('tim', 71_000)],
+          },
+        ],
+        status: 'FINISHED',
+        winnerUserId: 'tim',
+        finishedAt: date,
+      }),
+    );
+
+    expect(highlight.champion).toMatchObject({
+      id: 'tim',
+      driverName: 'Tim Andersson',
+    });
+    expect(highlight.currentRoundNumber).toBeNull();
+    expect(highlight.activeHeat).toBeNull();
   });
 });

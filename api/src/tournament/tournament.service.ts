@@ -14,6 +14,7 @@ import type { TournamentDriver } from './domain/tournament.types';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import type {
   DriverOptionDto,
+  LatestTournamentHighlightDto,
   RuleSetDto,
   TournamentDto,
   TournamentSummaryDto,
@@ -21,8 +22,10 @@ import type {
 import {
   toRuleSetDto,
   toTournamentDto,
+  toTournamentHighlightDto,
   toTournamentSummaryDto,
 } from './mappers/tournament-response.mapper';
+import { TournamentGateway } from './tournament.gateway';
 import { TournamentRepository } from './tournament.repository';
 import { TOURNAMENT_RANDOM_SOURCE } from './tournament.tokens';
 
@@ -33,6 +36,7 @@ export class TournamentService {
     private readonly users: UsersService,
     @Inject(TOURNAMENT_RANDOM_SOURCE)
     private readonly random: RandomSource,
+    private readonly gateway: TournamentGateway,
   ) {}
 
   listRuleSets(): RuleSetDto[] {
@@ -78,6 +82,7 @@ export class TournamentService {
         new Date(),
       ),
     );
+    this.gateway.broadcastUpdated(state.id);
 
     return toTournamentDto(state, hostUserId);
   }
@@ -92,6 +97,11 @@ export class TournamentService {
     if (!state) throw new NotFoundException('Tournament not found');
 
     return toTournamentDto(state, viewerUserId);
+  }
+
+  async getLatestHighlight(): Promise<LatestTournamentHighlightDto> {
+    const state = await this.tournaments.findMostRecentlyActive();
+    return { tournament: state ? toTournamentHighlightDto(state) : null };
   }
 
   private assertKnownCircuits(circuitIds: number[]): void {
