@@ -19,6 +19,8 @@ type SessionTargetPanelProps = {
   lapProgress?: number | null;
   finishDisabled: boolean;
   finishing: boolean;
+  finishLabel?: string;
+  finishingLabel?: string;
   onFinishSession: () => void;
 };
 
@@ -34,6 +36,8 @@ export default function SessionTargetPanel({
   lapProgress,
   finishDisabled,
   finishing,
+  finishLabel = "Exit Session",
+  finishingLabel = "Ending Session",
   onFinishSession,
 }: SessionTargetPanelProps) {
   return (
@@ -192,7 +196,7 @@ export default function SessionTargetPanel({
           boxShadow: (theme) => getOslAppShell(theme).accentGlow,
         }}
       >
-        {finishing ? "Ending Session" : "Exit Session"}
+        {finishing ? finishingLabel : finishLabel}
       </Button>
     </Stack>
   );
