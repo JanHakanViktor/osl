@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Session } from '../session/session.schema';
+import { SessionLapTracker } from './session-lap-tracker';
 
 type TelemetryPacket = {
   m_header?: {
@@ -64,6 +65,7 @@ export class SessionTelemetryService {
 
   private readonly logger = new Logger(SessionTelemetryService.name);
   private readonly sectorSnapshots = new Map<string, number[]>();
+  private readonly lapTracker = new SessionLapTracker();
 
   async handlePacket(
     event: string,
@@ -84,13 +86,14 @@ export class SessionTelemetryService {
         cleanLapStreak: 0,
         bestCleanLapStreak: 0,
         totalCleanLaps: 0,
+        totalLaps: 0,
         lastProcessedLapNum: 0,
       };
     }
 
     const telemetry = session.telemetry;
     let dirty = false;
-    let completedLapNum: number | null = null;
+    let lapsCompleted: number | null = null;
     let finishedSessionId: string | undefined;
     const sessionId = session._id.toString();
 
@@ -117,15 +120,23 @@ export class SessionTelemetryService {
     // LAP DATA
     if (event === 'lapData') {
       const lap = telemetryPacket.m_lapData?.[playerIndex];
-      const lapTime = this.firstNumber(
-        lap?.m_lastLapTimeInMS,
-        lap?.m_lastLapTimeInMs,
+
+      if (!lap) return {};
+
+      const currentLapNum = lap.m_currentLapNum ?? 1;
+      this.lapTracker.observe(
+        sessionId,
+        currentLapNum,
+        lap.m_currentLapInvalid === 1,
       );
 
-      if (!lap || !lapTime) return {};
+      const lapTime = this.firstNumber(
+        lap.m_lastLapTimeInMS,
+        lap.m_lastLapTimeInMs,
+      );
 
-      const isCleanLap = lap.m_currentLapInvalid === 0;
-      const currentLapNum = lap.m_currentLapNum ?? 1;
+      if (!lapTime) return {};
+
       const liveSectors = this.readAvailableSectors(lap);
       const liveSectorKey = this.getSectorSnapshotKey(sessionId, currentLapNum);
 
@@ -136,8 +147,16 @@ export class SessionTelemetryService {
         }
       }
 
-      completedLapNum = Math.max(currentLapNum - 1, 0);
+      // Only laps watched in progress are recorded, which skips laps finished
+      // before the session started. lastProcessedLapNum is persisted, so a lap
+      // whose save was overwritten by a concurrent packet is recorded again.
+      const completedLapNum = currentLapNum - 1;
+      const completedLap = this.lapTracker.findCompletedLap(
+        sessionId,
+        completedLapNum,
+      );
       const isNewCompletedLap =
+        completedLap !== null &&
         completedLapNum > 0 &&
         completedLapNum !== (telemetry.lastProcessedLapNum ?? 0);
 
@@ -153,13 +172,14 @@ export class SessionTelemetryService {
         );
 
         telemetry.lastProcessedLapNum = completedLapNum;
+        telemetry.totalLaps = (telemetry.totalLaps ?? 0) + 1;
 
         if (telemetry.fastestLapMs === 0 || lapTime < telemetry.fastestLapMs) {
           telemetry.fastestLapMs = lapTime;
           telemetry.fastestLapSectorsMs = completedSectors;
         }
 
-        if (isCleanLap) {
+        if (!completedLap.invalid) {
           telemetry.cleanLapStreak += 1;
           telemetry.totalCleanLaps += 1;
 
@@ -179,6 +199,8 @@ export class SessionTelemetryService {
       if (isNewCompletedLap) {
         dirty = true;
       }
+
+      lapsCompleted = telemetry.totalLaps ?? 0;
     }
 
     // CAR TELEMETRY
@@ -193,9 +215,7 @@ export class SessionTelemetryService {
       }
     }
 
-    if (
-      this.hasReachedSessionLimit(session, telemetryPacket, completedLapNum)
-    ) {
+    if (this.hasReachedSessionLimit(session, telemetryPacket, lapsCompleted)) {
       session.status = 'FINISHED';
       session.finishedAt = new Date();
       finishedSessionId = sessionId;
@@ -343,7 +363,7 @@ export class SessionTelemetryService {
   private hasReachedSessionLimit(
     session: Session,
     packet: TelemetryPacket,
-    completedLapNum: number | null,
+    lapsCompleted: number | null,
   ): boolean {
     if (session.limitType === 'TIME') {
       const sessionTime = packet.m_header?.m_sessionTime;
@@ -357,10 +377,10 @@ export class SessionTelemetryService {
 
     if (session.limitType === 'LAPS') {
       return (
-        typeof completedLapNum === 'number' &&
+        typeof lapsCompleted === 'number' &&
         typeof session.lapLimit === 'number' &&
         session.lapLimit > 0 &&
-        completedLapNum >= session.lapLimit
+        lapsCompleted >= session.lapLimit
       );
     }
 
