@@ -5,6 +5,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import HistoryIcon from "@mui/icons-material/History";
 import CloseIcon from "@mui/icons-material/Close";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useLocation, useNavigate } from "react-router";
 import SignInButton from "./auth/SignInButton";
 import { useUIStore } from "../store/uiStore";
@@ -34,6 +35,11 @@ const navItems = [
     label: "Session History",
     path: "/sessions",
     icon: HistoryIcon,
+  },
+  {
+    label: "Tournament",
+    path: "/tournaments",
+    icon: EmojiEventsIcon,
   },
 ];
 
@@ -283,7 +289,9 @@ function ResponsiveAppBar() {
                   location.pathname === path ||
                   (path === "/sessions" &&
                     location.pathname.startsWith("/sessions/") &&
-                    !location.pathname.endsWith("/live"));
+                    !location.pathname.endsWith("/live")) ||
+                  (path === "/tournaments" &&
+                    location.pathname.startsWith("/tournaments/"));
 
                 return (
                   <Button

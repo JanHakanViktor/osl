@@ -9,7 +9,7 @@ import { Box } from "@mui/material";
 const AppLayout = () => {
   useCurrentUser();
   const location = useLocation();
-  const isLiveTelemetryPage = /^\/sessions\/[^/]+\/live$/.test(
+  const isLiveTelemetryPage = /^\/(sessions|tournaments)\/[^/]+\/live$/.test(
     location.pathname,
   );
 
