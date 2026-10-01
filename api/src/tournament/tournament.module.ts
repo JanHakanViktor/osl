@@ -7,6 +7,7 @@ import { Tournament, TournamentSchema } from './schemas/tournament.schema';
 import { TournamentController } from './tournament.controller';
 import { TournamentGateway } from './tournament.gateway';
 import { TournamentHeatService } from './tournament-heat.service';
+import { TournamentHighlightsController } from './tournament-highlights.controller';
 import { TournamentRepository } from './tournament.repository';
 import { TournamentService } from './tournament.service';
 import { TOURNAMENT_RANDOM_SOURCE } from './tournament.tokens';
@@ -19,7 +20,7 @@ import { TOURNAMENT_RANDOM_SOURCE } from './tournament.tokens';
     UsersModule,
     TelemetryModule,
   ],
-  controllers: [TournamentController],
+  controllers: [TournamentController, TournamentHighlightsController],
   providers: [
     TournamentService,
     TournamentHeatService,

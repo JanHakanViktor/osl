@@ -26,10 +26,14 @@ function createDto(overrides: Partial<CreateTournamentDto> = {}) {
   } as CreateTournamentDto;
 }
 
-function setup(registered: RegisteredDriver[]) {
+function setup(
+  registered: RegisteredDriver[],
+  mostRecent: TournamentState | null = null,
+) {
   const tournaments = {
     create: jest.fn((state: TournamentState) => Promise.resolve(state)),
     countWinsByDriver: jest.fn(() => Promise.resolve(new Map([[viktorId, 2]]))),
+    findMostRecentlyActive: jest.fn(() => Promise.resolve(mostRecent)),
   };
   const users = {
     findDriversByIds: jest.fn(() => Promise.resolve(registered)),
@@ -138,5 +142,30 @@ describe('TournamentService', () => {
         tournamentWins: 0,
       },
     ]);
+  });
+
+  it('has no highlight before any tournament exists', async () => {
+    const { service } = setup(registered);
+
+    await expect(service.getLatestHighlight()).resolves.toEqual({
+      tournament: null,
+    });
+  });
+
+  it('highlights the most recently active tournament', async () => {
+    const { service, tournaments } = setup(registered);
+    await service.create(hostId, createDto());
+    const [savedState] = tournaments.create.mock.calls[0];
+    const { service: landing } = setup(registered, savedState);
+
+    const { tournament } = await landing.getLatestHighlight();
+
+    expect(tournament).toMatchObject({
+      name: 'Friday League',
+      status: 'READY',
+      roundsCompleted: 0,
+      roundsTotal: 2,
+      currentRoundNumber: 1,
+    });
   });
 });

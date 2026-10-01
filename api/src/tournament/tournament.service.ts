@@ -14,6 +14,7 @@ import type { TournamentDriver } from './domain/tournament.types';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import type {
   DriverOptionDto,
+  LatestTournamentHighlightDto,
   RuleSetDto,
   TournamentDto,
   TournamentSummaryDto,
@@ -21,6 +22,7 @@ import type {
 import {
   toRuleSetDto,
   toTournamentDto,
+  toTournamentHighlightDto,
   toTournamentSummaryDto,
 } from './mappers/tournament-response.mapper';
 import { TournamentRepository } from './tournament.repository';
@@ -92,6 +94,11 @@ export class TournamentService {
     if (!state) throw new NotFoundException('Tournament not found');
 
     return toTournamentDto(state, viewerUserId);
+  }
+
+  async getLatestHighlight(): Promise<LatestTournamentHighlightDto> {
+    const state = await this.tournaments.findMostRecentlyActive();
+    return { tournament: state ? toTournamentHighlightDto(state) : null };
   }
 
   private assertKnownCircuits(circuitIds: number[]): void {
