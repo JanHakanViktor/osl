@@ -18,9 +18,14 @@ export type ActiveHeatStatus = 'STAGED' | 'LIVE';
 
 export type HeatEndReason = 'LAP_TARGET_REACHED' | 'ENDED_BY_HOST';
 
+/** A driver as they were when the tournament was created. */
 export type TournamentDriver = {
   userId: string;
   driverName: string;
+  /** ISO 3166-1 alpha-2 code, or null when the driver had not chosen one. */
+  country: string | null;
+  /** Team id, or null when the driver had not chosen one. */
+  teamId: string | null;
 };
 
 export type HeatLap = {

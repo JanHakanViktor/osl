@@ -110,6 +110,14 @@ export class TournamentDriverRecord {
 
   @Prop({ required: true })
   driverName: string;
+
+  /** Missing on tournaments created before drivers had a flag. */
+  @Prop({ type: String, default: null })
+  country?: string | null;
+
+  /** Missing on tournaments created before drivers had a team. */
+  @Prop({ type: String, default: null })
+  teamId?: string | null;
 }
 
 const TournamentDriverRecordSchema = SchemaFactory.createForClass(

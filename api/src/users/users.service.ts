@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User } from 'src/users/user.schema';
 import type { TeamId } from 'src/data/team';
 import bcrypt from 'bcrypt';
@@ -20,7 +20,26 @@ export type NewUser = {
 export type RegisteredDriver = {
   id: string;
   driverName: string;
+  /** ISO 3166-1 alpha-2 code, or null when the driver has not chosen one. */
+  country: string | null;
+  /** Team id from src/data/team.ts, or null when the driver has not chosen one. */
+  teamId: string | null;
 };
+
+const REGISTERED_DRIVER_FIELDS = 'username drivername country teamId';
+
+function toRegisteredDriver(
+  user: Pick<User, 'username' | 'drivername' | 'country' | 'teamId'> & {
+    _id: Types.ObjectId;
+  },
+): RegisteredDriver {
+  return {
+    id: user._id.toString(),
+    driverName: user.drivername || user.username,
+    country: user.country ?? null,
+    teamId: user.teamId ?? null,
+  };
+}
 
 @Injectable()
 export class UsersService {
@@ -76,25 +95,19 @@ export class UsersService {
   async findDrivers(): Promise<RegisteredDriver[]> {
     const users = await this.userModel
       .find()
-      .select('username drivername')
+      .select(REGISTERED_DRIVER_FIELDS)
       .sort({ drivername: 1, username: 1 })
       .lean();
 
-    return users.map((user) => ({
-      id: user._id.toString(),
-      driverName: user.drivername || user.username,
-    }));
+    return users.map(toRegisteredDriver);
   }
 
   async findDriversByIds(ids: string[]): Promise<RegisteredDriver[]> {
     const users = await this.userModel
       .find({ _id: { $in: ids } })
-      .select('username drivername')
+      .select(REGISTERED_DRIVER_FIELDS)
       .lean();
 
-    return users.map((user) => ({
-      id: user._id.toString(),
-      driverName: user.drivername || user.username,
-    }));
+    return users.map(toRegisteredDriver);
   }
 }

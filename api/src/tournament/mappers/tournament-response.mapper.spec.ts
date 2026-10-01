@@ -3,7 +3,10 @@ import type {
   CompletedHeat,
   TournamentState,
 } from '../domain/tournament.types';
-import { toTournamentDto } from './tournament-response.mapper';
+import {
+  toTournamentDto,
+  toTournamentSummaryDto,
+} from './tournament-response.mapper';
 
 const date = new Date('2026-10-01T18:00:00Z');
 
@@ -34,8 +37,18 @@ function tournament(overrides: Partial<TournamentState> = {}): TournamentState {
       ruleSetId: 'LADDER',
     },
     drivers: [
-      { userId: 'viktor', driverName: 'Viktor Petersson' },
-      { userId: 'tim', driverName: 'Tim Andersson' },
+      {
+        userId: 'viktor',
+        driverName: 'Viktor Petersson',
+        country: 'SE',
+        teamId: 'ferrari',
+      },
+      {
+        userId: 'tim',
+        driverName: 'Tim Andersson',
+        country: null,
+        teamId: null,
+      },
     ],
     rounds: [
       {
@@ -138,8 +151,43 @@ describe('toTournamentDto', () => {
     );
 
     expect(dto.awards?.mostRoundWins).toEqual({
-      driver: { id: 'tim', driverName: 'Tim Andersson' },
+      driver: {
+        id: 'tim',
+        driverName: 'Tim Andersson',
+        country: null,
+        teamId: null,
+      },
       count: 1,
+    });
+  });
+
+  it('shows each driver flag and team wherever the driver appears', () => {
+    const viktor = {
+      id: 'viktor',
+      driverName: 'Viktor Petersson',
+      country: 'SE',
+      teamId: 'ferrari',
+    };
+
+    const dto = toTournamentDto(tournament(), 'host');
+
+    expect(dto.drivers[0]).toEqual(viktor);
+    expect(dto.standings[0].driver).toEqual(viktor);
+    expect(dto.rounds[0].results[0].driver).toEqual(viktor);
+    expect(dto.drivers[1]).toMatchObject({ country: null, teamId: null });
+  });
+
+  it('shows no flag or team for a winner missing from the driver list', () => {
+    const summary = toTournamentSummaryDto(
+      tournament({ status: 'FINISHED', winnerUserId: 'removed' }),
+      'host',
+    );
+
+    expect(summary.winner).toEqual({
+      id: 'removed',
+      driverName: 'Unknown driver',
+      country: null,
+      teamId: null,
     });
   });
 });

@@ -124,7 +124,12 @@ export class TournamentService {
         throw new BadRequestException('Every driver must be a registered user');
       }
 
-      return { userId: driver.id, driverName: driver.driverName };
+      return {
+        userId: driver.id,
+        driverName: driver.driverName,
+        country: driver.country,
+        teamId: driver.teamId,
+      };
     });
   }
 }

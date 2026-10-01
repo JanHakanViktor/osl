@@ -46,8 +46,13 @@ function setup(registered: RegisteredDriver[]) {
 }
 
 const registered: RegisteredDriver[] = [
-  { id: viktorId, driverName: 'Viktor Petersson' },
-  { id: timId, driverName: 'Tim Andersson' },
+  {
+    id: viktorId,
+    driverName: 'Viktor Petersson',
+    country: 'SE',
+    teamId: 'ferrari',
+  },
+  { id: timId, driverName: 'Tim Andersson', country: null, teamId: null },
 ];
 
 describe('TournamentService', () => {
@@ -75,6 +80,29 @@ describe('TournamentService', () => {
     expect(dto.rounds.map((round) => round.circuit.id)).toEqual([13, 5]);
   });
 
+  it('keeps each driver flag and team as they were at creation', async () => {
+    const { service, tournaments } = setup(registered);
+
+    const dto = await service.create(hostId, createDto());
+
+    const [savedState] = tournaments.create.mock.calls[0];
+    expect(savedState.drivers).toEqual([
+      {
+        userId: timId,
+        driverName: 'Tim Andersson',
+        country: null,
+        teamId: null,
+      },
+      {
+        userId: viktorId,
+        driverName: 'Viktor Petersson',
+        country: 'SE',
+        teamId: 'ferrari',
+      },
+    ]);
+    expect(dto.drivers[1]).toMatchObject({ country: 'SE', teamId: 'ferrari' });
+  });
+
   it('rejects drivers who are not registered', async () => {
     const { service } = setup([registered[0]]);
 
@@ -95,8 +123,20 @@ describe('TournamentService', () => {
     const { service } = setup(registered);
 
     await expect(service.listDriverOptions()).resolves.toEqual([
-      { id: viktorId, driverName: 'Viktor Petersson', tournamentWins: 2 },
-      { id: timId, driverName: 'Tim Andersson', tournamentWins: 0 },
+      {
+        id: viktorId,
+        driverName: 'Viktor Petersson',
+        country: 'SE',
+        teamId: 'ferrari',
+        tournamentWins: 2,
+      },
+      {
+        id: timId,
+        driverName: 'Tim Andersson',
+        country: null,
+        teamId: null,
+        tournamentWins: 0,
+      },
     ]);
   });
 });

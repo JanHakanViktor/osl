@@ -24,8 +24,8 @@ function newTournament(circuitIds = [5, 11, 13]): TournamentState {
         ruleSetId: 'LADDER',
       },
       drivers: [
-        { userId: 'viktor', driverName: 'Viktor' },
-        { userId: 'tim', driverName: 'Tim' },
+        { userId: 'viktor', driverName: 'Viktor', country: null, teamId: null },
+        { userId: 'tim', driverName: 'Tim', country: null, teamId: null },
       ],
       circuitIds,
     },
