@@ -183,6 +183,8 @@ export class SessionService {
       circuitName: session.circuitName,
       limitType: session.limitType,
       lapLimit: session.lapLimit,
+      // The same count the LAPS limit finishes the session on.
+      lapsCompleted: session.telemetry?.totalLaps ?? 0,
       timeLimitSeconds: session.timeLimitSeconds,
       startedAt: session.startedAt,
     };
