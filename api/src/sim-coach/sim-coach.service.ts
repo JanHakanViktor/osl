@@ -9,7 +9,7 @@ import { Session } from '../session/session.schema';
 import { SimCoachAnalysisEngine } from './analysis/sim-coach-analysis.engine';
 import type { AnalysisLap } from './analysis/sim-coach-analysis.types';
 import { CompletedLapDto } from './dto/completed-lap.dto';
-import { mapF1TrackIdToOslCircuitId } from './mappers/f1-track-id.mapper';
+import { mapF1TrackIdToOslCircuitId } from '../data/f1-track-id.mapper';
 import { DefaultReferenceLapRepository } from './references/default-reference-lap.repository';
 import { SimCoachLap } from './schemas/sim-coach-lap.schema';
 
