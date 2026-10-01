@@ -17,6 +17,7 @@ import {
   calculateLapProgress,
   calculateLapsRemaining,
   countGameLapsCompleted,
+  filterSessionLaps,
   findFastestLap,
   firstFiniteNumber,
   formatDuration,
@@ -109,7 +110,11 @@ export default function TelemetryPage() {
     return mapHistoryLaps(historyData ?? []);
   }, [playerSessionHistory]);
 
-  const completedLaps = mergeCompletedLaps(historyLaps, liveLaps);
+  const gameCompletedLaps = mergeCompletedLaps(historyLaps, liveLaps);
+  const completedLaps = filterSessionLaps(
+    gameCompletedLaps,
+    liveSession?.firstRecordedLapNumber,
+  );
   const fastestCompletedLap = findFastestLap(completedLaps);
   const fastestLapMs = fastestCompletedLap?.lapTimeMs ?? bestLapMs;
   const previousFastestLap = fastestCompletedLap
@@ -134,7 +139,7 @@ export default function TelemetryPage() {
       ? calculateLapsRemaining(liveSession.lapLimit, liveSession.lapsCompleted)
       : calculateLapsRemaining(
           session?.m_totalLaps,
-          countGameLapsCompleted(currentLapNumber, completedLaps.length),
+          countGameLapsCompleted(currentLapNumber, gameCompletedLaps.length),
         );
   const remainingSeconds = firstFiniteNumber(
     session?.m_sessionTimeLeft,

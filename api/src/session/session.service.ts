@@ -178,6 +178,8 @@ export class SessionService {
       throw new NotFoundException('Active session not found');
     }
 
+    const firstRecordedLapNum = session.telemetry?.firstProcessedLapNum ?? 0;
+
     return {
       id: session._id.toString(),
       sessionName: session.sessionName,
@@ -186,6 +188,9 @@ export class SessionService {
       lapLimit: session.lapLimit,
       // The same count the LAPS limit finishes the session on.
       lapsCompleted: session.telemetry?.totalLaps ?? 0,
+      // Game laps before this one were finished before the session started.
+      firstRecordedLapNumber:
+        firstRecordedLapNum > 0 ? firstRecordedLapNum : null,
       timeLimitSeconds: session.timeLimitSeconds,
       startedAt: session.startedAt,
     };

@@ -48,6 +48,30 @@ describe('SessionService.getLiveSession', () => {
 
     expect(liveSession.lapsCompleted).toBe(0);
   });
+
+  it('reports the first game lap the session recorded', async () => {
+    const { service, sessionId } = createServiceWithActiveSession({
+      totalLaps: 2,
+      firstProcessedLapNum: 5,
+      lastProcessedLapNum: 6,
+    });
+
+    const liveSession = await service.getLiveSession(sessionId, USER_ID);
+
+    expect(liveSession.firstRecordedLapNumber).toBe(5);
+  });
+
+  it('has no first recorded lap before the session records one', async () => {
+    const { service, sessionId } = createServiceWithActiveSession({
+      totalLaps: 0,
+      firstProcessedLapNum: 0,
+      lastProcessedLapNum: 0,
+    });
+
+    const liveSession = await service.getLiveSession(sessionId, USER_ID);
+
+    expect(liveSession.firstRecordedLapNumber).toBeNull();
+  });
 });
 
 describe('getValidSectorBreakdown', () => {

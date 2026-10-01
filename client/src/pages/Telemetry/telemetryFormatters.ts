@@ -204,6 +204,20 @@ export function mergeCompletedLaps(
   return [...mergedByLap.values()].sort((a, b) => a.lapNumber - b.lapNumber);
 }
 
+/**
+ * Keeps the laps driven during the OSL session. The game's lap history also
+ * holds laps finished before the session started, so no lap counts until the
+ * API has recorded one.
+ */
+export function filterSessionLaps(
+  laps: CompletedLap[],
+  firstRecordedLapNumber?: number | null,
+): CompletedLap[] {
+  if (firstRecordedLapNumber == null) return [];
+
+  return laps.filter((lap) => lap.lapNumber >= firstRecordedLapNumber);
+}
+
 export function calculateLapsRemaining(
   lapTarget?: number | null,
   lapsCompleted?: number | null,
