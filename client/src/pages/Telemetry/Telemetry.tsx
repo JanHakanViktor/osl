@@ -1,21 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Container } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
 import { getOslAppShell } from "../../theme";
 import { useCurrentUser } from "../../components/auth/auth.queries";
 import CircuitLibrary from "../../data/circuit";
-import { finishSession, getLiveSessionDetails } from "../../service/session";
+import { finishSession } from "../../service/session";
 import CompletedLapsList from "./components/CompletedLapsList";
 import DriverTelemetryHero from "./components/DriverTelemetryHero";
 import SectorTimingBar from "./components/SectorTimingBar";
 import SessionTargetPanel from "./components/SessionTargetPanel";
+import { useLiveSessionDetails } from "./hooks/useLiveSessionDetails";
 import { useTelemetrySocket } from "./hooks/useTelemetrySocket";
 import {
   buildSectorDisplays,
   buildFastestLapDeltaLabel,
   calculateLapProgress,
   calculateLapsRemaining,
+  countGameLapsCompleted,
   findFastestLap,
   firstFiniteNumber,
   formatDuration,
@@ -51,12 +52,6 @@ export default function TelemetryPage() {
     heldSector3Ms,
     sessionFinished,
   } = useTelemetrySocket();
-  const { data: liveSession } = useQuery({
-    queryKey: ["liveSession", sessionId],
-    queryFn: () => getLiveSessionDetails(sessionId!),
-    enabled: Boolean(sessionId),
-    retry: false,
-  });
   const [finishingSession, setFinishingSession] = useState(false);
   const hasNavigatedToOverviewRef = useRef(false);
   const driverName =
@@ -89,6 +84,10 @@ export default function TelemetryPage() {
     playerLap?.m_bestLapTimeInMs,
   );
   const currentLapNumber = playerLap?.m_currentLapNum;
+  const { data: liveSession } = useLiveSessionDetails(
+    sessionId,
+    currentLapNumber,
+  );
   const lapProgress = calculateLapProgress(
     playerLap?.m_lapDistance,
     session?.m_trackLength,
@@ -128,15 +127,15 @@ export default function TelemetryPage() {
     fastestCompletedLap,
   );
   const sessionElapsedSeconds = session?.m_header?.m_sessionTime ?? null;
-  const lapTarget =
+  // LAPS sessions count from the session start, like the API's auto-finish;
+  // other sessions count down the game's own race distance.
+  const lapsRemaining =
     liveSession?.limitType === "LAPS"
-      ? liveSession.lapLimit
-      : session?.m_totalLaps;
-  const lapsRemaining = calculateLapsRemaining(
-    lapTarget,
-    currentLapNumber,
-    completedLaps.length,
-  );
+      ? calculateLapsRemaining(liveSession.lapLimit, liveSession.lapsCompleted)
+      : calculateLapsRemaining(
+          session?.m_totalLaps,
+          countGameLapsCompleted(currentLapNumber, completedLaps.length),
+        );
   const remainingSeconds = firstFiniteNumber(
     session?.m_sessionTimeLeft,
     liveSession?.limitType === "TIME" &&
