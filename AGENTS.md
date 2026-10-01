@@ -34,11 +34,13 @@ Current structure:
 
 Treat the project as a production full-stack system. Preserve the separation between UI, API, telemetry ingestion, domain logic, persistence, and transport concerns.
 
-The local F1 25 UDP reference is an important project source:
+The F1 25 UDP specification is an important project source. OSL reads the F1 25 UDP format (`m_packetFormat` `2025`), documented in `Data Output from F1 25 v3.pdf`. EA attaches it to its UDP specification post:
 
-- `C:/Users/unthz/Downloads/Data Output from F1 25 v3 (4).pdf`
+- https://forums.ea.com/blog/f1-games-game-info-hub-en/ea-sports%E2%84%A2-f1%C2%AE25-2026-season-pack-udp-specification/12187347
 
-Use it when changing telemetry parsing, packet validation, session modeling, lap/session history, car status, car telemetry, or real-time broadcast behavior.
+The same post also has the F1 25: 2026 Season Pack specification. That newer format uses `m_packetFormat` `2026`, 24-car arrays and an extra packet 16 (Car Telemetry 2). OSL is built for the 2025 format, and the relay's sim-coach collector only accepts `2025`. The game must send the 2025 format: in its UDP settings, set "UDP Format" to `2025`. Players who started F1 25 before the Season Pack keep that format; new players get the 2026 format by default.
+
+Use the v3 spec when changing telemetry parsing, packet validation, session modeling, lap/session history, car status, car telemetry, or real-time broadcast behavior.
 
 ## Preferred Design Style
 
@@ -94,7 +96,7 @@ Do not over-design. A small clear module is better than a large abstract framewo
 
 ## F1 25 Telemetry Standards
 
-Treat the F1 25 data output PDF as the source of truth for UDP packet structure and semantics.
+Treat the F1 25 v3 data output PDF (the 2025 UDP format) as the source of truth for UDP packet structure and semantics.
 
 Important rules from the spec:
 
