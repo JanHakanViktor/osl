@@ -234,7 +234,12 @@ export class SessionTelemetryService {
       }
     }
 
-    if (this.hasReachedSessionLimit(session, telemetryPacket, lapsCompleted)) {
+    // Session history still reaches sessions that finished in the last two
+    // minutes; those must not be finished again.
+    if (
+      session.status === 'ACTIVE' &&
+      this.hasReachedSessionLimit(session, telemetryPacket, lapsCompleted)
+    ) {
       session.status = 'FINISHED';
       session.finishedAt = new Date();
       finishedSessionId = sessionId;

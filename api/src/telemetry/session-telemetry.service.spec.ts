@@ -371,6 +371,27 @@ describe('SessionTelemetryService', () => {
     });
   });
 
+  describe('when a session has finished', () => {
+    it('does not finish a TIME session again when late session history arrives', async () => {
+      const { model, service } = createService({
+        limitType: 'TIME',
+        timeLimitSeconds: 600,
+      });
+
+      const atLimit = await sendTopSpeed(service, 300, 600);
+      expect(atLimit.finishedSessionId).toBe(SESSION_ID);
+
+      // Finished a minute ago, still inside the session history grace period.
+      const finishedAt = new Date(Date.now() - 60_000);
+      model.persisted.finishedAt = finishedAt;
+
+      const lateHistory = await sendSessionHistory(service, [], 610);
+
+      expect(lateHistory.finishedSessionId).toBeUndefined();
+      expect(model.persisted.finishedAt).toEqual(finishedAt);
+    });
+  });
+
   describe('concurrent packets', () => {
     it('records a completed lap again with its own validity when a concurrent save overwrote it', async () => {
       const { model, service } = createService();
