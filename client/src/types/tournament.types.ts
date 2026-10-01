@@ -11,6 +11,10 @@ export type TournamentStatus =
 export type TournamentDriver = {
   id: string;
   driverName: string;
+  /** ISO 3166-1 alpha-2 code, or null when the driver has not chosen one. */
+  country: string | null;
+  /** Team id from TEAMS, or null when the driver has not chosen one. */
+  teamId: string | null;
 };
 
 export type DriverOption = TournamentDriver & {

@@ -3,6 +3,7 @@ import { alpha } from "@mui/material/styles";
 import { getOslAppShell } from "../../../theme";
 import type { Standing } from "../../../types/tournament.types";
 import DriverAvatar from "./DriverAvatar";
+import DriverCaption from "./DriverCaption";
 
 type DriverStandingsListProps = {
   standings: Standing[];
@@ -51,9 +52,9 @@ export default function DriverStandingsList({
               >
                 {standing.driver.driverName}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <DriverCaption driver={standing.driver}>
                 {standing.roundWins} track {standing.roundWins === 1 ? "win" : "wins"}
-              </Typography>
+              </DriverCaption>
             </Box>
             <Typography
               aria-label={`${standing.points} points`}

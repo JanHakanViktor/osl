@@ -16,6 +16,8 @@ import { alpha } from "@mui/material/styles";
 import { getOslAppShell } from "../../../../theme";
 import type { DriverOption } from "../../../../types/tournament.types";
 import DriverAvatar from "../../components/DriverAvatar";
+import DriverCaption from "../../components/DriverCaption";
+import DriverFlag from "../../components/DriverFlag";
 import TournamentPanel from "../../components/TournamentPanel";
 import { MAX_DRIVERS, MIN_DRIVERS } from "../tournamentDraft";
 
@@ -131,11 +133,12 @@ export default function DriverSelectionStep({
                 }}
               >
                 <DriverAvatar name={driver.driverName} highlighted={selected} />
-                <Typography
-                  sx={{ flex: 1, fontWeight: 900, textTransform: "uppercase" }}
-                >
-                  {driver.driverName}
-                </Typography>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography sx={{ fontWeight: 900, textTransform: "uppercase" }}>
+                    {driver.driverName}
+                  </Typography>
+                  <DriverCaption driver={driver} />
+                </Box>
                 <Typography sx={{ width: 96, textAlign: "right", fontWeight: 800 }}>
                   {driver.tournamentWins}x
                 </Typography>
@@ -189,6 +192,7 @@ export default function DriverSelectionStep({
                 <Typography color="text.secondary" sx={{ width: 22, fontWeight: 800 }}>
                   {index + 1}
                 </Typography>
+                <DriverFlag country={driver.country} />
                 <Typography sx={{ fontWeight: 900, textTransform: "uppercase" }}>
                   {driver.driverName}
                 </Typography>
