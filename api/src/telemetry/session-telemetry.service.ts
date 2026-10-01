@@ -52,6 +52,12 @@ type LapHistoryTelemetry = {
   m_lapValidBitFlags?: number;
 };
 
+/** Game lap numbers the session recorded in the current game session. */
+type RecordedLapRange = {
+  firstLapNum: number;
+  lastLapNum: number;
+};
+
 type SessionTelemetryResult = {
   finishedSessionId?: string;
 };
@@ -87,6 +93,7 @@ export class SessionTelemetryService {
         bestCleanLapStreak: 0,
         totalCleanLaps: 0,
         totalLaps: 0,
+        firstProcessedLapNum: 0,
         lastProcessedLapNum: 0,
       };
     }
@@ -108,7 +115,10 @@ export class SessionTelemetryService {
         return {};
       }
 
-      const fastestHistoryLap = this.findFastestHistoryLap(telemetryPacket);
+      const recordedLaps = this.getRecordedLapRange(telemetry);
+      const fastestHistoryLap = recordedLaps
+        ? this.findFastestHistoryLap(telemetryPacket, recordedLaps)
+        : null;
 
       if (fastestHistoryLap) {
         telemetry.fastestLapMs = fastestHistoryLap.lapTime;
@@ -170,6 +180,15 @@ export class SessionTelemetryService {
           this.sectorSnapshots.get(completedSectorKey) ??
             this.readAvailableSectors(lap),
         );
+
+        // Lap numbers only go back when the game session restarted. Its
+        // history starts over too, so the recorded laps start a new range.
+        if (
+          !telemetry.firstProcessedLapNum ||
+          completedLapNum < (telemetry.lastProcessedLapNum ?? 0)
+        ) {
+          telemetry.firstProcessedLapNum = completedLapNum;
+        }
 
         telemetry.lastProcessedLapNum = completedLapNum;
         telemetry.totalLaps = (telemetry.totalLaps ?? 0) + 1;
@@ -298,15 +317,33 @@ export class SessionTelemetryService {
     return [sector1, sector2, sector3];
   }
 
+  private getRecordedLapRange(
+    telemetry: Session['telemetry'],
+  ): RecordedLapRange | null {
+    const firstLapNum = telemetry.firstProcessedLapNum ?? 0;
+    const lastLapNum = telemetry.lastProcessedLapNum ?? 0;
+
+    if (firstLapNum < 1 || lastLapNum < firstLapNum) return null;
+
+    return { firstLapNum, lastLapNum };
+  }
+
   private findFastestHistoryLap(
     packet: TelemetryPacket,
+    recordedLaps: RecordedLapRange,
   ): { lapTime: number; sectors: number[] } | null {
     const historyLength = packet.m_lapHistoryData?.length ?? 0;
     const lapCount =
       typeof packet.m_numLaps === 'number' && packet.m_numLaps > 0
         ? Math.min(packet.m_numLaps, historyLength)
         : historyLength;
-    const history = packet.m_lapHistoryData?.slice(0, lapCount) ?? [];
+    // m_lapHistoryData[i] holds lap i + 1. The game session's history also
+    // has laps driven before the session started or after it finished.
+    const history =
+      packet.m_lapHistoryData?.slice(
+        recordedLaps.firstLapNum - 1,
+        Math.min(lapCount, recordedLaps.lastLapNum),
+      ) ?? [];
 
     return history.reduce<{ lapTime: number; sectors: number[] } | null>(
       (best, lap) => {

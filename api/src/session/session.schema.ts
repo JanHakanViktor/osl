@@ -45,6 +45,7 @@ export class Session extends Document {
       bestCleanLapStreak: { type: Number, default: 0 },
       totalCleanLaps: { type: Number, default: 0 },
       totalLaps: { type: Number, default: 0 },
+      firstProcessedLapNum: { type: Number, default: 0 },
       lastProcessedLapNum: { type: Number, default: 0 },
     },
     default: () => ({}),
@@ -58,6 +59,8 @@ export class Session extends Document {
     totalCleanLaps: number;
     /** Laps completed since the session started; drives the LAPS limit. */
     totalLaps?: number;
+    /** First game lap recorded since the game session last restarted. */
+    firstProcessedLapNum?: number;
     lastProcessedLapNum?: number;
   };
 }
