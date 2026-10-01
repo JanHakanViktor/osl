@@ -5,7 +5,9 @@ import { getOslAppShell } from "../../../theme";
 import type { Tournament } from "../../../types/tournament.types";
 import { useTournamentActions } from "../hooks/useTournament";
 import { WEATHER_LABELS } from "../tournamentFormatters";
+import { findTeam } from "../driverProfile";
 import DriverAvatar from "./DriverAvatar";
+import DriverCaption from "./DriverCaption";
 import DriverDice from "./DriverDice";
 import TournamentPanel from "./TournamentPanel";
 
@@ -90,6 +92,9 @@ export default function NextHeatPanel({ tournament }: NextHeatPanelProps) {
               >
                 {heat.driver.driverName}
               </Typography>
+              <DriverCaption driver={heat.driver}>
+                {findTeam(heat.driver.teamId)?.name}
+              </DriverCaption>
             </Box>
           </Stack>
 

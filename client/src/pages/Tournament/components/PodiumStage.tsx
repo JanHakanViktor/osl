@@ -1,7 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { getOslAppShell } from "../../../theme";
 import type { Standing } from "../../../types/tournament.types";
 import { driverCode, formatPoints } from "../tournamentFormatters";
+import DriverFlag from "./DriverFlag";
+import DriverTeamLogo from "./DriverTeamLogo";
 
 /** Podium heights in px for P1, P2 and P3. */
 const STEP_HEIGHTS: Record<number, { xs: number; md: number }> = {
@@ -53,6 +55,23 @@ export default function PodiumStage({ standings }: PodiumStageProps) {
               textAlign: "center",
             }}
           >
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="center"
+              flexWrap="wrap"
+              gap={1}
+              sx={{ mb: 1 }}
+            >
+              <DriverFlag
+                country={standing.driver.country}
+                size={isWinner ? 24 : 18}
+              />
+              <DriverTeamLogo
+                teamId={standing.driver.teamId}
+                height={isWinner ? 28 : 22}
+              />
+            </Stack>
             <Typography
               sx={{
                 fontWeight: 900,

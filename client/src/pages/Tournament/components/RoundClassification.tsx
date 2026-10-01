@@ -5,6 +5,7 @@ import type { RoundResult } from "../../../types/tournament.types";
 import { formatLapTime } from "../../Telemetry/telemetryFormatters";
 import { describeBonuses, formatPoints } from "../tournamentFormatters";
 import DriverAvatar from "./DriverAvatar";
+import DriverCaption from "./DriverCaption";
 
 type RoundClassificationProps = {
   results: RoundResult[];
@@ -86,9 +87,9 @@ export default function RoundClassification({
               <Typography noWrap sx={{ fontWeight: 900, textTransform: "uppercase" }}>
                 {result.driver.driverName}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <DriverCaption driver={result.driver}>
                 {lapSummary(result, lapsTarget)}
-              </Typography>
+              </DriverCaption>
             </Box>
             <Typography
               sx={{
