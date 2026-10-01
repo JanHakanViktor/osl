@@ -8,6 +8,11 @@ import { Model } from 'mongoose';
 import { User } from 'src/users/user.schema';
 import bcrypt from 'bcrypt';
 
+export type RegisteredDriver = {
+  id: string;
+  driverName: string;
+};
+
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
@@ -47,5 +52,30 @@ export class UsersService {
 
   async findSessionUser(userId: string) {
     return this.userModel.findById(userId).select('username drivername isAdmin');
+  }
+
+  async findDrivers(): Promise<RegisteredDriver[]> {
+    const users = await this.userModel
+      .find()
+      .select('username drivername')
+      .sort({ drivername: 1, username: 1 })
+      .lean();
+
+    return users.map((user) => ({
+      id: user._id.toString(),
+      driverName: user.drivername || user.username,
+    }));
+  }
+
+  async findDriversByIds(ids: string[]): Promise<RegisteredDriver[]> {
+    const users = await this.userModel
+      .find({ _id: { $in: ids } })
+      .select('username drivername')
+      .lean();
+
+    return users.map((user) => ({
+      id: user._id.toString(),
+      driverName: user.drivername || user.username,
+    }));
   }
 }

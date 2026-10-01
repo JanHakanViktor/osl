@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthController } from './health/health.controller';
 import { SimCoachModule } from './sim-coach/sim-coach.module';
+import { TournamentModule } from './tournament/tournament.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SimCoachModule } from './sim-coach/sim-coach.module';
     UsersModule,
     AuthModule,
     SimCoachModule,
+    TournamentModule,
   ],
   controllers: [HealthController],
 })
