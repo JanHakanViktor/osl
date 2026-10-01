@@ -6,7 +6,11 @@ import { finishSession } from "../../service/session";
 import LiveTelemetryDashboard from "./components/LiveTelemetryDashboard";
 import { useLiveSessionDetails } from "./hooks/useLiveSessionDetails";
 import { useTelemetrySocket } from "./hooks/useTelemetrySocket";
-import { buildLiveTelemetryView, buildSessionTarget } from "./liveTelemetryView";
+import {
+  buildLiveTelemetryView,
+  buildSessionTarget,
+  readCurrentLapNumber,
+} from "./liveTelemetryView";
 
 export default function TelemetryPage() {
   const navigate = useNavigate();
@@ -20,10 +24,15 @@ export default function TelemetryPage() {
       ? user.drivername
       : "Driver";
 
-  const view = useMemo(() => buildLiveTelemetryView(telemetry), [telemetry]);
   const { data: liveSession } = useLiveSessionDetails(
     sessionId,
-    view.currentLapNumber,
+    readCurrentLapNumber(telemetry),
+  );
+  // Hide laps the game finished before this session started.
+  const firstRecordedLapNumber = liveSession?.firstRecordedLapNumber ?? null;
+  const view = useMemo(
+    () => buildLiveTelemetryView(telemetry, { firstRecordedLapNumber }),
+    [telemetry, firstRecordedLapNumber],
   );
   const target = buildSessionTarget(liveSession, view, telemetry.session);
   const { sessionFinished } = telemetry;

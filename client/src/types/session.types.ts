@@ -21,6 +21,8 @@ export type LiveSessionDetails = {
   lapLimit?: number;
   /** Laps completed since the session started; the API finishes LAPS sessions on it. */
   lapsCompleted: number;
+  /** Game lap the session's recorded laps start from; null until one is recorded. */
+  firstRecordedLapNumber: number | null;
   startedAt?: string;
 };
 

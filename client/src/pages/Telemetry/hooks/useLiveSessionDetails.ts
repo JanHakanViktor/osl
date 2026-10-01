@@ -9,7 +9,8 @@ import type { LiveSessionDetails } from "../../../types/session.types";
 
 /**
  * Loads the live session and refetches it whenever the game starts a new lap,
- * so `lapsCompleted` follows the lap count the API finishes the session on.
+ * so `lapsCompleted` and `firstRecordedLapNumber` follow the laps the API has
+ * recorded for the session.
  */
 export function useLiveSessionDetails(
   sessionId?: string,

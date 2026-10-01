@@ -5,6 +5,7 @@ import {
   calculateLapProgress,
   calculateLapsRemaining,
   countGameLapsCompleted,
+  filterSessionLaps,
   getLapDataSectors,
   mergeCompletedLaps,
 } from "./telemetryFormatters";
@@ -87,6 +88,26 @@ assert.equal(
     mergeCompletedLaps([laps[0]], [laps[0], laps[1]]).map((lap) => lap.lapNumber),
   ),
   JSON.stringify([1, 2]),
+);
+
+// The game's lap history also holds laps finished before the session started.
+const gameLaps: CompletedLap[] = [4, 5, 6].map((lapNumber) => ({
+  ...laps[0],
+  lapNumber,
+}));
+
+assert.equal(
+  JSON.stringify(filterSessionLaps(gameLaps, 5).map((lap) => lap.lapNumber)),
+  JSON.stringify([5, 6]),
+);
+assert.equal(
+  JSON.stringify(filterSessionLaps(gameLaps, null).map((lap) => lap.lapNumber)),
+  JSON.stringify([]),
+);
+// After a game restart the recorded laps start again from lap 1.
+assert.equal(
+  JSON.stringify(filterSessionLaps(gameLaps, 1).map((lap) => lap.lapNumber)),
+  JSON.stringify([4, 5, 6]),
 );
 
 assert.equal(
