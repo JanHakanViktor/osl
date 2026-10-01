@@ -4,6 +4,7 @@ import {
   buildSectorDisplays,
   calculateLapProgress,
   calculateLapsRemaining,
+  countGameLapsCompleted,
   getLapDataSectors,
   mergeCompletedLaps,
 } from "./telemetryFormatters";
@@ -28,9 +29,21 @@ const laps: CompletedLap[] = [
   },
 ];
 
-assert.equal(calculateLapsRemaining(5, 2, 1), 4);
-assert.equal(calculateLapsRemaining(5, null, 3), 2);
-assert.equal(calculateLapsRemaining(null, 2, 1), null);
+// LAPS sessions count laps completed since the session started, so a session
+// started while the game is already on lap 5 still has its full limit left.
+assert.equal(calculateLapsRemaining(3, 0), 3);
+assert.equal(calculateLapsRemaining(3, 2), 1);
+assert.equal(calculateLapsRemaining(3, 4), 0);
+assert.equal(calculateLapsRemaining(3, null), 3);
+assert.equal(calculateLapsRemaining(null, 1), null);
+assert.equal(calculateLapsRemaining(0, 1), null);
+
+// The game's own race distance counts from its absolute lap number.
+assert.equal(countGameLapsCompleted(2, 1), 1);
+assert.equal(countGameLapsCompleted(5, 0), 4);
+assert.equal(countGameLapsCompleted(null, 3), 3);
+assert.equal(countGameLapsCompleted(undefined), 0);
+assert.equal(calculateLapsRemaining(5, countGameLapsCompleted(2, 1)), 4);
 assert.equal(calculateLapProgress(0, 5_000), 0);
 assert.equal(calculateLapProgress(1_250, 5_000), 0.25);
 assert.equal(calculateLapProgress(5_250, 5_000), 0.05);

@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router";
 import { useCurrentUser } from "../../components/auth/auth.queries";
 import CircuitLibrary from "../../data/circuit";
-import { finishSession, getLiveSessionDetails } from "../../service/session";
+import { finishSession } from "../../service/session";
 import LiveTelemetryDashboard from "./components/LiveTelemetryDashboard";
+import { useLiveSessionDetails } from "./hooks/useLiveSessionDetails";
 import { useTelemetrySocket } from "./hooks/useTelemetrySocket";
 import { buildLiveTelemetryView, buildSessionTarget } from "./liveTelemetryView";
 
@@ -13,12 +13,6 @@ export default function TelemetryPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { data: user } = useCurrentUser();
   const telemetry = useTelemetrySocket();
-  const { data: liveSession } = useQuery({
-    queryKey: ["liveSession", sessionId],
-    queryFn: () => getLiveSessionDetails(sessionId!),
-    enabled: Boolean(sessionId),
-    retry: false,
-  });
   const [finishingSession, setFinishingSession] = useState(false);
   const hasNavigatedToOverviewRef = useRef(false);
   const driverName =
@@ -27,6 +21,10 @@ export default function TelemetryPage() {
       : "Driver";
 
   const view = useMemo(() => buildLiveTelemetryView(telemetry), [telemetry]);
+  const { data: liveSession } = useLiveSessionDetails(
+    sessionId,
+    view.currentLapNumber,
+  );
   const target = buildSessionTarget(liveSession, view, telemetry.session);
   const { sessionFinished } = telemetry;
 

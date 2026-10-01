@@ -58,12 +58,29 @@ assert.equal(view.fastestLapDeltaLabel, "(-0.200)");
 assert.equal(view.lapProgress, 0.25);
 assert.equal(view.sessionElapsedSeconds, 300);
 
+const lapsSession = {
+  id: "s",
+  sessionName: "S",
+  circuitName: "C",
+  limitType: "LAPS" as const,
+  lapLimit: 5,
+};
+
 assert.deepEqual(
-  buildSessionTarget(
-    { id: "s", sessionName: "S", circuitName: "C", limitType: "LAPS", lapLimit: 5 },
-    view,
-    input.session,
-  ),
+  buildSessionTarget({ ...lapsSession, lapsCompleted: 2 }, view, input.session),
+  { label: "Laps Remaining", value: "3", visible: true },
+);
+
+// LAPS sessions count from the session start, not the game's lap number:
+// a session started while the game is on lap 3 still has its full limit.
+assert.deepEqual(
+  buildSessionTarget({ ...lapsSession, lapsCompleted: 0 }, view, input.session),
+  { label: "Laps Remaining", value: "5", visible: true },
+);
+
+// Without an OSL lap limit, count down the game's own race distance.
+assert.deepEqual(
+  buildSessionTarget(undefined, view, { ...input.session, m_totalLaps: 5 }),
   { label: "Laps Remaining", value: "3", visible: true },
 );
 
@@ -75,6 +92,7 @@ assert.deepEqual(
       circuitName: "C",
       limitType: "TIME",
       timeLimitSeconds: 900,
+      lapsCompleted: 0,
     },
     view,
     input.session,

@@ -206,20 +206,31 @@ export function mergeCompletedLaps(
 
 export function calculateLapsRemaining(
   lapTarget?: number | null,
-  currentLapNumber?: number | null,
-  completedLapCount = 0,
+  lapsCompleted?: number | null,
 ): number | null {
   if (lapTarget == null || !Number.isFinite(lapTarget) || lapTarget <= 0) {
     return null;
   }
 
+  const completed =
+    lapsCompleted != null && Number.isFinite(lapsCompleted)
+      ? Math.max(lapsCompleted, 0)
+      : 0;
+
+  return Math.max(lapTarget - completed, 0);
+}
+
+/** Laps the game has completed, judged from its absolute lap number. */
+export function countGameLapsCompleted(
+  currentLapNumber?: number | null,
+  completedLapCount = 0,
+): number {
   const completedFromCurrentLap =
     currentLapNumber != null && Number.isFinite(currentLapNumber)
       ? Math.max(currentLapNumber - 1, 0)
       : 0;
-  const completed = Math.max(completedFromCurrentLap, completedLapCount);
 
-  return Math.max(lapTarget - completed, 0);
+  return Math.max(completedFromCurrentLap, completedLapCount);
 }
 
 export function calculateLapProgress(

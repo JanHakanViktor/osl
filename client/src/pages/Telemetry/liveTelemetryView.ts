@@ -4,6 +4,7 @@ import {
   buildSectorDisplays,
   calculateLapProgress,
   calculateLapsRemaining,
+  countGameLapsCompleted,
   findFastestLap,
   firstFiniteNumber,
   formatDuration,
@@ -138,15 +139,18 @@ export function buildSessionTarget(
   session: SessionPacket | null,
 ): LiveTarget {
   const { sessionElapsedSeconds } = view;
-  const lapTarget =
+  // LAPS sessions count from the session start, like the API's auto-finish;
+  // other sessions count down the game's own race distance.
+  const lapsRemaining =
     liveSession?.limitType === "LAPS"
-      ? liveSession.lapLimit
-      : session?.m_totalLaps;
-  const lapsRemaining = calculateLapsRemaining(
-    lapTarget,
-    view.currentLapNumber,
-    view.completedLaps.length,
-  );
+      ? calculateLapsRemaining(liveSession.lapLimit, liveSession.lapsCompleted)
+      : calculateLapsRemaining(
+          session?.m_totalLaps,
+          countGameLapsCompleted(
+            view.currentLapNumber,
+            view.completedLaps.length,
+          ),
+        );
   const remainingSeconds = firstFiniteNumber(
     session?.m_sessionTimeLeft,
     liveSession?.limitType === "TIME" &&

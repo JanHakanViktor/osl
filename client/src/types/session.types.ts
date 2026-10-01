@@ -19,6 +19,8 @@ export type LiveSessionDetails = {
   limitType: "TIME" | "LAPS";
   timeLimitSeconds?: number;
   lapLimit?: number;
+  /** Laps completed since the session started; the API finishes LAPS sessions on it. */
+  lapsCompleted: number;
   startedAt?: string;
 };
 

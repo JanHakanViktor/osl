@@ -97,6 +97,8 @@ export class SessionService {
         cleanLapStreak: 0,
         bestCleanLapStreak: 0,
         totalCleanLaps: 0,
+        totalLaps: 0,
+        firstProcessedLapNum: 0,
         lastProcessedLapNum: 0,
       },
     });
@@ -182,6 +184,8 @@ export class SessionService {
       circuitName: session.circuitName,
       limitType: session.limitType,
       lapLimit: session.lapLimit,
+      // The same count the LAPS limit finishes the session on.
+      lapsCompleted: session.telemetry?.totalLaps ?? 0,
       timeLimitSeconds: session.timeLimitSeconds,
       startedAt: session.startedAt,
     };
