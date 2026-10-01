@@ -57,15 +57,4 @@ export type LandingSummary = {
     previousFastestLapMs?: number | null;
     previousFastestDriverName?: string | null;
   }>;
-  improvementTrend: {
-    driverName: string;
-    circuitId: number;
-    circuitName: string;
-    sessions: Array<{
-      id: string;
-      label: string;
-      sessionName: string;
-      fastestLapMs: number;
-    }>;
-  } | null;
 };

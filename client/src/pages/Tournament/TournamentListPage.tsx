@@ -16,29 +16,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { getTournaments } from "../../service/tournament";
 import { getOslAppShell } from "../../theme";
-import type {
-  TournamentStatus,
-  TournamentSummary,
-} from "../../types/tournament.types";
+import type { TournamentSummary } from "../../types/tournament.types";
 import DriverAvatar from "./components/DriverAvatar";
 import TournamentPageHeader from "./components/TournamentPageHeader";
 import TournamentPanel from "./components/TournamentPanel";
 import { tournamentKeys } from "./hooks/useTournament";
+import { TOURNAMENT_STATUS_CHIPS } from "./tournamentFormatters";
 import { tournamentPath } from "./tournamentRouting";
-
-const STATUS_CHIPS: Record<
-  TournamentStatus,
-  { label: string; color: "primary" | "warning" | "default" | "success" }
-> = {
-  HEAT_LIVE: { label: "Live", color: "primary" },
-  AWAITING_DRIVER: { label: "Driver up", color: "warning" },
-  READY: { label: "In progress", color: "default" },
-  FINISHED: { label: "Finished", color: "success" },
-};
 
 function TournamentCard({ tournament }: { tournament: TournamentSummary }) {
   const navigate = useNavigate();
-  const status = STATUS_CHIPS[tournament.status];
+  const status = TOURNAMENT_STATUS_CHIPS[tournament.status];
 
   return (
     <ButtonBase

@@ -1,5 +1,6 @@
 import type {
   RoundResult,
+  TournamentStatus,
   TournamentWeather,
 } from "../../types/tournament.types";
 
@@ -8,6 +9,16 @@ export const WEATHER_LABELS: Record<TournamentWeather, string> = {
   WET: "Wet",
   NIGHT: "Night",
   CHANGEABLE: "Changeable",
+};
+
+export const TOURNAMENT_STATUS_CHIPS: Record<
+  TournamentStatus,
+  { label: string; color: "primary" | "warning" | "default" | "success" }
+> = {
+  HEAT_LIVE: { label: "Live", color: "primary" },
+  AWAITING_DRIVER: { label: "Driver up", color: "warning" },
+  READY: { label: "In progress", color: "default" },
+  FINISHED: { label: "Finished", color: "success" },
 };
 
 function nameParts(name: string): string[] {

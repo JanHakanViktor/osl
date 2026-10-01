@@ -5,12 +5,14 @@ import HeroBanner from "../components/HeroBanner";
 import LiveTelemetryPreview from "../components/widgets/LiveTelemetryPreview";
 import LatestSessionRecap from "../components/widgets/LatestSessionRecap";
 import FastestLapBreakdown from "../components/widgets/FastestLapBreakdown";
-import DriverImprovementTrend from "../components/widgets/DriverImprovementTrend";
+import LatestTournamentWidget from "../components/widgets/LatestTournamentWidget";
 import { getLandingSummary } from "../service/session";
 import type { LandingSummary } from "../types/session.types";
+import { useLatestTournamentHighlight } from "./Tournament/hooks/useTournament";
 
 function LandingPage() {
   const [summary, setSummary] = useState<LandingSummary | null>(null);
+  const latestTournament = useLatestTournamentHighlight();
 
   useEffect(() => {
     let mounted = true;
@@ -66,7 +68,10 @@ function LandingPage() {
           <FastestLapBreakdown circuits={summary?.fastestLapByCircuit ?? []} />
         </Box>
         <Box>
-          <DriverImprovementTrend trend={summary?.improvementTrend ?? null} />
+          <LatestTournamentWidget
+            tournament={latestTournament.data?.tournament ?? null}
+            loading={latestTournament.isLoading}
+          />
         </Box>
       </Box>
     </>
