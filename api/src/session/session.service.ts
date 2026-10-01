@@ -97,6 +97,7 @@ export class SessionService {
         cleanLapStreak: 0,
         bestCleanLapStreak: 0,
         totalCleanLaps: 0,
+        totalLaps: 0,
         lastProcessedLapNum: 0,
       },
     });
