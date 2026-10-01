@@ -6,13 +6,28 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/users/user.schema';
+import type { TeamId } from 'src/data/team';
 import bcrypt from 'bcrypt';
+
+export type NewUser = {
+  username: string;
+  password: string;
+  drivername?: string;
+  country?: string;
+  teamId?: TeamId;
+};
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async createUser(username: string, password: string, drivername?: string) {
+  async createUser({
+    username,
+    password,
+    drivername,
+    country,
+    teamId,
+  }: NewUser) {
     const userExists = await this.userModel.findOne({ username });
 
     if (userExists) {
@@ -26,6 +41,8 @@ export class UsersService {
       drivername: drivername?.trim() || username,
       password: hashedPassword,
       isAdmin: false,
+      country,
+      teamId,
     });
   }
 
@@ -46,6 +63,8 @@ export class UsersService {
   }
 
   async findSessionUser(userId: string) {
-    return this.userModel.findById(userId).select('username drivername isAdmin');
+    return this.userModel
+      .findById(userId)
+      .select('username drivername isAdmin country teamId');
   }
 }
