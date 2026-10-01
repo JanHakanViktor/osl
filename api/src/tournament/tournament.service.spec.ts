@@ -5,6 +5,7 @@ import type { RegisteredDriver, UsersService } from '../users/users.service';
 import type { RandomSource } from './domain/random-source';
 import type { TournamentState } from './domain/tournament.types';
 import type { CreateTournamentDto } from './dto/create-tournament.dto';
+import type { TournamentGateway } from './tournament.gateway';
 import type { TournamentRepository } from './tournament.repository';
 import { TournamentService } from './tournament.service';
 
@@ -40,13 +41,15 @@ function setup(
     findDrivers: jest.fn(() => Promise.resolve(registered)),
   };
   const random: RandomSource = { nextInt: () => 0 };
+  const gateway = { broadcastUpdated: jest.fn() };
   const service = new TournamentService(
     tournaments as unknown as TournamentRepository,
     users as unknown as UsersService,
     random,
+    gateway as unknown as TournamentGateway,
   );
 
-  return { service, tournaments };
+  return { service, tournaments, gateway };
 }
 
 const registered: RegisteredDriver[] = [
@@ -142,6 +145,14 @@ describe('TournamentService', () => {
         tournamentWins: 0,
       },
     ]);
+  });
+
+  it('announces a new tournament so open screens such as the landing page refresh', async () => {
+    const { service, gateway } = setup(registered);
+
+    const dto = await service.create(hostId, createDto());
+
+    expect(gateway.broadcastUpdated).toHaveBeenCalledWith(dto.id);
   });
 
   it('has no highlight before any tournament exists', async () => {

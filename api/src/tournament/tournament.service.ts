@@ -25,6 +25,7 @@ import {
   toTournamentHighlightDto,
   toTournamentSummaryDto,
 } from './mappers/tournament-response.mapper';
+import { TournamentGateway } from './tournament.gateway';
 import { TournamentRepository } from './tournament.repository';
 import { TOURNAMENT_RANDOM_SOURCE } from './tournament.tokens';
 
@@ -35,6 +36,7 @@ export class TournamentService {
     private readonly users: UsersService,
     @Inject(TOURNAMENT_RANDOM_SOURCE)
     private readonly random: RandomSource,
+    private readonly gateway: TournamentGateway,
   ) {}
 
   listRuleSets(): RuleSetDto[] {
@@ -80,6 +82,7 @@ export class TournamentService {
         new Date(),
       ),
     );
+    this.gateway.broadcastUpdated(state.id);
 
     return toTournamentDto(state, hostUserId);
   }
