@@ -40,6 +40,68 @@ const router = createBrowserRouter([
               },
             ],
           },
+          {
+            path: "tournaments",
+            children: [
+              {
+                index: true,
+                lazy: async () => ({
+                  Component: (
+                    await import("../pages/Tournament/TournamentListPage.tsx")
+                  ).default,
+                }),
+              },
+              {
+                path: "new",
+                lazy: async () => ({
+                  Component: (
+                    await import(
+                      "../pages/Tournament/CreateTournament/CreateTournamentPage.tsx"
+                    )
+                  ).default,
+                }),
+              },
+              {
+                path: ":tournamentId",
+                children: [
+                  {
+                    index: true,
+                    lazy: async () => ({
+                      Component: (
+                        await import(
+                          "../pages/Tournament/TournamentStandingsPage.tsx"
+                        )
+                      ).default,
+                    }),
+                  },
+                  {
+                    path: "live",
+                    lazy: async () => ({
+                      Component: (
+                        await import("../pages/Tournament/TournamentLivePage.tsx")
+                      ).default,
+                    }),
+                  },
+                  {
+                    path: "rounds/:roundNumber",
+                    lazy: async () => ({
+                      Component: (
+                        await import("../pages/Tournament/TournamentRoundPage.tsx")
+                      ).default,
+                    }),
+                  },
+                  {
+                    path: "podium",
+                    lazy: async () => ({
+                      Component: (
+                        await import("../pages/Tournament/TournamentPodiumPage.tsx")
+                      ).default,
+                    }),
+                  },
+                ],
+              },
+            ],
+          },
         ],
       },
     ],

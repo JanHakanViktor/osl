@@ -60,3 +60,61 @@ describe('UsersService findSessionUser', () => {
     expect(fields).not.toContain('password');
   });
 });
+
+describe('UsersService driver lists', () => {
+  const landoId = new Types.ObjectId();
+  const veteranId = new Types.ObjectId();
+  const storedUsers = [
+    {
+      _id: landoId,
+      username: 'lando4',
+      drivername: 'Lando Norris',
+      country: 'GB',
+      teamId: 'mclaren',
+    },
+    { _id: veteranId, username: 'veteran' },
+  ];
+
+  function userModelReturning(users: typeof storedUsers) {
+    const query = {
+      select: jest.fn(() => query),
+      sort: jest.fn(() => query),
+      lean: jest.fn(() => Promise.resolve(users)),
+    };
+    return { model: { find: jest.fn(() => query) }, query };
+  }
+
+  it.each([
+    ['findDrivers', (service: UsersService) => service.findDrivers()],
+    [
+      'findDriversByIds',
+      (service: UsersService) =>
+        service.findDriversByIds([landoId.toString(), veteranId.toString()]),
+    ],
+  ])(
+    '%s includes each driver flag and team, null when not chosen',
+    async (_method, listDrivers) => {
+      const { model, query } = userModelReturning(storedUsers);
+      const service = new UsersService(model as never);
+
+      await expect(listDrivers(service)).resolves.toEqual([
+        {
+          id: landoId.toString(),
+          driverName: 'Lando Norris',
+          country: 'GB',
+          teamId: 'mclaren',
+        },
+        {
+          id: veteranId.toString(),
+          driverName: 'veteran',
+          country: null,
+          teamId: null,
+        },
+      ]);
+      const [projection] = query.select.mock.calls[0] as unknown as [string];
+      expect(projection.split(' ')).toEqual(
+        expect.arrayContaining(['country', 'teamId']),
+      );
+    },
+  );
+});
