@@ -114,6 +114,16 @@ client.on(PACKETS.session, (data: SessionPacket) => {
   void forward("session", data);
 });
 
+// Live timing names every car from participants and takes final results
+// from the classification the game sends when the session ends.
+client.on(PACKETS.participants, (data: unknown) =>
+  forward("participants", data)
+);
+
+client.on(PACKETS.finalClassification, (data: unknown) =>
+  forward("finalClassification", data)
+);
+
 client.socket?.on("message", (message) => {
   packetStats.raw += 1;
 
