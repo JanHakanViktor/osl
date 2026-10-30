@@ -5,6 +5,7 @@ import type { RegisteredDriver, UsersService } from '../users/users.service';
 import type { RandomSource } from './domain/random-source';
 import type { TournamentState } from './domain/tournament.types';
 import type { CreateTournamentDto } from './dto/create-tournament.dto';
+import type { TournamentGateway } from './tournament.gateway';
 import type { TournamentRepository } from './tournament.repository';
 import { TournamentService } from './tournament.service';
 
@@ -26,23 +27,29 @@ function createDto(overrides: Partial<CreateTournamentDto> = {}) {
   } as CreateTournamentDto;
 }
 
-function setup(registered: RegisteredDriver[]) {
+function setup(
+  registered: RegisteredDriver[],
+  mostRecent: TournamentState | null = null,
+) {
   const tournaments = {
     create: jest.fn((state: TournamentState) => Promise.resolve(state)),
     countWinsByDriver: jest.fn(() => Promise.resolve(new Map([[viktorId, 2]]))),
+    findMostRecentlyActive: jest.fn(() => Promise.resolve(mostRecent)),
   };
   const users = {
     findDriversByIds: jest.fn(() => Promise.resolve(registered)),
     findDrivers: jest.fn(() => Promise.resolve(registered)),
   };
   const random: RandomSource = { nextInt: () => 0 };
+  const gateway = { broadcastUpdated: jest.fn() };
   const service = new TournamentService(
     tournaments as unknown as TournamentRepository,
     users as unknown as UsersService,
     random,
+    gateway as unknown as TournamentGateway,
   );
 
-  return { service, tournaments };
+  return { service, tournaments, gateway };
 }
 
 const registered: RegisteredDriver[] = [
@@ -138,5 +145,38 @@ describe('TournamentService', () => {
         tournamentWins: 0,
       },
     ]);
+  });
+
+  it('announces a new tournament so open screens such as the landing page refresh', async () => {
+    const { service, gateway } = setup(registered);
+
+    const dto = await service.create(hostId, createDto());
+
+    expect(gateway.broadcastUpdated).toHaveBeenCalledWith(dto.id);
+  });
+
+  it('has no highlight before any tournament exists', async () => {
+    const { service } = setup(registered);
+
+    await expect(service.getLatestHighlight()).resolves.toEqual({
+      tournament: null,
+    });
+  });
+
+  it('highlights the most recently active tournament', async () => {
+    const { service, tournaments } = setup(registered);
+    await service.create(hostId, createDto());
+    const [savedState] = tournaments.create.mock.calls[0];
+    const { service: landing } = setup(registered, savedState);
+
+    const { tournament } = await landing.getLatestHighlight();
+
+    expect(tournament).toMatchObject({
+      name: 'Friday League',
+      status: 'READY',
+      roundsCompleted: 0,
+      roundsTotal: 2,
+      currentRoundNumber: 1,
+    });
   });
 });

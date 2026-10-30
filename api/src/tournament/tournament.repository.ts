@@ -54,6 +54,16 @@ export class TournamentRepository {
     return record ? toTournamentState(record) : null;
   }
 
+  /** The tournament that changed last: a live heat, a new one, or the latest finish. */
+  async findMostRecentlyActive(): Promise<TournamentState | null> {
+    const record = await this.tournamentModel
+      .findOne()
+      .sort({ updatedAt: -1, _id: -1 })
+      .lean<TournamentRecordWithId>();
+
+    return record ? toTournamentState(record) : null;
+  }
+
   async listForUser(userId: string): Promise<TournamentState[]> {
     const id = new Types.ObjectId(userId);
     const records = await this.tournamentModel

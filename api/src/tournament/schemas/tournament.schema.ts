@@ -177,3 +177,4 @@ export type TournamentDocument = HydratedDocument<Tournament>;
 
 export const TournamentSchema = SchemaFactory.createForClass(Tournament);
 TournamentSchema.index({ 'drivers.userId': 1 });
+TournamentSchema.index({ updatedAt: -1 });
