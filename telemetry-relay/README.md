@@ -2,6 +2,8 @@
 
 The relay forwards live F1 25 UDP packets to the API and builds durable completed-lap payloads for the sim coach.
 
+It forwards motion, session, lap data, participants, car telemetry, final classification and session history packets. Lap data, participants, session history and final classification carry every car in the session, so the API's live timing covers the whole grid of an online lobby, not only the player.
+
 ## Sim-coach configuration
 
 - `TELEMETRY_SECRET`: shared secret accepted by the API.
