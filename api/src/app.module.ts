@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { HealthController } from './health/health.controller';
 import { SimCoachModule } from './sim-coach/sim-coach.module';
 import { TournamentModule } from './tournament/tournament.module';
+import { LiveTimingModule } from './live-timing/live-timing.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TournamentModule } from './tournament/tournament.module';
     AuthModule,
     SimCoachModule,
     TournamentModule,
+    LiveTimingModule,
   ],
   controllers: [HealthController],
 })
