@@ -6,6 +6,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import HistoryIcon from "@mui/icons-material/History";
 import CloseIcon from "@mui/icons-material/Close";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import SensorsIcon from "@mui/icons-material/Sensors";
 import { useLocation, useNavigate } from "react-router";
 import SignInButton from "./auth/SignInButton";
 import { useUIStore } from "../store/uiStore";
@@ -35,6 +36,11 @@ const navItems = [
     label: "Session History",
     path: "/sessions",
     icon: HistoryIcon,
+  },
+  {
+    label: "Live Timing",
+    path: "/live-timing",
+    icon: SensorsIcon,
   },
   {
     label: "Tournament",
@@ -291,7 +297,9 @@ function ResponsiveAppBar() {
                     location.pathname.startsWith("/sessions/") &&
                     !location.pathname.endsWith("/live")) ||
                   (path === "/tournaments" &&
-                    location.pathname.startsWith("/tournaments/"));
+                    location.pathname.startsWith("/tournaments/")) ||
+                  (path === "/live-timing" &&
+                    location.pathname.startsWith("/live-timing/"));
 
                 return (
                   <Button

@@ -41,6 +41,35 @@ const router = createBrowserRouter([
             ],
           },
           {
+            path: "live-timing",
+            children: [
+              {
+                index: true,
+                lazy: async () => ({
+                  Component: (
+                    await import("../pages/LiveTiming/LiveTimingPage.tsx")
+                  ).default,
+                }),
+              },
+              {
+                path: "sessions",
+                lazy: async () => ({
+                  Component: (
+                    await import("../pages/LiveTiming/TimingSessionsPage.tsx")
+                  ).default,
+                }),
+              },
+              {
+                path: "sessions/:sessionUid",
+                lazy: async () => ({
+                  Component: (
+                    await import("../pages/LiveTiming/TimingSessionPage.tsx")
+                  ).default,
+                }),
+              },
+            ],
+          },
+          {
             path: "tournaments",
             children: [
               {
