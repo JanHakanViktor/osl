@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import {
   useMutation,
   useQuery,
@@ -8,6 +8,7 @@ import { io } from "socket.io-client";
 import {
   abortHeat,
   finishHeat,
+  getLatestTournamentHighlight,
   getTournament,
   rollNextDriver,
   startHeat,
@@ -17,48 +18,56 @@ import type { Tournament } from "../../../types/tournament.types";
 const SERVER_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:3030";
 /** Fallback refresh while the rig is busy, in case the socket drops. */
 const BUSY_REFRESH_MS = 5_000;
+const IDLE_REFRESH_MS = 30_000;
 
 export const tournamentKeys = {
   all: ["tournaments"] as const,
   list: () => ["tournaments", "list"] as const,
   detail: (id: string) => ["tournaments", "detail", id] as const,
+  latestHighlight: () => ["tournaments", "latest-highlight"] as const,
   ruleSets: () => ["tournaments", "rule-sets"] as const,
   drivers: () => ["tournaments", "drivers"] as const,
 };
 
-function isRigBusy(tournament?: Tournament) {
+function isRigBusy(tournament?: Pick<Tournament, "status">) {
   return (
     tournament?.status === "AWAITING_DRIVER" ||
     tournament?.status === "HEAT_LIVE"
   );
 }
 
-/** Refetches the tournament whenever the API reports a change to it. */
-function useTournamentUpdates(tournamentId?: string) {
-  const queryClient = useQueryClient();
+/** Calls onUpdated with the id of every tournament the API reports changed. */
+function useTournamentUpdatedEvents(
+  enabled: boolean,
+  onUpdated: (tournamentId: string) => void,
+) {
+  const handleUpdated = useEffectEvent(onUpdated);
 
   useEffect(() => {
-    if (!tournamentId) return;
+    if (!enabled) return;
 
     const socket = io(`${SERVER_URL.replace(/\/$/, "")}/tournaments`, {
       reconnection: true,
     });
-    socket.on("tournamentUpdated", (event: { tournamentId: string }) => {
-      if (event.tournamentId === tournamentId) {
-        void queryClient.invalidateQueries({
-          queryKey: tournamentKeys.detail(tournamentId),
-        });
-      }
-    });
+    socket.on("tournamentUpdated", (event: { tournamentId: string }) =>
+      handleUpdated(event.tournamentId),
+    );
 
     return () => {
       socket.disconnect();
     };
-  }, [queryClient, tournamentId]);
+  }, [enabled]);
 }
 
 export function useTournament(tournamentId?: string) {
-  useTournamentUpdates(tournamentId);
+  const queryClient = useQueryClient();
+  useTournamentUpdatedEvents(Boolean(tournamentId), (updatedId) => {
+    if (updatedId === tournamentId) {
+      void queryClient.invalidateQueries({
+        queryKey: tournamentKeys.detail(updatedId),
+      });
+    }
+  });
 
   return useQuery({
     queryKey: tournamentKeys.detail(tournamentId ?? ""),
@@ -66,6 +75,25 @@ export function useTournament(tournamentId?: string) {
     enabled: Boolean(tournamentId),
     refetchInterval: (query) =>
       isRigBusy(query.state.data) ? BUSY_REFRESH_MS : false,
+  });
+}
+
+/** The tournament that changed last, kept fresh for the landing page. */
+export function useLatestTournamentHighlight() {
+  const queryClient = useQueryClient();
+  useTournamentUpdatedEvents(true, () => {
+    void queryClient.invalidateQueries({
+      queryKey: tournamentKeys.latestHighlight(),
+    });
+  });
+
+  return useQuery({
+    queryKey: tournamentKeys.latestHighlight(),
+    queryFn: getLatestTournamentHighlight,
+    refetchInterval: (query) =>
+      isRigBusy(query.state.data?.tournament ?? undefined)
+        ? BUSY_REFRESH_MS
+        : IDLE_REFRESH_MS,
   });
 }
 

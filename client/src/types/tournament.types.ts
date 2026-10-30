@@ -136,6 +136,44 @@ export type TournamentSummary = {
   finishedAt: string | null;
 };
 
+/** Public, compact view of the tournament that changed last. */
+export type TournamentHighlight = {
+  id: string;
+  name: string;
+  status: TournamentStatus;
+  ruleSetName: string;
+  weather: TournamentWeather;
+  lapsPerDriver: number;
+  roundsCompleted: number;
+  roundsTotal: number;
+  currentRoundNumber: number | null;
+  rounds: Array<{
+    roundNumber: number;
+    circuit: TournamentCircuit;
+    status: TournamentRound["status"];
+    /** Fastest driver once every driver has driven the track. */
+    winner: TournamentDriver | null;
+  }>;
+  standings: Standing[];
+  activeHeat: Pick<
+    ActiveHeat,
+    | "roundNumber"
+    | "circuit"
+    | "driver"
+    | "status"
+    | "lapsCompleted"
+    | "lapsTarget"
+    | "bestLapMs"
+  > | null;
+  champion: TournamentDriver | null;
+  createdAt: string;
+  finishedAt: string | null;
+};
+
+export type LatestTournamentHighlight = {
+  tournament: TournamentHighlight | null;
+};
+
 export type CreateTournamentPayload = {
   name: string;
   weather: TournamentWeather;

@@ -1,6 +1,7 @@
 import type {
   CreateTournamentPayload,
   DriverOption,
+  LatestTournamentHighlight,
   RuleSet,
   Tournament,
   TournamentSummary,
@@ -46,6 +47,14 @@ export function getDriverOptions(): Promise<DriverOption[]> {
 
 export function getTournaments(): Promise<TournamentSummary[]> {
   return requestJson("/tournaments", "Failed to load tournaments");
+}
+
+/** Public: the tournament that changed last, for the landing page. */
+export function getLatestTournamentHighlight(): Promise<LatestTournamentHighlight> {
+  return requestJson(
+    "/tournament-highlights/latest",
+    "Failed to load the latest tournament",
+  );
 }
 
 export function getTournament(id: string): Promise<Tournament> {
